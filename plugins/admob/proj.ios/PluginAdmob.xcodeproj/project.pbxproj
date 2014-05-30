@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9771DEA11938CAFD0046C175 /* libAdapterNend.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9771DE9B1938CACE0046C175 /* libAdapterNend.a */; };
+		9771DEA21938CAFD0046C175 /* libNendAd.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 9771DE9C1938CACE0046C175 /* libNendAd.a */; };
 		FADC44AB176EA82000B2D5ED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADC44AA176EA82000B2D5ED /* Foundation.framework */; };
 		FADC44C5176EA84500B2D5ED /* libGoogleAdMobAds.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FADC44C2176EA84500B2D5ED /* libGoogleAdMobAds.a */; };
 		FADC44C6176EA84500B2D5ED /* AdsAdmob.m in Sources */ = {isa = PBXBuildFile; fileRef = FADC44C4176EA84500B2D5ED /* AdsAdmob.m */; };
@@ -28,6 +30,12 @@
 		05F48C0F192C9162008FB408 /* GADInAppPurchase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADInAppPurchase.h; sourceTree = "<group>"; };
 		05F48C10192C9162008FB408 /* GADInAppPurchaseDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADInAppPurchaseDelegate.h; sourceTree = "<group>"; };
 		05F48C11192C9162008FB408 /* GADModules.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADModules.h; sourceTree = "<group>"; };
+		9771DE9B1938CACE0046C175 /* libAdapterNend.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libAdapterNend.a; sourceTree = "<group>"; };
+		9771DE9C1938CACE0046C175 /* libNendAd.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libNendAd.a; sourceTree = "<group>"; };
+		9771DE9D1938CACE0046C175 /* NADIconArrayView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADIconArrayView.h; sourceTree = "<group>"; };
+		9771DE9E1938CACE0046C175 /* NADIconLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADIconLoader.h; sourceTree = "<group>"; };
+		9771DE9F1938CACE0046C175 /* NADIconView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADIconView.h; sourceTree = "<group>"; };
+		9771DEA01938CACE0046C175 /* NADView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADView.h; sourceTree = "<group>"; };
 		FADC44A7176EA82000B2D5ED /* libPluginAdmob.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginAdmob.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FADC44AA176EA82000B2D5ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FADC44B9176EA84500B2D5ED /* GADAdMobExtras.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = GADAdMobExtras.h; sourceTree = "<group>"; };
@@ -52,12 +60,27 @@
 			files = (
 				FADC44AB176EA82000B2D5ED /* Foundation.framework in Frameworks */,
 				FADC44C5176EA84500B2D5ED /* libGoogleAdMobAds.a in Frameworks */,
+				9771DEA21938CAFD0046C175 /* libNendAd.a in Frameworks */,
+				9771DEA11938CAFD0046C175 /* libAdapterNend.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		9771DE9A1938CACE0046C175 /* NendAd */ = {
+			isa = PBXGroup;
+			children = (
+				9771DE9B1938CACE0046C175 /* libAdapterNend.a */,
+				9771DE9C1938CACE0046C175 /* libNendAd.a */,
+				9771DE9D1938CACE0046C175 /* NADIconArrayView.h */,
+				9771DE9E1938CACE0046C175 /* NADIconLoader.h */,
+				9771DE9F1938CACE0046C175 /* NADIconView.h */,
+				9771DEA01938CACE0046C175 /* NADView.h */,
+			);
+			path = NendAd;
+			sourceTree = "<group>";
+		};
 		FADC449E176EA82000B2D5ED = {
 			isa = PBXGroup;
 			children = (
@@ -65,6 +88,7 @@
 				FADC44B8176EA84500B2D5ED /* Admob */,
 				FADC44C3176EA84500B2D5ED /* AdsAdmob.h */,
 				FADC44C4176EA84500B2D5ED /* AdsAdmob.m */,
+				9771DE9A1938CACE0046C175 /* NendAd */,
 				FADC44A9176EA82000B2D5ED /* Frameworks */,
 				FADC44A8176EA82000B2D5ED /* Products */,
 			);
@@ -228,6 +252,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Admob\"",
+					"\"$(SRCROOT)/NendAd\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -248,6 +273,7 @@
 				LIBRARY_SEARCH_PATHS = (
 					"$(inherited)",
 					"\"$(SRCROOT)/Admob\"",
+					"\"$(SRCROOT)/NendAd\"",
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
