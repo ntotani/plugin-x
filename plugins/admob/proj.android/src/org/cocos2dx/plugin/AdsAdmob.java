@@ -28,7 +28,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Set;
 
-import com.google.ads.*;
+import com.google.android.gms.ads.*;
 import com.google.ads.AdRequest.ErrorCode;
 
 import android.app.Activity;
@@ -169,35 +169,40 @@ public class AdsAdmob implements InterfaceAds {
 					size = AdSize.BANNER;
 					break;
 				case AdsAdmob.ADMOB_SIZE_IABMRect:
-					size = AdSize.IAB_MRECT;
+					size = AdSize.MEDIUM_RECTANGLE;
 					break;
 				case AdsAdmob.ADMOB_SIZE_IABBanner:
-					size = AdSize.IAB_BANNER;
+					size = AdSize.FULL_BANNER;
 					break;
 				case AdsAdmob.ADMOB_SIZE_IABLeaderboard:
-					size = AdSize.IAB_LEADERBOARD;
+					size = AdSize.LEADERBOARD;
 					break;
 				case AdsAdmob.ADMOB_SIZE_Skyscraper:
-				    size = AdSize.IAB_WIDE_SKYSCRAPER;
+				    size = AdSize.SMART_BANNER;
 				    break;
 				default:
 					break;
 				}
-				adView = new AdView(mContext, size, mPublishID);
-				AdRequest req = new AdRequest();
+				adView = new AdView(mContext);
+        adView.setAdUnitId(mPublishID);
+        adView.setAdSize(size);
+        
+				AdRequest.Builder builder = new AdRequest.Builder();
+        builder.addTestDevice(AdRequest.DEVICE_ID_EMULATOR);
 				
 				try {
 					if (mTestDevices != null) {
 						Iterator<String> ir = mTestDevices.iterator();
 						while(ir.hasNext())
 						{
-							req.addTestDevice(ir.next());
+              builder.addTestDevice(ir.next());
 						}
 					}
 				} catch (Exception e) {
 					LogE("Error during add test device", e);
 				}
 				
+				AdRequest req = builder.build();
 				adView.loadAd(req);
 				adView.setAdListener(new AdmobAdsListener());
 
@@ -232,28 +237,32 @@ public class AdsAdmob implements InterfaceAds {
 		mTestDevices.add(deviceID);
 	}
 
-	private class AdmobAdsListener implements AdListener {
+	private class AdmobAdsListener extends AdListener {
 
 		@Override
-		public void onDismissScreen(Ad arg0) {
+		public void onAdClosed() {
 			LogD("onDismissScreen invoked");
 			AdsWrapper.onAdsResult(mAdapter, AdsWrapper.RESULT_CODE_AdsDismissed, "Ads view dismissed!");
 		}
 
 		@Override
-		public void onFailedToReceiveAd(Ad arg0, ErrorCode arg1) {
+		public void onAdFailedToLoad(int errorCode) {
 			int errorNo = AdsWrapper.RESULT_CODE_UnknownError;
 			String errorMsg = "Unknow error";
-			switch (arg1) {
-			case NETWORK_ERROR:
+			switch (errorCode) {
+			case AdRequest.ERROR_CODE_NETWORK_ERROR:
 				errorNo =  AdsWrapper.RESULT_CODE_NetworkError;
 				errorMsg = "Network error";
 				break;
-			case INVALID_REQUEST:
+			case AdRequest.ERROR_CODE_INTERNAL_ERROR:
+				errorNo =  AdsWrapper.RESULT_CODE_NetworkError;
+				errorMsg = "Internal error";
+				break;
+			case AdRequest.ERROR_CODE_INVALID_REQUEST:
 				errorNo = AdsWrapper.RESULT_CODE_NetworkError;
 				errorMsg = "The ad request is invalid";
 				break;
-			case NO_FILL:
+			case AdRequest.ERROR_CODE_NO_FILL:
 				errorMsg = "The ad request is successful, but no ad was returned due to lack of ad inventory.";
 				break;
 			default:
@@ -264,18 +273,18 @@ public class AdsAdmob implements InterfaceAds {
 		}
 
 		@Override
-		public void onLeaveApplication(Ad arg0) {
+		public void onAdLeftApplication() {
 			LogD("onLeaveApplication invoked");
 		}
 
 		@Override
-		public void onPresentScreen(Ad arg0) {
+		public void onAdOpened() {
 			LogD("onPresentScreen invoked");
 			AdsWrapper.onAdsResult(mAdapter, AdsWrapper.RESULT_CODE_AdsShown, "Ads view shown!");
 		}
 
 		@Override
-		public void onReceiveAd(Ad arg0) {
+		public void onAdLoaded() {
 			LogD("onReceiveAd invoked");
 			AdsWrapper.onAdsResult(mAdapter, AdsWrapper.RESULT_CODE_AdsReceived, "Ads request received success!");
 		}
