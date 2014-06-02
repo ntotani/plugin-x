@@ -52,7 +52,7 @@
     SLComposeViewController *cvc = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
     [cvc setInitialText:[NSString stringWithFormat:@"%@", [mShareInfo objectForKey:@"SharedText"]]];
     NSString* imgPath = [mShareInfo objectForKey:@"SharedImagePath"];
-    if (!imgPath) {
+    if (imgPath) {
         [cvc addImage:[UIImage imageWithContentsOfFile:imgPath]];
     }
     [cvc setCompletionHandler:^(SLComposeViewControllerResult result) {
