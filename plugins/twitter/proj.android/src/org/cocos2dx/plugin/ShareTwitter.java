@@ -23,14 +23,20 @@ THE SOFTWARE.
 ****************************************************************************/
 package org.cocos2dx.plugin;
 
+import java.io.File;
 import java.util.Hashtable;
 
 import org.cocos2dx.plugin.TwitterApp.TwDialogListener;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
+import android.content.ComponentName;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.util.Log;
 
 public class ShareTwitter implements InterfaceShare {
@@ -101,6 +107,7 @@ public class ShareTwitter implements InterfaceShare {
 			return;
 		}
 
+/*
 		if (! isInitialized) {
 			shareResult(ShareWrapper.SHARERESULT_FAIL, "Initialize failed!");
 			return;
@@ -118,6 +125,7 @@ public class ShareTwitter implements InterfaceShare {
 
 			return;
 		}
+*/
 		
 		PluginWrapper.runOnMainThread(new Runnable() {
 			
@@ -173,6 +181,30 @@ public class ShareTwitter implements InterfaceShare {
 	private static void sendToTwitter() {
 		String text = mShareInfo.get(KEY_TEXT);
 		String imagePath = mShareInfo.get(KEY_IMAGE_PATH);				
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		intent.putExtra(Intent.EXTRA_TEXT, text);
+		intent.setType("text/plain");
+		if (imagePath != null && imagePath.length() > 0) {
+			File file = new File(imagePath);
+			if (file.exists()) {
+				file.setReadable(true, false);
+				// if needed
+				// mContext.registerMedia(file);
+				intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(file));
+				intent.setType("image/jpeg");
+			}
+		}
+		String packageName = "com.twitter.android";
+		PackageManager pm = mContext.getPackageManager();
+		for (ResolveInfo info :pm.queryIntentActivities(intent, 0)) {
+			if (info.activityInfo.applicationInfo.packageName.equals(packageName)) {
+				intent.setComponent(new ComponentName(packageName, info.activityInfo.name));
+				mContext.startActivity(intent);
+				return;
+			}
+		}
+		mContext.startActivity(Intent.createChooser(intent, "共有"));
+/*
 		try {
 			if(imagePath != null && imagePath.length() > 0){
 				mTwitter.updateStatus(text, imagePath);
@@ -186,6 +218,7 @@ public class ShareTwitter implements InterfaceShare {
 			shareResult(ShareWrapper.SHARERESULT_FAIL, "Unknown error!");
 			e.printStackTrace();
 		}
+*/
 	}
 
 	@Override
