@@ -1,0 +1,12 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context="org.cocos2dx.plugin.FacebookActivity" >
+
+    <item
+        android:id="@+id/org_cocos2dx_plugin_facebook_action_post"
+        android:icon="@android:drawable/ic_menu_upload"
+        android:title="@string/org_cocos2dx_plugin_facebook_action_post"
+        app:showAsAction="ifRoom"/>
+
+</menu>

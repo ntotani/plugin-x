@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="org_cocos2dx_plugin_facebook_action_post">POST</string>
+    <string name="org_cocos2dx_plugin_facebook_image_desc">img</string>
+
+</resources>
