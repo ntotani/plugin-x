@@ -1,5 +1,5 @@
 #define plugins array 
-export ALL_PLUGINS=("flurry" "umeng" "admob" "twitter" "facebook" "googleplay")
+export ALL_PLUGINS=("flurry" "admob" "twitter" "facebook" "googleplay")
 
 # define the plugin root directory & publish target directory
 export TARGET_DIR_NAME="publish"
