@@ -1,7 +1,6 @@
 #import <Foundation/Foundation.h>
 #import "InterfaceUser.h"
-//#import "GADBannerView.h"
-//#import "GADBannerViewDelegate.h"
+#import <GooglePlus/GooglePlus.h>
 
 /*
 typedef enum {
@@ -18,7 +17,7 @@ typedef enum {
 } AdmobType;
  */
 
-@interface UserGoogleplay : NSObject <InterfaceUser/*, GADBannerViewDelegate*/>
+@interface UserGoogleplay : NSObject <InterfaceUser, GPPSignInDelegate>
 {
 }
 
@@ -41,10 +40,10 @@ typedef enum {
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 
-
 /**
  interface for Googleplay SDK
  */
-//- (void) addTestDevice: (NSString*) deviceID;
+- (void)finishedWithAuth:(GTMOAuth2Authentication *)auth
+                   error:(NSError *)error;
 
 @end

@@ -9,7 +9,7 @@
 
 @interface GPGMultiplayerConfig : NSObject
 
-@property(nonatomic, assign) int exclusiveBitMask;
+@property(nonatomic, assign) unsigned long long exclusiveBitMask;
 
 @property(nonatomic, retain) NSArray *invitedPlayerIds;
 

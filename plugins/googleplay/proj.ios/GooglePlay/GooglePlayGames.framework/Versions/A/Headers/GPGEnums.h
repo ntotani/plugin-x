@@ -156,6 +156,7 @@ typedef enum {
 
 extern const int kGPGTurnBasedMinPlayers;
 extern const int kGPGTurnBasedMaxPlayers;
+extern const int kGPGTurnBasedParticipantResultPlacingUninitialized;
 
 typedef enum {
   GPGTurnBasedMatchCreationSuccess,
@@ -223,6 +224,8 @@ typedef enum {
 
 // A result status for a participant that has finished a match.
 typedef enum {
+  // The participant result status was never set.
+  GPGTurnBasedParticipantResultStatusUninitialized = -1,
   // The participant won the match.
   GPGTurnBasedParticipantResultStatusWin,
   // The participant lost the match.

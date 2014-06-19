@@ -23,7 +23,44 @@
 #import <Foundation/Foundation.h>
 
 #import "GTLDefines.h"
-#import "GTMHTTPFetcherService.h"
+
+// Fetcher bridging macros -- Internal library use only.
+//
+// GTL_USE_SESSION_FETCHER should be set to force the GTL library to use
+// GTMSessionFetcher rather than the older GTMHTTPFetcher.  The session
+// fetcher requires iOS 7/OS X 10.9 and supports out-of-process uploads.
+
+#ifndef GTL_USE_SESSION_FETCHER
+#define GTL_USE_SESSION_FETCHER 0
+#endif
+
+#if GTL_USE_SESSION_FETCHER
+  #define GTLFetcher GTMSessionFetcher
+  #define GTLFetcherService GTMSessionFetcherService
+  #define GTLUploadFetcherClass GTMSessionUploadFetcher
+  #define GTLUploadFetcherClassStr @"GTMSessionUploadFetcher"
+  #define GTLApplicationIdentifier GTMFetcherApplicationIdentifier
+  #define GTLSystemVersionString GTMFetcherSystemVersionString
+  #define GTLCleanedUserAgentString GTMFetcherCleanedUserAgentString
+  #define GTLAssertValidSelector GTMSessionFetcherAssertValidSelector
+
+  #import "GTMSessionFetcher.h"
+  #import "GTMSessionFetcherService.h"
+#else
+  // !GTL_USE_SESSION_FETCHER
+  #define GTLFetcher GTMHTTPFetcher
+  #define GTLFetcherService GTMHTTPFetcherService
+  #define GTLUploadFetcherClass GTMHTTPUploadFetcher
+  #define GTLUploadFetcherClassStr @"GTMHTTPUploadFetcher"
+  #define GTLApplicationIdentifier GTMApplicationIdentifier
+  #define GTLSystemVersionString GTMSystemVersionString
+  #define GTLCleanedUserAgentString GTMCleanedUserAgentString
+  #define GTLAssertValidSelector GTMAssertSelectorNilOrImplementedWithArgs
+
+  #import "GTMHTTPFetcher.h"
+  #import "GTMHTTPFetcherService.h"
+#endif  // GTL_USE_SESSION_FETCHER
+
 #import "GTLBatchQuery.h"
 #import "GTLBatchResult.h"
 #import "GTLDateTime.h"
@@ -93,7 +130,7 @@ typedef void *GTLServiceUploadProgressBlock;
  @private
   NSOperationQueue *parseQueue_;
   NSString *userAgent_;
-  GTMHTTPFetcherService *fetcherService_;
+  GTLFetcherService *fetcherService_;
   NSString *userAgentAddition_;
 
   NSMutableDictionary *serviceProperties_; // initial values for properties in future tickets
@@ -196,7 +233,7 @@ typedef void *GTLServiceUploadProgressBlock;
 //
 // If present, it should have the signature:
 //   -(BOOL)ticket:(GTLServiceTicket *)ticket willRetry:(BOOL)suggestedWillRetry forError:(NSError *)error
-// and return YES to cause a retry.  Note that unlike the GTMHTTPFetcher retry
+// and return YES to cause a retry.  Note that unlike the fetcher retry
 // selector, this selector's first argument is a ticket, not a fetcher.
 
 @property (nonatomic, assign) SEL retrySelector;
@@ -399,16 +436,18 @@ typedef void *GTLServiceUploadProgressBlock;
 // was called operationQueue)
 @property (nonatomic, retain) NSOperationQueue *parseQueue;
 
-// The fetcher service object issues the GTMHTTPFetcher instances
+// The fetcher service object issues the fetcher instances
 // for this API service
-@property (nonatomic, retain) GTMHTTPFetcherService *fetcherService;
+@property (nonatomic, retain) GTLFetcherService *fetcherService;
 
 // Default storage for cookies is in the service object's fetchHistory.
 //
 // Apps that want to share cookies between all standalone fetchers and the
 // service object may specify static application-wide cookie storage,
 // kGTMHTTPFetcherCookieStorageMethodStatic.
+#if !GTL_USE_SESSION_FETCHER
 @property (nonatomic, assign) NSInteger cookieStorageMethod;
+#endif
 
 // When sending REST style queries, should the payload be wrapped in a "data"
 // element, and will the reply be wrapped in an "data" element.
@@ -483,7 +522,7 @@ typedef void *GTLServiceUploadProgressBlock;
   NSMutableDictionary *ticketProperties_;
   NSDictionary *surrogates_;
 
-  GTMHTTPFetcher *objectFetcher_;
+  GTLFetcher *objectFetcher_;
   SEL uploadProgressSelector_;
   BOOL shouldFetchNextPages_;
   BOOL isRetryEnabled_;
@@ -533,7 +572,7 @@ typedef void *GTLServiceUploadProgressBlock;
 - (void)resumeUpload;
 - (BOOL)isUploadPaused;
 
-@property (nonatomic, retain) GTMHTTPFetcher *objectFetcher;
+@property (nonatomic, retain) GTLFetcher *objectFetcher;
 @property (nonatomic, assign) SEL uploadProgressSelector;
 
 // Services which do not require an user authorization may require a developer
@@ -591,7 +630,7 @@ typedef void *GTLServiceUploadProgressBlock;
 
 
 // Category to provide opaque access to tickets stored in fetcher properties
-@interface GTMHTTPFetcher (GTLServiceTicketAdditions)
+@interface GTLFetcher (GTLServiceTicketAdditions)
 - (id)ticket;
 @end
 

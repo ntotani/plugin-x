@@ -16,7 +16,7 @@
 
 - (id)initWithMinPlayers:(int)minPlayers
               maxPlayers:(int)maxPlayers
-        exclusiveBitMask:(int)exclusiveBitMask
+        exclusiveBitMask:(unsigned long long)exclusiveBitMask
                  variant:(int)variant;
 
 - (id)initWithMinPlayers:(int)minPlayers maxPlayers:(int)maxPlayers;

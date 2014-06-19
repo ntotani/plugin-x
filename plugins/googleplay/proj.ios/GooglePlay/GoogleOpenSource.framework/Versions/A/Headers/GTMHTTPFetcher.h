@@ -276,10 +276,13 @@ extern NSString *const kGTMHTTPFetcherRetryDelayStartedNotification;
 extern NSString *const kGTMHTTPFetcherRetryDelayStoppedNotification;
 
 // callback constants
+
+#if !defined(GTMSessionFetcherBridge)
 extern NSString *const kGTMHTTPFetcherErrorDomain;
 extern NSString *const kGTMHTTPFetcherStatusDomain;
 extern NSString *const kGTMHTTPFetcherErrorChallengeKey;
 extern NSString *const kGTMHTTPFetcherStatusDataKey;  // data returned with a kGTMHTTPFetcherStatusDomain error
+#endif  // !defined(GTMSessionFetcherBridge)
 
 #ifdef __cplusplus
 }
@@ -295,11 +298,13 @@ enum {
   // The code kGTMHTTPFetcherErrorAuthorizationFailed (-5) has been removed;
   // look for status 401 instead.
 
+#if !defined(GTMSessionFetcherBridge)
   kGTMHTTPFetcherStatusNotModified = 304,
   kGTMHTTPFetcherStatusBadRequest = 400,
   kGTMHTTPFetcherStatusUnauthorized = 401,
   kGTMHTTPFetcherStatusForbidden = 403,
   kGTMHTTPFetcherStatusPreconditionFailed = 412
+#endif  // !defined(GTMSessionFetcherBridge)
 };
 
 // cookie storage methods
@@ -368,6 +373,7 @@ NSString *GTMApplicationIdentifier(NSBundle *bundle);
 - (void)removeCachedDataForRequest:(NSURLRequest *)request;
 @end
 
+#if !defined(GTMSessionFetcherBridge)
 @protocol GTMHTTPFetcherServiceProtocol <NSObject>
 // This protocol allows us to call into the service without requiring
 // GTMHTTPFetcherService sources in this project
@@ -419,6 +425,7 @@ NSString *GTMApplicationIdentifier(NSBundle *bundle);
 - (BOOL)primeForRefresh;
 
 @end
+#endif  // !defined(GTMSessionFetcherBridge)
 
 // GTMHTTPFetcher objects are used for async retrieval of an http get or post
 //
@@ -749,6 +756,11 @@ NSString *GTMApplicationIdentifier(NSBundle *bundle);
 // NSURLConnection.
 + (Class)connectionClass;
 + (void)setConnectionClass:(Class)theClass;
+
+//
+// Method for compatibility with GTMSessionFetcher
+//
+@property (retain) NSData *bodyData;
 
 // Spin the run loop, discarding events, until the fetch has completed
 //
