@@ -1,0 +1,264 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		9755A2AB1952DCE400E1D8E0 /* GoogleOpenSource.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9755A2A61952DCE400E1D8E0 /* GoogleOpenSource.framework */; };
+		9755A2AC1952DCE400E1D8E0 /* GooglePlayGames.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9755A2A81952DCE400E1D8E0 /* GooglePlayGames.framework */; };
+		9755A2AD1952DCE400E1D8E0 /* GooglePlus.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 9755A2AA1952DCE400E1D8E0 /* GooglePlus.framework */; };
+		FADC44AB176EA82000B2D5ED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADC44AA176EA82000B2D5ED /* Foundation.framework */; };
+		FADC44C6176EA84500B2D5ED /* UserGoogleplay.m in Sources */ = {isa = PBXBuildFile; fileRef = FADC44C4176EA84500B2D5ED /* UserGoogleplay.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FADC44A5176EA82000B2D5ED /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		9755A2A61952DCE400E1D8E0 /* GoogleOpenSource.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GoogleOpenSource.framework; path = GooglePlay/GoogleOpenSource.framework; sourceTree = "<group>"; };
+		9755A2A71952DCE400E1D8E0 /* GooglePlayGames.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlayGames.bundle; path = GooglePlay/GooglePlayGames.bundle; sourceTree = "<group>"; };
+		9755A2A81952DCE400E1D8E0 /* GooglePlayGames.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlayGames.framework; path = GooglePlay/GooglePlayGames.framework; sourceTree = "<group>"; };
+		9755A2A91952DCE400E1D8E0 /* GooglePlus.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; name = GooglePlus.bundle; path = GooglePlay/GooglePlus.bundle; sourceTree = "<group>"; };
+		9755A2AA1952DCE400E1D8E0 /* GooglePlus.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = GooglePlus.framework; path = GooglePlay/GooglePlus.framework; sourceTree = "<group>"; };
+		FADC44A7176EA82000B2D5ED /* libPluginGoogleplay.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginGoogleplay.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		FADC44AA176EA82000B2D5ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		FADC44C3176EA84500B2D5ED /* UserGoogleplay.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserGoogleplay.h; sourceTree = "<group>"; };
+		FADC44C4176EA84500B2D5ED /* UserGoogleplay.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserGoogleplay.m; sourceTree = "<group>"; };
+		FADC44C7176EA85F00B2D5ED /* PluginGoogleplay-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PluginGoogleplay-Prefix.pch"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FADC44A4176EA82000B2D5ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				9755A2AC1952DCE400E1D8E0 /* GooglePlayGames.framework in Frameworks */,
+				9755A2AD1952DCE400E1D8E0 /* GooglePlus.framework in Frameworks */,
+				9755A2AB1952DCE400E1D8E0 /* GoogleOpenSource.framework in Frameworks */,
+				FADC44AB176EA82000B2D5ED /* Foundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FADC449E176EA82000B2D5ED = {
+			isa = PBXGroup;
+			children = (
+				FADC44C7176EA85F00B2D5ED /* PluginGoogleplay-Prefix.pch */,
+				FADC44C3176EA84500B2D5ED /* UserGoogleplay.h */,
+				FADC44C4176EA84500B2D5ED /* UserGoogleplay.m */,
+				FADC44A9176EA82000B2D5ED /* Frameworks */,
+				FADC44A8176EA82000B2D5ED /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FADC44A8176EA82000B2D5ED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FADC44A7176EA82000B2D5ED /* libPluginGoogleplay.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FADC44A9176EA82000B2D5ED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				FADC44AA176EA82000B2D5ED /* Foundation.framework */,
+				9755A2A61952DCE400E1D8E0 /* GoogleOpenSource.framework */,
+				9755A2A71952DCE400E1D8E0 /* GooglePlayGames.bundle */,
+				9755A2A81952DCE400E1D8E0 /* GooglePlayGames.framework */,
+				9755A2A91952DCE400E1D8E0 /* GooglePlus.bundle */,
+				9755A2AA1952DCE400E1D8E0 /* GooglePlus.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FADC44A6176EA82000B2D5ED /* PluginGoogleplay */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FADC44B5176EA82000B2D5ED /* Build configuration list for PBXNativeTarget "PluginGoogleplay" */;
+			buildPhases = (
+				FADC44A3176EA82000B2D5ED /* Sources */,
+				FADC44A4176EA82000B2D5ED /* Frameworks */,
+				FADC44A5176EA82000B2D5ED /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PluginGoogleplay;
+			productName = PluginGoogleplay;
+			productReference = FADC44A7176EA82000B2D5ED /* libPluginGoogleplay.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FADC449F176EA82000B2D5ED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "cocos2d-x";
+			};
+			buildConfigurationList = FADC44A2176EA82000B2D5ED /* Build configuration list for PBXProject "PluginGoogleplay" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FADC449E176EA82000B2D5ED;
+			productRefGroup = FADC44A8176EA82000B2D5ED /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FADC44A6176EA82000B2D5ED /* PluginGoogleplay */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FADC44A3176EA82000B2D5ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				FADC44C6176EA84500B2D5ED /* UserGoogleplay.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FADC44B3176EA82000B2D5ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FADC44B4176EA82000B2D5ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FADC44B6176EA82000B2D5ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				DSTROOT = /tmp/PluginGoogleplay.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GooglePlay",
+				);
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PluginGoogleplay-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../protocols/platform/ios";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = PluginGoogleplay;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		FADC44B7176EA82000B2D5ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				DSTROOT = /tmp/PluginGoogleplay.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GooglePlay",
+				);
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PluginGoogleplay-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../protocols/platform/ios";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = PluginGoogleplay;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FADC44A2176EA82000B2D5ED /* Build configuration list for PBXProject "PluginGoogleplay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FADC44B3176EA82000B2D5ED /* Debug */,
+				FADC44B4176EA82000B2D5ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FADC44B5176EA82000B2D5ED /* Build configuration list for PBXNativeTarget "PluginGoogleplay" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FADC44B6176EA82000B2D5ED /* Debug */,
+				FADC44B7176EA82000B2D5ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FADC449F176EA82000B2D5ED /* Project object */;
+}
