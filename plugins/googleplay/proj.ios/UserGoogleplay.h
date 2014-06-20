@@ -18,7 +18,7 @@ typedef enum {
 } AdmobType;
  */
 
-@interface UserGoogleplay : NSObject <InterfaceUser, GPPSignInDelegate, GPGStatusDelegate>
+@interface UserGoogleplay : NSObject <InterfaceUser, GPPSignInDelegate, GPGStatusDelegate, GPGRealTimeRoomDelegate>
 {
 }
 
@@ -48,5 +48,9 @@ typedef enum {
                    error:(NSError *)error;
 - (void)didFinishGamesSignInWithError:(NSError *)error;
 - (void)didFinishGamesSignOutWithError:(NSError *)error;
+
+- (void)createQuickStartRoom;
+- (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status;
+- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController;
 
 @end

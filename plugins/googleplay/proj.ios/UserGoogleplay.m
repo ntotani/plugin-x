@@ -1,5 +1,6 @@
 #import "UserGoogleplay.h"
 #import "UserWrapper.h"
+#import "AdsWrapper.h"
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
@@ -124,6 +125,47 @@
     } else {
         [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"logout succeed"];
     }
+}
+
+- (void)createQuickStartRoom {
+    // 2 player auto-match room
+    GPGMultiplayerConfig *config
+    = [[GPGMultiplayerConfig alloc] init];
+    config.minAutoMatchingPlayers = 1;
+    config.maxAutoMatchingPlayers = 1;
+    // Could also include variants or exclusive bitmasks here
+
+    [GPGManager sharedInstance].realTimeRoomDelegate = self;
+    GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initAndCreateRoomWithConfig:config];
+    [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
+}
+
+- (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status {
+    //self.roomToTrack = room
+    if (status == GPGRealTimeRoomStatusDeleted) {
+        NSLog(@"GPGRoomStatusDeleted. User probably clicked cancel");
+        // Tell the view controller that's currently up to
+        // dismiss any modal view controllers it might have
+        //[self.lobbyViewController multiPlayerGameWasCanceled];
+        //self.roomToTrack = nil;
+        [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
+    } else if (status == GPGRealTimeRoomStatusConnecting) {
+        NSLog(@"RoomStatusConnected");
+    } else if (status == GPGRealTimeRoomStatusActive) {
+        NSLog(@"RoomStatusActive! Game is ready to go");
+        // We may have a view controller up on screen if we're using the
+        // invite UI
+        //[self.lobbyViewController dismissViewControllerIfAppropriateThenStartGame];
+    } else if (status == GPGRealTimeRoomStatusAutoMatching) {
+        NSLog(@"RoomStatusAutoMatching! Waiting for auto-matching to take place");
+    } else if (status == GPGRealTimeRoomStatusInviting) {
+        NSLog(@"RoomStatusInviting! Waiting for invites to get accepted");
+    } else {
+        NSLog(@"Unknown room status %d", status);
+    }
+}
+
+- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController {
 }
 
 @end
