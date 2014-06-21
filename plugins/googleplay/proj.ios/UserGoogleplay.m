@@ -5,6 +5,9 @@
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
 @implementation UserGoogleplay
+{
+    GPGRealTimeRoom* roomToTrack;
+}
 
 @synthesize debug = __debug;
 @synthesize strClientID = __ClientID;
@@ -110,6 +113,8 @@
      (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert)];
 }
 
+#pragma mark GPGStatusDelegate impl
+
 - (void)didFinishGamesSignInWithError:(NSError *)error {
     if (error) {
         OUTPUT_LOG(@"ERROR during sign in: %@", [error localizedDescription]);
@@ -122,32 +127,18 @@
 - (void)didFinishGamesSignOutWithError:(NSError *)error {
     if (error) {
         OUTPUT_LOG(@"ERROR during sign out: %@", [error localizedDescription]);
-    } else {
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"logout succeed"];
     }
 }
 
-- (void)createQuickStartRoom {
-    // 2 player auto-match room
-    GPGMultiplayerConfig *config
-    = [[GPGMultiplayerConfig alloc] init];
-    config.minAutoMatchingPlayers = 1;
-    config.maxAutoMatchingPlayers = 1;
-    // Could also include variants or exclusive bitmasks here
-
-    [GPGManager sharedInstance].realTimeRoomDelegate = self;
-    GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initAndCreateRoomWithConfig:config];
-    [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
-}
+#pragma mark GPGRealTimeRoomDelegate impl
 
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status {
-    //self.roomToTrack = room
+    roomToTrack = room;
     if (status == GPGRealTimeRoomStatusDeleted) {
         NSLog(@"GPGRoomStatusDeleted. User probably clicked cancel");
         // Tell the view controller that's currently up to
         // dismiss any modal view controllers it might have
-        //[self.lobbyViewController multiPlayerGameWasCanceled];
-        //self.roomToTrack = nil;
+        roomToTrack = nil;
         [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
     } else if (status == GPGRealTimeRoomStatusConnecting) {
         NSLog(@"RoomStatusConnected");
@@ -155,7 +146,9 @@
         NSLog(@"RoomStatusActive! Game is ready to go");
         // We may have a view controller up on screen if we're using the
         // invite UI
-        //[self.lobbyViewController dismissViewControllerIfAppropriateThenStartGame];
+        [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:^{
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onMatch"];
+        }];
     } else if (status == GPGRealTimeRoomStatusAutoMatching) {
         NSLog(@"RoomStatusAutoMatching! Waiting for auto-matching to take place");
     } else if (status == GPGRealTimeRoomStatusInviting) {
@@ -165,7 +158,32 @@
     }
 }
 
-- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController {
+- (void)room:(GPGRealTimeRoom *)room didReceiveData:(NSData *)data
+fromParticipant:(GPGRealTimeParticipant *)participant
+    dataMode:(GPGRealTimeDataMode)dataMode {
+    [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
+}
+
+- (void)createQuickStartRoom {
+    // 2 player auto-match room
+    GPGMultiplayerConfig *config = [[GPGMultiplayerConfig alloc] init];
+    config.minAutoMatchingPlayers = 1;
+    config.maxAutoMatchingPlayers = 1;
+    // Could also include variants or exclusive bitmasks here
+
+    [GPGManager sharedInstance].realTimeRoomDelegate = self;
+    GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initAndCreateRoomWithConfig:config];
+    [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
+}
+
+- (void)leaveRoom {
+    if (roomToTrack) {
+        [roomToTrack leave];
+    }
+}
+
+- (void)sendMessage:(NSString*)message {
+    [roomToTrack sendUnreliableDataToAll:[message dataUsingEncoding:NSUTF8StringEncoding]];
 }
 
 @end

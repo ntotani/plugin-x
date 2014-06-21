@@ -3,31 +3,12 @@
 #import <GooglePlus/GooglePlus.h>
 #import <GooglePlayGames/GooglePlayGames.h>
 
-/*
-typedef enum {
-    kSizeBanner = 1,
-    kSizeIABMRect,
-    kSizeIABBanner,
-    kSizeIABLeaderboard,
-    kSizeSkyscraper,
-} AdmobSizeEnum;
-
-typedef enum {
-    kTypeBanner = 1,
-    kTypeFullScreen,
-} AdmobType;
- */
-
 @interface UserGoogleplay : NSObject <InterfaceUser, GPPSignInDelegate, GPGStatusDelegate, GPGRealTimeRoomDelegate>
 {
 }
 
 @property BOOL debug;
 @property (copy, nonatomic) NSString* strClientID;
-/*
-@property (assign, nonatomic) GADBannerView* bannerView;
-@property (assign, nonatomic) NSMutableArray* testDeviceIDs;
- */
 
 /**
  interfaces from InterfaceUser
@@ -42,15 +23,27 @@ typedef enum {
 - (NSString*) getPluginVersion;
 
 /**
- interface for Googleplay SDK
+ interface for GPPSignInDelegate
  */
 - (void)finishedWithAuth:(GTMOAuth2Authentication *)auth
                    error:(NSError *)error;
+
+/**
+ interface for GPGStatusDelegate
+ */
 - (void)didFinishGamesSignInWithError:(NSError *)error;
 - (void)didFinishGamesSignOutWithError:(NSError *)error;
 
-- (void)createQuickStartRoom;
+/**
+ interface for GPGRealTimeRoomDelegate
+ */
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status;
-- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController;
+- (void)room:(GPGRealTimeRoom *)room didReceiveData:(NSData *)data
+fromParticipant:(GPGRealTimeParticipant *)participant
+    dataMode:(GPGRealTimeDataMode)dataMode;
+
+- (void)createQuickStartRoom;
+- (void)leaveRoom;
+- (void)sendMessage:(NSString*)message;
 
 @end
