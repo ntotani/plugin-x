@@ -46,25 +46,22 @@
 
 - (void) login
 {
-    OUTPUT_LOG(@"login");
     [[GPPSignIn sharedInstance] authenticate];
 }
 
 - (void) logout
 {
-    OUTPUT_LOG(@"logout");
     [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"logout success"];
 }
 
-- (BOOL) isLogined
+- (NSNumber*) isLogined
 {
-    OUTPUT_LOG(@"isLogined");
-    return YES;
+    return [[GPGManager sharedInstance] hasAuthorizer] ? @1 : @0;
 }
 
 - (NSString*) getSessionID
 {
-    return @"hoge";
+    return @"";
 }
 
 - (void) setDebugMode: (BOOL) isDebugMode
@@ -161,7 +158,9 @@
 - (void)room:(GPGRealTimeRoom *)room didReceiveData:(NSData *)data
 fromParticipant:(GPGRealTimeParticipant *)participant
     dataMode:(GPGRealTimeDataMode)dataMode {
-    [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
+    if (!participant.isLocalParticipant) {
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
+    }
 }
 
 - (void)createQuickStartRoom {

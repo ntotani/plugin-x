@@ -16,7 +16,7 @@
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo;
 - (void) login;
 - (void) logout;
-- (BOOL) isLogined;
+- (NSNumber*) isLogined;
 - (NSString*) getSessionID;
 - (void) setDebugMode: (BOOL) debug;
 - (NSString*) getSDKVersion;
