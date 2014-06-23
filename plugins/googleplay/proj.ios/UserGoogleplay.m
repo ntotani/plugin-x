@@ -163,6 +163,14 @@ fromParticipant:(GPGRealTimeParticipant *)participant
     }
 }
 
+- (void)room:(GPGRealTimeRoom *)room
+ participant:(GPGRealTimeParticipant *)participant
+didChangeStatus:(GPGRealTimeParticipantStatus)status {
+    if (status == GPGRealTimeParticipantStatusLeft) {
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onLeft"];
+    }
+}
+
 - (void)createQuickStartRoom {
     // 2 player auto-match room
     GPGMultiplayerConfig *config = [[GPGMultiplayerConfig alloc] init];
@@ -178,6 +186,7 @@ fromParticipant:(GPGRealTimeParticipant *)participant
 - (void)leaveRoom {
     if (roomToTrack) {
         [roomToTrack leave];
+        roomToTrack = nil;
     }
 }
 

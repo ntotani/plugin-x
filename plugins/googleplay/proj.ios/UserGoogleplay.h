@@ -41,6 +41,9 @@
 - (void)room:(GPGRealTimeRoom *)room didReceiveData:(NSData *)data
 fromParticipant:(GPGRealTimeParticipant *)participant
     dataMode:(GPGRealTimeDataMode)dataMode;
+- (void)room:(GPGRealTimeRoom *)room
+ participant:(GPGRealTimeParticipant *)participant
+didChangeStatus:(GPGRealTimeParticipantStatus)status;
 
 - (void)createQuickStartRoom;
 - (void)leaveRoom;
