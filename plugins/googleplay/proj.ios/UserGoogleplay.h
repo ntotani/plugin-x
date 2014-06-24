@@ -18,7 +18,7 @@
 - (void) logout;
 - (NSNumber*) isLogined;
 - (NSString*) getSessionID;
-- (void) setDebugMode: (BOOL) debug;
+- (void) setDebugMode: (NSNumber*) debug;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 

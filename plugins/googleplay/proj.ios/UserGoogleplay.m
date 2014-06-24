@@ -64,9 +64,9 @@
     return @"";
 }
 
-- (void) setDebugMode: (BOOL) isDebugMode
+- (void) setDebugMode: (NSNumber*) isDebugMode
 {
-    self.debug = isDebugMode;
+    self.debug = [isDebugMode boolValue];
 }
 
 - (NSString*) getSDKVersion
@@ -132,26 +132,26 @@
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status {
     roomToTrack = room;
     if (status == GPGRealTimeRoomStatusDeleted) {
-        NSLog(@"GPGRoomStatusDeleted. User probably clicked cancel");
+        OUTPUT_LOG(@"GPGRoomStatusDeleted. User probably clicked cancel");
         // Tell the view controller that's currently up to
         // dismiss any modal view controllers it might have
         roomToTrack = nil;
         [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
     } else if (status == GPGRealTimeRoomStatusConnecting) {
-        NSLog(@"RoomStatusConnected");
+        OUTPUT_LOG(@"RoomStatusConnected");
     } else if (status == GPGRealTimeRoomStatusActive) {
-        NSLog(@"RoomStatusActive! Game is ready to go");
+        OUTPUT_LOG(@"RoomStatusActive! Game is ready to go");
         // We may have a view controller up on screen if we're using the
         // invite UI
         [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:^{
             [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onMatch"];
         }];
     } else if (status == GPGRealTimeRoomStatusAutoMatching) {
-        NSLog(@"RoomStatusAutoMatching! Waiting for auto-matching to take place");
+        OUTPUT_LOG(@"RoomStatusAutoMatching! Waiting for auto-matching to take place");
     } else if (status == GPGRealTimeRoomStatusInviting) {
-        NSLog(@"RoomStatusInviting! Waiting for invites to get accepted");
+        OUTPUT_LOG(@"RoomStatusInviting! Waiting for invites to get accepted");
     } else {
-        NSLog(@"Unknown room status %d", status);
+        OUTPUT_LOG(@"Unknown room status %d", status);
     }
 }
 
