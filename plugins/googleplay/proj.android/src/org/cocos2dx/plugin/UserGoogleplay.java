@@ -27,14 +27,21 @@ import java.util.Hashtable;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import android.preference.PreferenceManager.OnActivityResultListener;
 
-public class UserGoogleplay implements InterfaceUser {
+import com.google.example.games.basegameutils.GameHelper;
+
+import org.cocos2dx.lib.Cocos2dxHelper;
+
+public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListener, Cocos2dxHelper.OnActivityStartStopListener {
 
     private static final String LOG_TAG = "UserGoogleplay";
     private static Activity mContext = null;
     private static UserGoogleplay mGoogleplay = null;
     private static boolean bDebug = false;
+    private GameHelper mGameHelper;
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -50,6 +57,16 @@ public class UserGoogleplay implements InterfaceUser {
     public UserGoogleplay(Context context) {
         mContext = (Activity) context;
         mGoogleplay = this;
+        mGameHelper = new GameHelper(mContext, GameHelper.CLIENT_GAMES);
+        mGameHelper.setup(this);
+        Cocos2dxHelper.addOnActivityStartStopListener(this);
+        Cocos2dxHelper.addOnActivityResultListener(new OnActivityResultListener() { 
+            @Override
+            public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+                mGameHelper.onActivityResult(requestCode, resultCode, data);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -71,6 +88,7 @@ public class UserGoogleplay implements InterfaceUser {
     @Override
     public void setDebugMode(boolean debug) {
         bDebug = debug;
+        mGameHelper.enableDebugLog(debug);
     }
 
     @Override
@@ -122,4 +140,25 @@ public class UserGoogleplay implements InterfaceUser {
         }
         return strRet;
     }
+
+    @Override
+    public void onSignInSucceeded() {
+        // handle sign-in succeess
+    }
+
+    @Override
+    public void onSignInFailed() {
+        // handle sign-in failure (e.g. show Sign In button)
+    }
+
+    @Override
+    public void onActivityStart() {
+        mGameHelper.onStart(mContext);
+    }
+
+    @Override
+    public void onActivityStop() {
+        mGameHelper.onStop();
+    }
+
 }
