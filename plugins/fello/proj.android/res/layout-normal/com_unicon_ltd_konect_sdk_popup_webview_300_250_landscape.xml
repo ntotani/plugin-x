@@ -1,0 +1,52 @@
+<com.unicon_ltd.konect.sdk.FelloRelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/com_unicon_ltd_konect_sdk_notification_popup"
+    android:layout_width="480dp"
+    android:layout_height="320dp"
+    android:layout_gravity="center_vertical|center_horizontal"
+    android:background="@color/com_unicon_ltd_konect_sdk_halftransparent"
+    android:clickable="true" >
+    
+	<ViewFlipper android:id="@+id/com_unicon_ltd_konect_sdk_flipper"
+	    android:layout_width="480dp"
+	    android:layout_height="320dp"
+        android:layout_centerInParent="true">
+
+    <FrameLayout
+        android:id="@+id/com_unicon_ltd_konect_sdk_firstlayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+	<FrameLayout
+        android:id="@+id/com_unicon_ltd_konect_sdk_secondlayout"
+	    android:layout_width="480dp"
+	    android:layout_height="320dp"
+        android:background="@drawable/com_unicon_ltd_konect_sdk_ad_typeb_300_250_landscape_frame"
+        android:padding="0dp" >
+        
+        <Button
+	        android:id="@+id/com_unicon_ltd_konect_sdk_popup_button_negative"
+	        android:layout_width="35dp"
+	        android:layout_height="35dp"
+	        android:layout_marginLeft="357dp"
+	        android:layout_marginTop="14dp"
+		    android:layout_gravity="top|left"
+	        android:background="@drawable/com_unicon_ltd_konect_sdk_ad_typeb_mobile_close"
+	        android:padding="0dp"
+	        />
+        
+	    <WebView
+	        android:id="@+id/com_unicon_ltd_konect_sdk_webview"
+	        android:layout_width="300dp"
+	        android:layout_height="250dp"
+	        android:layout_marginLeft="90dp"
+	        android:layout_marginTop="53dp"
+		    android:layout_gravity="top|left"
+	        android:padding="0dp"
+	        android:scrollbars="none" 
+	        />
+	    
+    </FrameLayout>
+    
+	</ViewFlipper>
+    
+</com.unicon_ltd.konect.sdk.FelloRelativeLayout>
