@@ -29,7 +29,9 @@ import java.util.Iterator;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.util.Log;
+import android.net.Uri;
 
 import com.flurry.android.Constants;
 import com.flurry.android.FlurryAgent;
@@ -336,4 +338,12 @@ public class AnalyticsFlurry implements InterfaceAnalytics {
     public String getPluginVersion() {
         return "0.2.0";
     }
+
+    public void openReviewPage(String storeId) {
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse("https://play.google.com/store/apps/details?id="
+                    + mContext.getPackageName() + "&hl=ja"));
+        mContext.startActivity(intent);
+    }
+
 }
