@@ -35,8 +35,9 @@ import com.google.example.games.basegameutils.GameHelper;
 
 import org.cocos2dx.lib.Cocos2dxHelper;
 
-public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListener, Cocos2dxHelper.OnActivityStartStopListener {
+public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListener, OnActivityResultListener, Cocos2dxHelper.OnActivityStartStopListener, RoomUpdateListener {
 
+    private static final int RC_WAITING_ROOM = 10002;
     private static final String LOG_TAG = "UserGoogleplay";
     private static Activity mContext = null;
     private static UserGoogleplay mGoogleplay = null;
@@ -57,16 +58,6 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     public UserGoogleplay(Context context) {
         mContext = (Activity) context;
         mGoogleplay = this;
-        mGameHelper = new GameHelper(mContext, GameHelper.CLIENT_GAMES);
-        mGameHelper.setup(this);
-        Cocos2dxHelper.addOnActivityStartStopListener(this);
-        Cocos2dxHelper.addOnActivityResultListener(new OnActivityResultListener() { 
-            @Override
-            public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
-                mGameHelper.onActivityResult(requestCode, resultCode, data);
-                return false;
-            }
-        });
     }
 
     @Override
@@ -76,11 +67,11 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         PluginWrapper.runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                try {
-                    //String clientId = curCPInfo.get("ClientID");
-                } catch (Exception e) {
-                    LogE("Developer info is wrong!", e);
-                }
+                mGameHelper = new GameHelper(mContext, GameHelper.CLIENT_GAMES);
+                mGameHelper.setup(mGoogleplay);
+                mGameHelper.enableDebugLog(bDebug);
+                Cocos2dxHelper.addOnActivityStartStopListener(mGoogleplay);
+                Cocos2dxHelper.addOnActivityResultListener(mGoogleplay);
             }
         });
     }
@@ -88,7 +79,6 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     @Override
     public void setDebugMode(boolean debug) {
         bDebug = debug;
-        mGameHelper.enableDebugLog(debug);
     }
 
     @Override
@@ -103,15 +93,10 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
     @Override
     public void login() {
-        if (isLogined()) {
-            UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGIN_SUCCEED, "Already logined!");
-            return;
-        }
-
         PluginWrapper.runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                // login
+                mGameHelper.beginUserInitiatedSignIn();
             }
         });
     }
@@ -121,15 +106,14 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         PluginWrapper.runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                // logout
-                UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "User logout");
+                mGameHelper.signOut();
             }
         });
     }
 
     @Override
     public boolean isLogined() {
-        return true;
+        return mGameHelper.isSignedIn();
     }
 
     @Override
@@ -143,12 +127,12 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
     @Override
     public void onSignInSucceeded() {
-        // handle sign-in succeess
+        UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGIN_SUCCEED, "onSignInSucceeded");
     }
 
     @Override
     public void onSignInFailed() {
-        // handle sign-in failure (e.g. show Sign In button)
+        UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGIN_FAILED, "onSignInFailed");
     }
 
     @Override
@@ -159,6 +143,84 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     @Override
     public void onActivityStop() {
         mGameHelper.onStop();
+    }
+
+    public void createQuickStartRoom() {
+        // auto-match criteria to invite one random automatch opponent.  
+        // You can also specify more opponents (up to 3). 
+        Bundle am = RoomConfig.createAutoMatchCriteria(1, 1, 0);
+
+        // build the room config:
+        RoomConfig.Builder roomConfigBuilder = makeBasicRoomConfigBuilder();
+        roomConfigBuilder.setAutoMatchCriteria(am);
+        RoomConfig roomConfig = roomConfigBuilder.build();
+
+        // create room:
+        Games.RealTimeMultiplayer.create(getApiClient(), roomConfig);
+
+        // prevent screen from sleeping during handshake
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+    }
+
+    @Override
+    public void onRoomCreated(int statusCode, Room room) {
+        if (statusCode != GamesStatusCodes.STATUS_OK) {
+            // let screen go to sleep
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // show error message, return to main screen.
+        }
+        // get waiting room intent
+        Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(getApiClient(), room, Integer.MAX_VALUE);
+        startActivityForResult(i, RC_WAITING_ROOM);
+    }
+
+    @Override
+    public void onJoinedRoom(int statusCode, Room room) {
+        if (statusCode != GamesStatusCodes.STATUS_OK) {
+            // let screen go to sleep
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // show error message, return to main screen.
+        }
+        // get waiting room intent
+        Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(getApiClient(), room, Integer.MAX_VALUE);
+        startActivityForResult(i, RC_WAITING_ROOM);
+    }
+
+    @Override
+    public void onRoomConnected(int statusCode, Room room) {
+        if (statusCode != GamesStatusCodes.STATUS_OK) {
+            // let screen go to sleep
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // show error message, return to main screen.
+        }
+    }
+
+    @Override
+    public boolean onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (request == RC_WAITING_ROOM) {
+            if (response == Activity.RESULT_OK) {
+                // (start game)
+                UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onMatch");
+            } else if (response == Activity.RESULT_CANCELED) {
+                // Waiting room was dismissed with the back button. The meaning of this
+                // action is up to the game. You may choose to leave the room and cancel the
+                // match, or do something else like minimize the waiting room and
+                // continue to connect in the background.
+
+                // in this example, we take the simple approach and just leave the room:
+                Games.RealTimeMultiplayer.leave(getApiClient(), null, mRoomId);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else if (response == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
+                // player wants to leave the room.
+                Games.RealTimeMultiplayer.leave(getApiClient(), null, mRoomId);
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+        mGameHelper.onActivityResult(requestCode, resultCode, data);
+        return false;
     }
 
 }
