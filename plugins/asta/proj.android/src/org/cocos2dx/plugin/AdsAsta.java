@@ -47,7 +47,7 @@ public class AdsAsta implements InterfaceAds {
 	private static final String LOG_TAG = "AdsAsta";
 	private static Activity mContext = null;
 	private static boolean bDebug = false;
-  private static final int AST_ICON_WIDTH = 80;
+  private static final int AST_ICON_WIDTH = 50;
   private static final int DEVICE_BASE_WIDTH = 360;
   private String _MEDIA_CODE;
   private int AST_ICON_COUNT;
@@ -87,8 +87,8 @@ public class AdsAsta implements InterfaceAds {
       layoutParams = new RelativeLayout.LayoutParams(FILL_PARENT, (int)(AST_ICON_WIDTH * metrics.density));
 
       layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-      //iconAdView.setGravity(Gravity.CENTER_HORIZONTAL);
-      //iconAdView.setLayoutParams(layoutParams);
+      iconAdView.setGravity(Gravity.CENTER_HORIZONTAL);
+      iconAdView.setLayoutParams(layoutParams);
 
       IconLoader<Integer> iconLoader = new IconLoader<Integer>(_MEDIA_CODE, activity);
       iconLoader.setRefreshInterval(15);
@@ -114,10 +114,10 @@ public class AdsAsta implements InterfaceAds {
           iconAdSubView.addView(view);
           iconAdView.addView(iconAdSubView);
       }
-      //_adMain.addView(iconAdView);
-      //_adMain.setVisibility(View.INVISIBLE);
-      WindowManager mWm = (WindowManager) mContext.getSystemService("window");
-      AdsWrapper.addAdView(mWm, iconAdView, AdsWrapper.POS_BOTTOM);
+      _adMain.addView(iconAdView);
+      _adMain.setVisibility(View.INVISIBLE);
+      View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
+      ((ViewGroup)contentView).addView(_adMain);
       _iconLoader = iconLoader;
   }
 
