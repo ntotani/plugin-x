@@ -1,6 +1,7 @@
 #import <Foundation/Foundation.h>
 #import "InterfaceUser.h"
 #import <GooglePlus/GooglePlus.h>
+#import <GooglePlayGames/GooglePlayGames.h>
 
 /*
 typedef enum {
@@ -17,7 +18,7 @@ typedef enum {
 } AdmobType;
  */
 
-@interface UserGoogleplay : NSObject <InterfaceUser, GPPSignInDelegate>
+@interface UserGoogleplay : NSObject <InterfaceUser, GPPSignInDelegate, GPGStatusDelegate>
 {
 }
 
@@ -45,5 +46,7 @@ typedef enum {
  */
 - (void)finishedWithAuth:(GTMOAuth2Authentication *)auth
                    error:(NSError *)error;
+- (void)didFinishGamesSignInWithError:(NSError *)error;
+- (void)didFinishGamesSignOutWithError:(NSError *)error;
 
 @end

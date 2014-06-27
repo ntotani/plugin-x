@@ -35,13 +35,14 @@
     signIn.scopes = @[@"https://www.googleapis.com/auth/games"];
     signIn.language = [[NSLocale preferredLanguages] objectAtIndex:0];
     signIn.delegate = self;
-    signIn.shouldFetchGoogleUserID =YES;
+    signIn.shouldFetchGoogleUserID = YES;
+    [GPGManager sharedInstance].statusDelegate = self;
+    [signIn trySilentAuthentication];
 }
 
 - (void) login
 {
     OUTPUT_LOG(@"login");
-    //[UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:@"login success"];
     [[GPPSignIn sharedInstance] authenticate];
 }
 
@@ -81,14 +82,47 @@
 
 - (void)finishedWithAuth:(GTMOAuth2Authentication *)auth error:(NSError *)error
 {
-    NSLog(@"Finished with auth.");
+    OUTPUT_LOG(@"Finished with auth.");
     if (error == nil && auth) {
-        NSLog(@"Success signing in to Google! Auth object is %@", auth);
-        
-        // Eventually, you'll want to do something here.
-        
+        OUTPUT_LOG(@"Success signing in to Google! Auth object is %@", auth);
+        [self startGoogleGamesSignIn];
     } else {
-        NSLog(@"Failed to log into Google\n\tError=%@\n\tAuthObj=%@",error,auth);
+        OUTPUT_LOG(@"Failed to log into Google\n\tError=%@\n\tAuthObj=%@",error,auth);
+        [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"login failed"];
+    }
+}
+
+- (void)startGoogleGamesSignIn {
+    // The GPPSignIn object has an auth token now. Pass it to the GPGManager.
+    [[GPGManager sharedInstance] signIn:[GPPSignIn sharedInstance]
+                     reauthorizeHandler:^(BOOL requiresKeychainWipe, NSError *error) {
+                         // If you hit this, auth has failed and you need to authenticate.
+                         // Most likely you can refresh behind the scenes
+                         if (requiresKeychainWipe) {
+                             [[GPPSignIn sharedInstance] signOut];
+                         }
+                         [[GPPSignIn sharedInstance] authenticate];
+                     }];
+
+    // Let's also ask if it's okay to send push notifciations
+    [[UIApplication sharedApplication] registerForRemoteNotificationTypes:
+     (UIRemoteNotificationTypeBadge | UIRemoteNotificationTypeAlert)];
+}
+
+- (void)didFinishGamesSignInWithError:(NSError *)error {
+    if (error) {
+        OUTPUT_LOG(@"ERROR during sign in: %@", [error localizedDescription]);
+        [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"login failed"];
+    } else {
+        [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:@"login succeed"];
+    }
+}
+
+- (void)didFinishGamesSignOutWithError:(NSError *)error {
+    if (error) {
+        OUTPUT_LOG(@"ERROR during sign out: %@", [error localizedDescription]);
+    } else {
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"logout succeed"];
     }
 }
 
