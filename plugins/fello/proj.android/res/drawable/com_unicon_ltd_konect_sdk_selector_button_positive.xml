@@ -1,0 +1,6 @@
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item android:drawable="@drawable/com_unicon_ltd_konect_sdk_shape_button_positive_pressed" android:state_pressed="true"/>
+    <item android:drawable="@drawable/com_unicon_ltd_konect_sdk_shape_button_positive_default"/>
+
+</selector>

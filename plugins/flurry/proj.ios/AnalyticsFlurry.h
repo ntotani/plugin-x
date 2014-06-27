@@ -58,4 +58,6 @@ THE SOFTWARE.
 - (void) logTimedEventBeginWithParams: (NSMutableDictionary*) params;
 - (void) logTimedEventEndWithParams: (NSMutableDictionary*) params;
 
+- (void) openReviewPage:(NSString*)storeId;
+
 @end

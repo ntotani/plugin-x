@@ -26,6 +26,7 @@ package org.cocos2dx.plugin;
 import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
+import android.graphics.PixelFormat;
 
 public class AdsWrapper {
 
@@ -51,6 +52,7 @@ public class AdsWrapper {
 		mLayoutParams.width = WindowManager.LayoutParams.WRAP_CONTENT;
 		mLayoutParams.height = WindowManager.LayoutParams.WRAP_CONTENT;
 		mLayoutParams.flags |= WindowManager.LayoutParams.FLAG_NOT_FOCUSABLE;
+		mLayoutParams.format = PixelFormat.TRANSLUCENT;
 		
 		switch (pos) {
 		case POS_CENTER:
