@@ -129,6 +129,10 @@
 
 #pragma mark GPGRealTimeRoomDelegate impl
 
+- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController {
+    [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status {
     roomToTrack = room;
     if (status == GPGRealTimeRoomStatusDeleted) {
@@ -180,6 +184,12 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
 
     [GPGManager sharedInstance].realTimeRoomDelegate = self;
     GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initAndCreateRoomWithConfig:config];
+    [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
+}
+
+- (void)createNormalInviteRoom {
+    [GPGManager sharedInstance].realTimeRoomDelegate = self;
+    GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initWithMinPlayers:2 maxPlayers:2];
     [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
 }
 
