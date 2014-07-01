@@ -129,6 +129,10 @@
 
 #pragma mark GPGRealTimeRoomDelegate impl
 
+- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController {
+    [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status {
     roomToTrack = room;
     if (status == GPGRealTimeRoomStatusDeleted) {

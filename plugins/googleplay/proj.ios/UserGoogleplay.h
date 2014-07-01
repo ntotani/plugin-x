@@ -37,6 +37,7 @@
 /**
  interface for GPGRealTimeRoomDelegate
  */
+- (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController;
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status;
 - (void)room:(GPGRealTimeRoom *)room didReceiveData:(NSData *)data
 fromParticipant:(GPGRealTimeParticipant *)participant
