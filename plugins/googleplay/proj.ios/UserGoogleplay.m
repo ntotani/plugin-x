@@ -183,6 +183,12 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
     [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
 }
 
+- (void)createNormalInviteRoom {
+    [GPGManager sharedInstance].realTimeRoomDelegate = self;
+    GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initWithMinPlayers:2 maxPlayers:2];
+    [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
+}
+
 - (void)leaveRoom {
     if (roomToTrack) {
         [roomToTrack leave];

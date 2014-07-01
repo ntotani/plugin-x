@@ -46,6 +46,7 @@ fromParticipant:(GPGRealTimeParticipant *)participant
 didChangeStatus:(GPGRealTimeParticipantStatus)status;
 
 - (void)createQuickStartRoom;
+- (void)createNormalInviteRoom;
 - (void)leaveRoom;
 - (void)sendMessage:(NSString*)message;
 
