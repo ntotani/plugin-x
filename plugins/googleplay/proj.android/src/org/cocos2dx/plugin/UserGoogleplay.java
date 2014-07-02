@@ -39,6 +39,7 @@ import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.multiplayer.Multiplayer;
+import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
@@ -51,8 +52,9 @@ import org.cocos2dx.lib.Cocos2dxHelper;
 
 public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListener, OnActivityResultListener, Cocos2dxHelper.OnActivityStartStopListener, RoomUpdateListener, RealTimeMessageReceivedListener, RoomStatusUpdateListener {
 
-    private static final int RC_SELECT_PLAYERS = 10000;
-    private static final int RC_WAITING_ROOM = 10002;
+    private static final int RC_SELECT_PLAYERS   = 10000;
+    private static final int RC_INVITATION_INBOX = 10001;
+    private static final int RC_WAITING_ROOM     = 10002;
     private static final String LOG_TAG = "UserGoogleplay";
     private static Activity mContext = null;
     private static UserGoogleplay mGoogleplay = null;
@@ -166,7 +168,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         LogD("onJoinedRoom");
         if (statusCode != GamesStatusCodes.STATUS_OK) {
             // let screen go to sleep
-            //mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
             // show error message, return to main screen.
         } else {
@@ -180,6 +182,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     @Override
     public void onLeftRoom(int statusCode, String roomId) {
         LogD("onLeftRoom");
+        mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
     }
 
     @Override
@@ -187,7 +190,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         LogD("onRoomConnected");
         if (statusCode != GamesStatusCodes.STATUS_OK) {
             // let screen go to sleep
-            //mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
             // show error message, return to main screen.
         }
@@ -198,7 +201,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         LogD("onRoomCreated");
         if (statusCode != GamesStatusCodes.STATUS_OK) {
             // let screen go to sleep
-            //mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
 
             // show error message, return to main screen.
         } else {
@@ -240,11 +243,12 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
                 // in this example, we take the simple approach and just leave the room:
                 Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), this, mRoomId);
+                mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             } else if (response == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                 // player wants to leave the room.
                 Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), this, mRoomId);
+                mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
-            //mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             return true;
         } else if (request == RC_SELECT_PLAYERS) {
             if (response != Activity.RESULT_OK) {
@@ -282,7 +286,27 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
             Games.RealTimeMultiplayer.create(mGameHelper.getApiClient(), roomConfig);
 
             // prevent screen from sleeping during handshake
-            //getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            mContext.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+        } else if (request == RC_INVITATION_INBOX) {
+            if (response != Activity.RESULT_OK) {
+                // canceled
+                return false;
+            }
+
+            // get the selected invitation
+            Bundle extras = data.getExtras();
+            Invitation invitation = extras.getParcelable(Multiplayer.EXTRA_INVITATION);
+
+            // accept it!
+            RoomConfig roomConfig = makeBasicRoomConfigBuilder()
+                .setInvitationIdToAccept(invitation.getInvitationId())
+                .build();
+            Games.RealTimeMultiplayer.join(mGameHelper.getApiClient(), roomConfig);
+
+            // prevent screen from sleeping during handshake
+            mContext.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+
+            // go to game screen
         }
         return false;
     }
@@ -297,6 +321,17 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         } catch(java.io.UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void showInviteRoom() {
+     PluginWrapper.runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                // launch the intent to show the invitation inbox screen
+                Intent intent = Games.Invitations.getInvitationInboxIntent(mGameHelper.getApiClient());
+                mContext.startActivityForResult(intent, RC_INVITATION_INBOX);
+            }
+        });
     }
 
     public void createQuickStartRoom() {
@@ -316,7 +351,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
                 Games.RealTimeMultiplayer.create(mGameHelper.getApiClient(), roomConfig);
 
                 // prevent screen from sleeping during handshake
-                //mContext.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                mContext.getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         });
     }
