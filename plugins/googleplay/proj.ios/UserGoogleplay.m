@@ -51,7 +51,7 @@
 
 - (void) logout
 {
-    [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"logout success"];
+    [[GPGManager sharedInstance] signOut];
 }
 
 - (NSNumber*) isLogined
