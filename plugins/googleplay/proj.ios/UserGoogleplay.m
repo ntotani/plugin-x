@@ -129,6 +129,17 @@
 
 #pragma mark GPGRealTimeRoomDelegate impl
 
+/*
+- (void)didReceiveRealTimeInviteForRoom:(GPGRealTimeRoomData *)roomData {
+    // The following code will bring up the in-game RoomViewController
+    // UI with the current invitation listed as a match invite
+    NSMutableArray *roomDataList = [NSMutableArray arrayWithObject:roomData];
+    GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc]
+                                                         initWithRoomDataList:roomDataList];
+    [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
+}
+*/
+
 - (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController {
     [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
 }
@@ -173,6 +184,22 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
     if (status == GPGRealTimeParticipantStatusLeft) {
         [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onLeft"];
     }
+}
+
+- (void)showInviteRoom {
+    [GPGRealTimeRoomMaker listRoomsWithMaxResults:50 completionHandler:^(NSArray *rooms, NSError *error) {
+        NSMutableArray *validRoomDataList = [NSMutableArray array];
+        for (GPGRealTimeRoomData *roomData in rooms) {
+            if (roomData.status == GPGRealTimeRoomStatusInviting) {
+                [validRoomDataList addObject:roomData];
+            }
+        }
+        [GPGManager sharedInstance].realTimeRoomDelegate = self;
+        GPGRealTimeRoomViewController *listOfInvites =
+        [[GPGRealTimeRoomViewController alloc]
+         initWithRoomDataList:validRoomDataList];
+        [[AdsWrapper getCurrentRootViewController] presentViewController:listOfInvites animated:YES completion:nil];
+    }];
 }
 
 - (void)createQuickStartRoom {
