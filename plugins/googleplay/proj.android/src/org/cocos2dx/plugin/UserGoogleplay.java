@@ -40,6 +40,7 @@ import com.google.android.gms.games.GamesStatusCodes;
 import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
@@ -60,7 +61,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     private static UserGoogleplay mGoogleplay = null;
     private static boolean bDebug = false;
     private GameHelper mGameHelper;
-    private String mRoomId;
+    private Room roomToTrack;
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -172,7 +173,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
             // show error message, return to main screen.
         } else {
-            mRoomId = room.getRoomId();
+            roomToTrack = room;
             // get waiting room intent
             Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGameHelper.getApiClient(), room, Integer.MAX_VALUE);
             mContext.startActivityForResult(i, RC_WAITING_ROOM);
@@ -205,7 +206,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
             // show error message, return to main screen.
         } else {
-            mRoomId = room.getRoomId();
+            roomToTrack = room;
             // get waiting room intent
             Intent i = Games.RealTimeMultiplayer.getWaitingRoomIntent(mGameHelper.getApiClient(), room, Integer.MAX_VALUE);
             mContext.startActivityForResult(i, RC_WAITING_ROOM);
@@ -234,7 +235,17 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         if (request == RC_WAITING_ROOM) {
             LogD("onActivityResult");
             if (response == Activity.RESULT_OK) {
-                UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onMatch");
+                String myName = "";
+                String hisName = "";
+                String myId = Games.Players.getCurrentPlayerId(mGameHelper.getApiClient());
+                for (Participant p : roomToTrack.getParticipants()) {
+                    if (p.getPlayer() != null && p.getPlayer().getPlayerId().equals(myId)) {
+                        myName = p.getDisplayName();
+                    } else {
+                        hisName = p.getDisplayName();
+                    }
+                }
+                UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onMatch " + myName + ":" + hisName);
             } else if (response == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the
@@ -242,11 +253,11 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
                 // continue to connect in the background.
 
                 // in this example, we take the simple approach and just leave the room:
-                Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), this, mRoomId);
+                Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), this, roomToTrack.getRoomId());
                 mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             } else if (response == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                 // player wants to leave the room.
-                Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), this, mRoomId);
+                Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), this, roomToTrack.getRoomId());
                 mContext.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
             return true;
@@ -376,7 +387,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         PluginWrapper.runOnMainThread(new Runnable() {
             @Override
             public void run() {
-                Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), mGoogleplay, mRoomId);
+                Games.RealTimeMultiplayer.leave(mGameHelper.getApiClient(), mGoogleplay, roomToTrack.getRoomId());
             }
         });
     }
@@ -387,7 +398,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
             PluginWrapper.runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGameHelper.getApiClient(), data, mRoomId);
+                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGameHelper.getApiClient(), data, roomToTrack.getRoomId());
                 }
             });
         } catch(java.io.UnsupportedEncodingException e) {
