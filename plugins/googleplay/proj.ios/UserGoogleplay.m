@@ -158,8 +158,11 @@
         OUTPUT_LOG(@"RoomStatusActive! Game is ready to go");
         // We may have a view controller up on screen if we're using the
         // invite UI
-        [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:^{
-            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onMatch"];
+        [room enumerateConnectedParticipantsUsingBlock:^(GPGRealTimeParticipant *participant) {
+            [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:^{
+                NSString* msg = [NSString stringWithFormat:@"onMatch %@:%@", room.localParticipant.displayName, participant.displayName];
+                [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:msg];
+            }];
         }];
     } else if (status == GPGRealTimeRoomStatusAutoMatching) {
         OUTPUT_LOG(@"RoomStatusAutoMatching! Waiting for auto-matching to take place");
