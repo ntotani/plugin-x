@@ -62,6 +62,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     private static boolean bDebug = false;
     private GameHelper mGameHelper;
     private Room roomToTrack;
+    private String participantIdToTrack;
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -243,6 +244,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
                         myName = p.getDisplayName();
                     } else {
                         hisName = p.getDisplayName();
+                        participantIdToTrack = p.getParticipantId();
                     }
                 }
                 UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onMatch " + myName + ":" + hisName);
@@ -398,7 +400,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
             PluginWrapper.runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGameHelper.getApiClient(), data, roomToTrack.getRoomId());
+                    Games.RealTimeMultiplayer.sendReliableMessage(mGameHelper.getApiClient(), null, data, roomToTrack.getRoomId(), participantIdToTrack);
                 }
             });
         } catch(java.io.UnsupportedEncodingException e) {

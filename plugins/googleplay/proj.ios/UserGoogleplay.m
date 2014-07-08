@@ -7,6 +7,7 @@
 @implementation UserGoogleplay
 {
     GPGRealTimeRoom* roomToTrack;
+    GPGRealTimeParticipant* enemyToTrack;
 }
 
 @synthesize debug = __debug;
@@ -159,6 +160,7 @@
         // We may have a view controller up on screen if we're using the
         // invite UI
         [room enumerateConnectedParticipantsUsingBlock:^(GPGRealTimeParticipant *participant) {
+            enemyToTrack = participant;
             [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:^{
                 NSString* msg = [NSString stringWithFormat:@"onMatch %@:%@", room.localParticipant.displayName, participant.displayName];
                 [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:msg];
@@ -231,7 +233,11 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
 }
 
 - (void)sendMessage:(NSString*)message {
-    [roomToTrack sendUnreliableDataToAll:[message dataUsingEncoding:NSUTF8StringEncoding]];
+    if (enemyToTrack != nil) {
+        [roomToTrack sendReliableData:[message dataUsingEncoding:NSUTF8StringEncoding] toParticipants:@[enemyToTrack]];
+    } else {
+        [roomToTrack sendUnreliableDataToAll:[message dataUsingEncoding:NSUTF8StringEncoding]];
+    }
 }
 
 @end
