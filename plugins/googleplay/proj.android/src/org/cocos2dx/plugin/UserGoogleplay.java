@@ -41,6 +41,7 @@ import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Participant;
+import com.google.android.gms.games.multiplayer.OnInvitationReceivedListener;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateListener;
@@ -51,7 +52,7 @@ import com.google.example.games.basegameutils.GameHelper;
 
 import org.cocos2dx.lib.Cocos2dxHelper;
 
-public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListener, OnActivityResultListener, Cocos2dxHelper.OnActivityStartStopListener, RoomUpdateListener, RealTimeMessageReceivedListener, RoomStatusUpdateListener {
+public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListener, OnActivityResultListener, Cocos2dxHelper.OnActivityStartStopListener, RoomUpdateListener, RealTimeMessageReceivedListener, RoomStatusUpdateListener, OnInvitationReceivedListener {
 
     private static final int RC_SELECT_PLAYERS   = 10000;
     private static final int RC_INVITATION_INBOX = 10001;
@@ -147,6 +148,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
     @Override
     public void onSignInSucceeded() {
+        Games.Invitations.registerInvitationListener(mGameHelper.getApiClient(), this);
         UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGIN_SUCCEED, "onSignInSucceeded");
     }
 
@@ -164,6 +166,14 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     public void onActivityStop() {
         mGameHelper.onStop();
     }
+
+    @Override
+    public void onInvitationReceived(Invitation invitation) {
+        UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onInvite");
+    }
+
+    @Override
+    public void onInvitationRemoved(String invitationId) {}
 
     @Override
     public void onJoinedRoom(int statusCode, Room room) {
@@ -406,6 +416,9 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
         } catch(java.io.UnsupportedEncodingException e) {
             e.printStackTrace();
         }
+    }
+
+    public void checkInvite() {
     }
 
 }
