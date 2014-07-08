@@ -52,7 +52,22 @@
             }
         }];
     } else {
-        [AMoAdSDK showAppliPromotionWall:[AdsWrapper getCurrentRootViewController]];
+        //Felloと同じ階層にビューコントローラーを生成
+        UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+        UIWindow *topWindow = [[UIApplication sharedApplication] keyWindow];
+        if (topWindow.windowLevel != UIWindowLevelNormal)
+        {
+            NSArray *windows = [[UIApplication sharedApplication] windows];
+            for(topWindow in windows)
+            {
+                if (topWindow.windowLevel == UIWindowLevelNormal)
+                    break;
+            }
+        }
+        UIView *rootView = [[topWindow subviews] objectAtIndex:0];
+        [rootView addSubview:viewController.view];
+        
+        [AMoAdSDK showAppliPromotionWall:viewController];
     }
 }
 
