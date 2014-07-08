@@ -42,6 +42,7 @@
     signIn.delegate = self;
     signIn.shouldFetchGoogleUserID = YES;
     [GPGManager sharedInstance].statusDelegate = self;
+    [GPGManager sharedInstance].realTimeRoomDelegate = self;
     [signIn trySilentAuthentication];
 }
 
@@ -130,16 +131,17 @@
 
 #pragma mark GPGRealTimeRoomDelegate impl
 
-/*
 - (void)didReceiveRealTimeInviteForRoom:(GPGRealTimeRoomData *)roomData {
+    /*
     // The following code will bring up the in-game RoomViewController
     // UI with the current invitation listed as a match invite
     NSMutableArray *roomDataList = [NSMutableArray arrayWithObject:roomData];
     GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc]
                                                          initWithRoomDataList:roomDataList];
     [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
+     */
+    [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onInvite"];
 }
-*/
 
 - (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController {
     [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
@@ -199,7 +201,6 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
                 [validRoomDataList addObject:roomData];
             }
         }
-        [GPGManager sharedInstance].realTimeRoomDelegate = self;
         GPGRealTimeRoomViewController *listOfInvites =
         [[GPGRealTimeRoomViewController alloc]
          initWithRoomDataList:validRoomDataList];
@@ -214,13 +215,11 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
     config.maxAutoMatchingPlayers = 1;
     // Could also include variants or exclusive bitmasks here
 
-    [GPGManager sharedInstance].realTimeRoomDelegate = self;
     GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initAndCreateRoomWithConfig:config];
     [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
 }
 
 - (void)createNormalInviteRoom {
-    [GPGManager sharedInstance].realTimeRoomDelegate = self;
     GPGRealTimeRoomViewController *roomViewController = [[GPGRealTimeRoomViewController alloc] initWithMinPlayers:2 maxPlayers:2];
     [[AdsWrapper getCurrentRootViewController] presentViewController:roomViewController animated:YES completion:nil];
 }
@@ -238,6 +237,17 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status {
     } else {
         [roomToTrack sendUnreliableDataToAll:[message dataUsingEncoding:NSUTF8StringEncoding]];
     }
+}
+
+- (void)checkInvite {
+    [GPGRealTimeRoomMaker listRoomsWithMaxResults:50 completionHandler:^(NSArray *rooms, NSError *error) {
+        for (GPGRealTimeRoomData *roomData in rooms) {
+            if (roomData.status == GPGRealTimeRoomStatusInviting) {
+                [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"onInvite"];
+                break;
+            }
+        }
+    }];
 }
 
 @end

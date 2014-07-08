@@ -37,7 +37,7 @@
 /**
  interface for GPGRealTimeRoomDelegate
  */
-//- (void)didReceiveRealTimeInviteForRoom:(GPGRealTimeRoomData *)roomData;
+- (void)didReceiveRealTimeInviteForRoom:(GPGRealTimeRoomData *)roomData;
 - (void)roomViewControllerDidClose:(GPGRealTimeRoomViewController *)roomViewController;
 - (void)room:(GPGRealTimeRoom *)room didChangeStatus:(GPGRealTimeRoomStatus)status;
 - (void)room:(GPGRealTimeRoom *)room didReceiveData:(NSData *)data
@@ -52,5 +52,6 @@ didChangeStatus:(GPGRealTimeParticipantStatus)status;
 - (void)createNormalInviteRoom;
 - (void)leaveRoom;
 - (void)sendMessage:(NSString*)message;
+- (void)checkInvite;
 
 @end
