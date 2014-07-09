@@ -1,0 +1,270 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		D8F7F4C7196BD7560048ABE8 /* AdsAppvador.m in Sources */ = {isa = PBXBuildFile; fileRef = D8F7F4C6196BD7560048ABE8 /* AdsAppvador.m */; };
+		D8F7F4D3196BD9BE0048ABE8 /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F7F4CB196BD8620048ABE8 /* AVFoundation.framework */; };
+		D8F7F4D4196BD9C70048ABE8 /* AdSupport.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F7F4CD196BD8760048ABE8 /* AdSupport.framework */; };
+		D8F7F4D5196BD9D40048ABE8 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F7F4D1196BD88B0048ABE8 /* CoreMedia.framework */; };
+		D8F7F4D6196BD9DB0048ABE8 /* CoreTelephony.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F7F4CF196BD8840048ABE8 /* CoreTelephony.framework */; };
+		D8F7F4D8196BD9F70048ABE8 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F7F4D7196BD9F70048ABE8 /* Foundation.framework */; };
+		D8F7F4DB196BDA3F0048ABE8 /* AppVador.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D8F7F4DA196BDA3F0048ABE8 /* AppVador.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		FADC44A5176EA82000B2D5ED /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/${PRODUCT_NAME}";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		D8F7F4C5196BD7560048ABE8 /* AdsAppvador.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsAppvador.h; sourceTree = "<group>"; };
+		D8F7F4C6196BD7560048ABE8 /* AdsAppvador.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AdsAppvador.m; sourceTree = "<group>"; };
+		D8F7F4CA196BD7730048ABE8 /* PluginAppvador-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "PluginAppvador-Prefix.pch"; sourceTree = "<group>"; };
+		D8F7F4CB196BD8620048ABE8 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AVFoundation.framework; path = System/Library/Frameworks/AVFoundation.framework; sourceTree = SDKROOT; };
+		D8F7F4CD196BD8760048ABE8 /* AdSupport.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AdSupport.framework; path = System/Library/Frameworks/AdSupport.framework; sourceTree = SDKROOT; };
+		D8F7F4CF196BD8840048ABE8 /* CoreTelephony.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreTelephony.framework; path = System/Library/Frameworks/CoreTelephony.framework; sourceTree = SDKROOT; };
+		D8F7F4D1196BD88B0048ABE8 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
+		D8F7F4D7196BD9F70048ABE8 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
+		D8F7F4DA196BDA3F0048ABE8 /* AppVador.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AppVador.framework; sourceTree = "<group>"; };
+		FADC44A7176EA82000B2D5ED /* libPluginAppvador.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginAppvador.a; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		FADC44A4176EA82000B2D5ED /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8F7F4D8196BD9F70048ABE8 /* Foundation.framework in Frameworks */,
+				D8F7F4D6196BD9DB0048ABE8 /* CoreTelephony.framework in Frameworks */,
+				D8F7F4DB196BDA3F0048ABE8 /* AppVador.framework in Frameworks */,
+				D8F7F4D5196BD9D40048ABE8 /* CoreMedia.framework in Frameworks */,
+				D8F7F4D4196BD9C70048ABE8 /* AdSupport.framework in Frameworks */,
+				D8F7F4D3196BD9BE0048ABE8 /* AVFoundation.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		FADC449E176EA82000B2D5ED = {
+			isa = PBXGroup;
+			children = (
+				D8F7F4C5196BD7560048ABE8 /* AdsAppvador.h */,
+				D8F7F4C6196BD7560048ABE8 /* AdsAppvador.m */,
+				D8F7F4CA196BD7730048ABE8 /* PluginAppvador-Prefix.pch */,
+				FADC44A9176EA82000B2D5ED /* Frameworks */,
+				FADC44A8176EA82000B2D5ED /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		FADC44A8176EA82000B2D5ED /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				FADC44A7176EA82000B2D5ED /* libPluginAppvador.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		FADC44A9176EA82000B2D5ED /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				D8F7F4DA196BDA3F0048ABE8 /* AppVador.framework */,
+				D8F7F4D7196BD9F70048ABE8 /* Foundation.framework */,
+				D8F7F4D1196BD88B0048ABE8 /* CoreMedia.framework */,
+				D8F7F4CF196BD8840048ABE8 /* CoreTelephony.framework */,
+				D8F7F4CD196BD8760048ABE8 /* AdSupport.framework */,
+				D8F7F4CB196BD8620048ABE8 /* AVFoundation.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		FADC44A6176EA82000B2D5ED /* PluginAppvador */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = FADC44B5176EA82000B2D5ED /* Build configuration list for PBXNativeTarget "PluginAppvador" */;
+			buildPhases = (
+				FADC44A3176EA82000B2D5ED /* Sources */,
+				FADC44A4176EA82000B2D5ED /* Frameworks */,
+				FADC44A5176EA82000B2D5ED /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PluginAppvador;
+			productName = PluginAdmob;
+			productReference = FADC44A7176EA82000B2D5ED /* libPluginAppvador.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		FADC449F176EA82000B2D5ED /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0460;
+				ORGANIZATIONNAME = "cocos2d-x";
+			};
+			buildConfigurationList = FADC44A2176EA82000B2D5ED /* Build configuration list for PBXProject "PluginAppvador" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = FADC449E176EA82000B2D5ED;
+			productRefGroup = FADC44A8176EA82000B2D5ED /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				FADC44A6176EA82000B2D5ED /* PluginAppvador */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		FADC44A3176EA82000B2D5ED /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				D8F7F4C7196BD7560048ABE8 /* AdsAppvador.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		FADC44B3176EA82000B2D5ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		FADC44B4176EA82000B2D5ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ARCHS = "$(ARCHS_STANDARD_32_BIT)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 6.1;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		FADC44B6176EA82000B2D5ED /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				DSTROOT = /tmp/PluginAppvador.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PluginAppvador-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../protocols/platform/ios";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = PluginAppvador;
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		FADC44B7176EA82000B2D5ED /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
+				CLANG_CXX_LIBRARY = "compiler-default";
+				DSTROOT = /tmp/PluginAppvador.dst;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)",
+				);
+				GCC_C_LANGUAGE_STANDARD = "compiler-default";
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "PluginAppvador-Prefix.pch";
+				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../protocols/platform/ios";
+				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = PluginAppvador;
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		FADC44A2176EA82000B2D5ED /* Build configuration list for PBXProject "PluginAppvador" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FADC44B3176EA82000B2D5ED /* Debug */,
+				FADC44B4176EA82000B2D5ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		FADC44B5176EA82000B2D5ED /* Build configuration list for PBXNativeTarget "PluginAppvador" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				FADC44B6176EA82000B2D5ED /* Debug */,
+				FADC44B7176EA82000B2D5ED /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = FADC449F176EA82000B2D5ED /* Project object */;
+}

@@ -43,6 +43,8 @@
 {
     NSString* mode = [info objectForKey:@"mode"];
     NSString* triggerID = [info objectForKey:@"triggerID"];
+    NSString* hasAdsAppvadorBanner = [info objectForKey:@"hasAdsAppvadorBanner"];
+    
     if ([mode isEqualToString:@"request"]) {
         [AMoAdSDK sendTriggerID:triggerID callbackBlock:^(NSInteger sts, NSString *url, NSInteger width, NSInteger height) {
             if (sts) {
@@ -52,22 +54,27 @@
             }
         }];
     } else {
-        //Felloと同じ階層にビューコントローラーを生成
-        UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
-        UIWindow *topWindow = [[UIApplication sharedApplication] keyWindow];
-        if (topWindow.windowLevel != UIWindowLevelNormal)
-        {
-            NSArray *windows = [[UIApplication sharedApplication] windows];
-            for(topWindow in windows)
+        if ([hasAdsAppvadorBanner isEqualToString:@"YES"]) {
+            //下の方法だとウォール表示後にAppVadorのバナー広告がタップできなくなるので、ルートビューコントローラーで表示
+            [AMoAdSDK showAppliPromotionWall:[AdsWrapper getCurrentRootViewController]];
+        } else {
+            //Felloと同じ階層にビューコントローラーを生成
+            UIViewController *viewController = [[UIViewController alloc] initWithNibName:nil bundle:nil];
+            UIWindow *topWindow = [[UIApplication sharedApplication] keyWindow];
+            if (topWindow.windowLevel != UIWindowLevelNormal)
             {
-                if (topWindow.windowLevel == UIWindowLevelNormal)
+                NSArray *windows = [[UIApplication sharedApplication] windows];
+                for(topWindow in windows)
+                {
+                    if (topWindow.windowLevel == UIWindowLevelNormal)
                     break;
+                }
             }
+            UIView *rootView = [[topWindow subviews] objectAtIndex:0];
+            [rootView addSubview:viewController.view];
+            
+            [AMoAdSDK showAppliPromotionWall:viewController];
         }
-        UIView *rootView = [[topWindow subviews] objectAtIndex:0];
-        [rootView addSubview:viewController.view];
-        
-        [AMoAdSDK showAppliPromotionWall:viewController];
     }
 }
 
