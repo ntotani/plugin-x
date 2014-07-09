@@ -31,6 +31,7 @@ import android.os.Bundle;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 import android.preference.PreferenceManager.OnActivityResultListener;
 import android.view.WindowManager;
@@ -58,12 +59,15 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     private static final int RC_INVITATION_INBOX = 10001;
     private static final int RC_WAITING_ROOM     = 10002;
     private static final String LOG_TAG = "UserGoogleplay";
+    private static final String SP_KEY = "UserGooglePlay";
+    private static final String SP_KEY_SIGNIN = "signin";
     private static Activity mContext = null;
     private static UserGoogleplay mGoogleplay = null;
     private static boolean bDebug = false;
     private GameHelper mGameHelper;
     private Room roomToTrack;
     private String participantIdToTrack;
+    private boolean invited = false;
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -91,6 +95,10 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
                 mGameHelper = new GameHelper(mContext, GameHelper.CLIENT_GAMES);
                 mGameHelper.setup(mGoogleplay);
                 mGameHelper.enableDebugLog(bDebug);
+                SharedPreferences sp = mContext.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE);
+                if (sp.getBoolean(SP_KEY_SIGNIN, false) && !mGameHelper.getApiClient().isConnected()) {
+                    mGameHelper.getApiClient().connect();
+                }
                 Cocos2dxHelper.addOnActivityStartStopListener(mGoogleplay);
                 Cocos2dxHelper.addOnActivityResultListener(mGoogleplay);
             }
@@ -128,6 +136,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
             @Override
             public void run() {
                 mGameHelper.signOut();
+                mContext.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE).edit().putBoolean(SP_KEY_SIGNIN, false).apply();
             }
         });
     }
@@ -150,6 +159,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     public void onSignInSucceeded() {
         Games.Invitations.registerInvitationListener(mGameHelper.getApiClient(), this);
         UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGIN_SUCCEED, "onSignInSucceeded");
+        mContext.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE).edit().putBoolean(SP_KEY_SIGNIN, true).apply();
     }
 
     @Override
@@ -159,7 +169,10 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
     @Override
     public void onActivityStart() {
-        mGameHelper.onStart(mContext);
+        SharedPreferences sp = mContext.getSharedPreferences(SP_KEY, Context.MODE_PRIVATE);
+        if (sp.getBoolean(SP_KEY_SIGNIN, false)) {
+            mGameHelper.onStart(mContext);
+        }
     }
 
     @Override
@@ -169,11 +182,14 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
 
     @Override
     public void onInvitationReceived(Invitation invitation) {
+        invited = true;
         UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onInvite");
     }
 
     @Override
-    public void onInvitationRemoved(String invitationId) {}
+    public void onInvitationRemoved(String invitationId) {
+        invited = false;
+    }
 
     @Override
     public void onJoinedRoom(int statusCode, Room room) {
@@ -419,6 +435,11 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     }
 
     public void checkInvite() {
+        if (invited || mGameHelper.hasInvitation()) {
+            invited = false;
+            mGameHelper.clearInvitation();
+            UserWrapper.onActionResult(mGoogleplay, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "onInvite");
+        }
     }
 
 }
