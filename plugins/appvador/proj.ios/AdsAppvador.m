@@ -57,8 +57,6 @@
     avAdView.rootViewController = rootViewController;
     avAdView.delegate = self;
     [avAdView isTest:self.debug];
-    [rootView addSubview:avAdView];
-    [avAdView setHidden:true];
     
     //インタースティシャル広告
     if (self.debug) {
@@ -77,7 +75,7 @@
     
     if ([mode isEqualToString:@"banner"]) {
         OUTPUT_LOG(@"showAds! BannerAd");
-        [avAdView setHidden:false];
+        [[AdsWrapper getCurrentRootViewController].view addSubview:avAdView];
         [avAdView adStart];
     } else if([mode isEqualToString:@"interstitial"]) {
         OUTPUT_LOG(@"showAds! InterstitialAd");
@@ -87,7 +85,7 @@
 
 - (void) hideAds: (NSMutableDictionary*) info
 {
-    [avAdView setHidden:true];
+    [avAdView removeFromSuperview];
 }
 
 - (void) queryPoints
