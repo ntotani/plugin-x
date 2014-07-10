@@ -263,8 +263,9 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
             LogD("onActivityResult");
             if (response == Activity.RESULT_OK) {
                 String myName = "";
-                String hisName = "";
+                String hisName = "Opponent";
                 String myId = Games.Players.getCurrentPlayerId(mGameHelper.getApiClient());
+                participantIdToTrack = null;
                 for (Participant p : roomToTrack.getParticipants()) {
                     if (p.getPlayer() != null && p.getPlayer().getPlayerId().equals(myId)) {
                         myName = p.getDisplayName();
@@ -353,6 +354,7 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
     @Override
     public void onRealTimeMessageReceived(RealTimeMessage message) {
         byte[] data = message.getMessageData();
+        participantIdToTrack = message.getSenderParticipantId();
         try {
             String mes = new String(data, "UTF-8");
             LogD(mes);
@@ -426,7 +428,11 @@ public class UserGoogleplay implements InterfaceUser, GameHelper.GameHelperListe
             PluginWrapper.runOnMainThread(new Runnable() {
                 @Override
                 public void run() {
-                    Games.RealTimeMultiplayer.sendReliableMessage(mGameHelper.getApiClient(), null, data, roomToTrack.getRoomId(), participantIdToTrack);
+                    if (participantIdToTrack != null) {
+                        Games.RealTimeMultiplayer.sendReliableMessage(mGameHelper.getApiClient(), null, data, roomToTrack.getRoomId(), participantIdToTrack);
+                    } else {
+                        Games.RealTimeMultiplayer.sendUnreliableMessageToOthers(mGameHelper.getApiClient(), data, roomToTrack.getRoomId());
+                    }
                 }
             });
         } catch(java.io.UnsupportedEncodingException e) {
