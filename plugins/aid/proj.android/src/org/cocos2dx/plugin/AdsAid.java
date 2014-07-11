@@ -38,7 +38,9 @@ public class AdsAid implements InterfaceAds {
 	private static Activity mContext = null;
 	private static boolean bDebug = false;
     private static String AppId = "";
+    private static String AppIdCp = "";
     private static AdController _aidAdController;
+    private static AdController _aidAdControllerCp;
     
 	protected static void LogD(String msg) {
 		if (bDebug) {
@@ -59,11 +61,29 @@ public class AdsAid implements InterfaceAds {
 	public void configDeveloperInfo(Hashtable<String, String> devInfo) {
         LogD("AdsAid configDeveloperInfo!");
         AppId = devInfo.get("AidID");
+        AppIdCp = devInfo.get("AidIDCp");
 	}
     
     public void initAid() {
+        LogD("AdsAid initAid!");
         Activity activity = mContext;
-        _aidAdController = new AdController(AppId, activity);
+        if (AppId!="") {
+            LogD("AdsAid gen _aidAdController!");
+            _aidAdController = new AdController(AppId, activity);
+            _aidAdController.setCreativeStyle(AdController.CreativeStyle.PLAIN_TEXT);
+            _aidAdController.startPreloading();
+        }
+    }
+    
+    public void initAidCp() {
+        LogD("AdsAid initAidCp!");
+        Activity activity = mContext;
+        if (AppIdCp!="") {
+            LogD("AdsAid gen _aidAdControllerCp!");
+            _aidAdControllerCp = new AdController(AppIdCp, activity);
+            _aidAdControllerCp.setCreativeStyle(AdController.CreativeStyle.PLAIN_TEXT);
+            _aidAdControllerCp.startPreloading();
+        }
     }
     
 	@Override
@@ -73,19 +93,47 @@ public class AdsAid implements InterfaceAds {
 			@Override
 			public void run() {
                 LogD("AdsAid showAds!");
-                if (_aidAdController == null) {
-                    initAid();
+                if (mode != null && mode.equals("cp")) {
+                    LogD("AdsAid cpMode!");
+                    if (_aidAdControllerCp == null) {
+                        initAidCp();
+                    }
+                    if (_aidAdControllerCp != null) {
+                        long started = System.currentTimeMillis();
+                        while (true) {
+                            // 広告がロードされていなければ、最大10秒待つ
+                            if (_aidAdControllerCp.hasLoadedContent()) {
+                                LogD("AdsAid show!");
+                                //自社広告ダイアログを表示
+                                _aidAdControllerCp.stopPreloading();
+                                _aidAdControllerCp.showDialog(AdController.DialogType.ON_DEMAND);
+                                break;
+                            }
+                            if (started + 10000L < System.currentTimeMillis()) break;
+                            sleep(500L);
+                        }
+                    }
+                } else {
+                    LogD("AdsAid not cpMode!");
+                    if (_aidAdController == null) {
+                        initAid();
+                    }
+                    if (_aidAdController != null) {
+                        long started = System.currentTimeMillis();
+                        while (true) {
+                            // 広告がロードされていなければ、最大10秒待つ
+                            if (_aidAdController.hasLoadedContent()) {
+                                LogD("AdsAid show!");
+                                //広告ダイアログを表示
+                                _aidAdController.stopPreloading();
+                                _aidAdController.showDialog(AdController.DialogType.ON_DEMAND);
+                                break;
+                            }
+                            if (started + 10000L < System.currentTimeMillis()) break;
+                            Thread.sleep(500L);
+                        }
+                    }
                 }
-                if (mode == "text") {
-                    //テキスト型広告
-                    _aidAdController.setCreativeStyle(AdController.CreativeStyle.PLAIN_TEXT);
-                } else if (mode == "image") {
-                    //画像ポップアップ型
-                    _aidAdController.setCreativeStyle(AdController.CreativeStyle.POPUP_IMAGE);
-                }
-                _aidAdController.startPreloading();
-                _aidAdController.stopPreloading();
-                _aidAdController.showDialog(AdController.DialogType.ON_DEMAND);
 			}
 		});
 	}

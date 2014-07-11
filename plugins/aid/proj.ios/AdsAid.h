@@ -26,13 +26,18 @@
 #import "InterfaceAds.h"
 #import <AidAd/AidAd.h>
 
-@interface AdsAid : NSObject <InterfaceAds>
+@interface AdsAid : NSObject <InterfaceAds, AidAdAgentDelegate>
 {
 }
 
 @property BOOL debug;
 
-/**
+//コールバック
+- (void)aidCallback:(NSString*)msg code:(int)code;
+
+- (void)showDialogAfterLoad: (NSTimer*)timer;
+
+/**s
  interfaces from InterfaceAds
  */
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo;
@@ -43,5 +48,10 @@
 - (void) setDebugMode: (NSNumber*) isDebugMode;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
+
+- (void)adAgentDidOpenDialog:(AidAdAgent*)agent;
+- (void)adAgentDidCloseDialog:(AidAdAgent*)agent;
+- (void)adAgentDidDetectCloseButtonWasTapped:(AidAdAgent*)agent;
+- (void)adAgentDidDetectDetailButtonWasTapped:(AidAdAgent*)agent;
 
 @end

@@ -30,25 +30,95 @@
 @implementation AdsAid
 {
     AidAdAgent* aidAgent;
+    AidAdAgent* aidAgentCp;
+    NSString* AppId;
+    NSString* AppIdCp;
 }
 
 @synthesize debug = __debug;
 
 #pragma mark InterfaceAds impl
 
+//コールバック
+- (void)aidCallback:(NSString*)msg code:(int)code;
+{
+    OUTPUT_LOG(@"AdsAid:aidCallback! code=%d", code);
+    [AdsWrapper onAdsResult:self withRet:code withMsg:msg];
+}
+
+- (void)showDialogAfterLoad: (NSTimer*)timer
+{
+    NSDictionary* userInfo = [timer userInfo];
+    AidAdAgent* agent = [userInfo objectForKey:@"agent"];
+    
+    do {
+        if ([agent hasLoadedContent]) {
+            // 広告コンテンツは読み込み済み
+            OUTPUT_LOG(@"AidAd basic content is ready");
+            break;
+        }
+        
+        NSDate* started = [userInfo objectForKey:@"started"];
+        NSTimeInterval delay = 0 - [started timeIntervalSinceNow];
+        if ( delay > 10) {
+            // 10秒経っていたら広告が間に合わないとしてあきらめる
+            OUTPUT_LOG(@"AidAd content is not available");
+            break;
+        }
+        
+        // 次のタイマーによる呼び出しを待つ
+        return;
+        
+    } while (0);
+    
+    //広告ダイアログを表示
+    OUTPUT_LOG(@"AdsAid aidAgent showDialog");
+    [agent showDialog];
+    [timer invalidate];
+}
+
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo
 {
-    NSString* AppId = (NSString*) [devInfo objectForKey:@"AidID"];
-    //広告の取得を開始します
-    aidAgent = [AidAd agentForMedia:AppId];
-    [aidAgent startLoading];
+    OUTPUT_LOG(@"AdsAid configDeveloperInfo!");
+    AppId = (NSString*) [devInfo objectForKey:@"AidID"];
+    AppIdCp = (NSString*) [devInfo objectForKey:@"AidIDCp"];
+    
+    if (![AppId isEqualToString:@""]) {
+        //広告の取得を開始します
+        OUTPUT_LOG(@"AdsAid gen aidAgent");
+        aidAgent = [AidAd agentForMedia:AppId];
+        [aidAgent startLoading];
+    }
+    if (![AppIdCp isEqualToString:@""]) {
+        //自社広告の取得を開始します
+        OUTPUT_LOG(@"AdsAid gen aidAgentCp");
+        aidAgentCp = [AidAd agentForMedia:AppIdCp];
+        [aidAgentCp startLoading];
+        [aidAgentCp setDelegate:self];
+    }
 }
 
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos
 {
-    if (aidAgent) {
-        // 広告ダイアログを表示
-        [aidAgent showDialog];
+    OUTPUT_LOG(@"AdsAid showAds!");
+    NSString* mode = (NSString*)[info objectForKey:@"mode"];
+    
+    AidAdAgent* agent;
+    if ([mode isEqualToString:@"cp"]) {
+        agent = aidAgentCp;
+    } else {
+        agent = aidAgent;
+    }
+    
+    if (agent)
+    {
+        // 取得完了した事を定期的にチェックさせるタイマー
+        NSDictionary* userInfo = @{@"agent":agent, @"started":[NSDate date]};
+        [NSTimer scheduledTimerWithTimeInterval:1
+                                         target:self
+                                       selector:@selector(showDialogAfterLoad:)
+                                       userInfo:userInfo
+                                        repeats:YES];
     }
 }
 
@@ -80,6 +150,28 @@
 - (NSString*) getPluginVersion
 {
     return @"0.0.1";
+}
+
+- (void)adAgentDidOpenDialog:(AidAdAgent*)agent
+{
+    OUTPUT_LOG(@"AdsAid adAgentDidOpenDialog!");
+}
+
+- (void)adAgentDidCloseDialog:(AidAdAgent*)agent
+{
+    OUTPUT_LOG(@"AdsAid adAgentDidCloseDialog!");
+}
+
+- (void)adAgentDidDetectCloseButtonWasTapped:(AidAdAgent*)agent
+{
+    OUTPUT_LOG(@"AdsAid adAgentDidDetectCloseButtonWasTapped!");
+    [self aidCallback:@"tap_btn_close" code:kAdsReceived];
+}
+
+- (void)adAgentDidDetectDetailButtonWasTapped:(AidAdAgent*)agent
+{
+    OUTPUT_LOG(@"AdsAid adAgentDidDetectDetailButtonWasTapped!");
+    [self aidCallback:@"tap_btn_detail" code:kAdsReceived];
 }
 
 @end
