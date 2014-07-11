@@ -76,7 +76,11 @@
     if ([mode isEqualToString:@"banner"]) {
         OUTPUT_LOG(@"showAds! BannerAd");
         [[AdsWrapper getCurrentRootViewController].view addSubview:avAdView];
-        [avAdView adStart];
+        if (avAdView) {
+            [avAdView adStart];
+        } else {
+            [self appVadorCallback:@"banner" code:kUnknownError];
+        }
     } else if([mode isEqualToString:@"interstitial"]) {
         OUTPUT_LOG(@"showAds! InterstitialAd");
        [InterstitialAd showInterstitial];
