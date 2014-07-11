@@ -85,7 +85,9 @@
 
 - (void) hideAds: (NSMutableDictionary*) info
 {
-    [avAdView removeFromSuperview];
+    if ([avAdView superview]) {
+        [avAdView removeFromSuperview];
+    }
 }
 
 - (void) queryPoints
