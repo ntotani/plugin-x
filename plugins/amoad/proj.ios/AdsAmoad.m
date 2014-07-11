@@ -43,7 +43,7 @@
 {
     NSString* mode = [info objectForKey:@"mode"];
     NSString* triggerID = [info objectForKey:@"triggerID"];
-    NSString* hasAdsAppvadorBanner = [info objectForKey:@"hasAdsAppvadorBanner"];
+    NSString* hasAdsAppvadorInterstitial = [info objectForKey:@"hasAdsAppvadorInterstitial"];
     
     if ([mode isEqualToString:@"request"]) {
         [AMoAdSDK sendTriggerID:triggerID callbackBlock:^(NSInteger sts, NSString *url, NSInteger width, NSInteger height) {
@@ -54,7 +54,7 @@
             }
         }];
     } else {
-        if ([hasAdsAppvadorBanner isEqualToString:@"YES"]) {
+        if ([hasAdsAppvadorInterstitial isEqualToString:@"YES"]) {
             //下の方法だとウォール表示後にAppVadorのバナー広告がタップできなくなるので、ルートビューコントローラーで表示
             [AMoAdSDK showAppliPromotionWall:[AdsWrapper getCurrentRootViewController]];
         } else {
