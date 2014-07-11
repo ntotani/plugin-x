@@ -110,7 +110,7 @@ public class AdsAid implements InterfaceAds {
                                 break;
                             }
                             if (started + 10000L < System.currentTimeMillis()) break;
-                            sleep(500L);
+                            //sleep(500L);
                         }
                     }
                 } else {
@@ -130,7 +130,7 @@ public class AdsAid implements InterfaceAds {
                                 break;
                             }
                             if (started + 10000L < System.currentTimeMillis()) break;
-                            Thread.sleep(500L);
+                            //sleep(500L);
                         }
                     }
                 }
