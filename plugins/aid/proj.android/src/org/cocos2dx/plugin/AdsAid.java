@@ -109,7 +109,7 @@ public class AdsAid implements InterfaceAds {
                 }
                 
                 if (_targetController != null) {
-                    class multiThread extends Thread{
+                    new Thread(new Runnable(){
                         public void run(){
                             try
                             {
@@ -131,9 +131,7 @@ public class AdsAid implements InterfaceAds {
                                 }
                             });
                         }
-                    }
-                    multiThread thread = new multiThread();
-                    thread.start();
+                    }).start();
                 }
 			}
 		});
