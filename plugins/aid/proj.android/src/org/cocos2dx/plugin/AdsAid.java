@@ -39,6 +39,7 @@ public class AdsAid implements InterfaceAds {
 	private static boolean bDebug = false;
     private static String AppId = "";
     private static String AppIdCp = "";
+    private static AdController _targetController;
     private static AdController _aidAdController;
     private static AdController _aidAdControllerCp;
     
@@ -98,41 +99,41 @@ public class AdsAid implements InterfaceAds {
                     if (_aidAdControllerCp == null) {
                         initAidCp();
                     }
-                    if (_aidAdControllerCp != null) {
-                        long started = System.currentTimeMillis();
-                        while (true) {
-                            // 広告がロードされていなければ、最大10秒待つ
-                            if (_aidAdControllerCp.hasLoadedContent()) {
-                                LogD("AdsAid show!");
-                                //自社広告ダイアログを表示
-                                _aidAdControllerCp.stopPreloading();
-                                _aidAdControllerCp.showDialog(AdController.DialogType.ON_DEMAND);
-                                break;
-                            }
-                            if (started + 10000L < System.currentTimeMillis()) break;
-                            //sleep(500L);
-                        }
-                    }
+                    _targetController = _aidAdControllerCp;
                 } else {
                     LogD("AdsAid not cpMode!");
                     if (_aidAdController == null) {
                         initAid();
                     }
-                    if (_aidAdController != null) {
-                        long started = System.currentTimeMillis();
-                        while (true) {
-                            // 広告がロードされていなければ、最大10秒待つ
-                            if (_aidAdController.hasLoadedContent()) {
-                                LogD("AdsAid show!");
-                                //広告ダイアログを表示
-                                _aidAdController.stopPreloading();
-                                _aidAdController.showDialog(AdController.DialogType.ON_DEMAND);
-                                break;
+                    _targetController = _aidAdController;
+                }
+                
+                if (_targetController != null) {
+                    class multiThread extends Thread{
+                        public void run(){
+                            try
+                            {
+                                long started = System.currentTimeMillis();
+                                while (true) {
+                                    // 広告がロードされていなければ、最大10秒待つ
+                                    if (_targetController.hasLoadedContent()) break;
+                                    if (started + 10000L < System.currentTimeMillis()) break;
+                                    Thread.sleep(500L);
+                                }
                             }
-                            if (started + 10000L < System.currentTimeMillis()) break;
-                            //sleep(500L);
+                            catch(InterruptedException iex) {}
+                            
+                            PluginWrapper.runOnMainThread(new Runnable() {
+                                @Override
+                                public void run() {
+                                    //広告ダイアログを表示
+                                    _targetController.showDialog(AdController.DialogType.ON_DEMAND);
+                                }
+                            });
                         }
                     }
+                    multiThread thread = new multiThread();
+                    thread.start();
                 }
 			}
 		});
