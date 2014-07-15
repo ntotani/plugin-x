@@ -29,6 +29,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
+import android.view.View;
 
 import jp.live_aid.aid.AdController;
 
@@ -42,6 +43,7 @@ public class AdsAid implements InterfaceAds {
     private static AdController _targetController;
     private static AdController _aidAdController;
     private static AdController _aidAdControllerCp;
+    private static AdsAid mAdapter = null;
     
 	protected static void LogD(String msg) {
 		if (bDebug) {
@@ -51,6 +53,7 @@ public class AdsAid implements InterfaceAds {
 
 	public AdsAid(Context context) {
 		mContext = (Activity) context;
+        mAdapter = this;
 	}
 
 	@Override
@@ -81,7 +84,25 @@ public class AdsAid implements InterfaceAds {
         Activity activity = mContext;
         if (AppIdCp!="") {
             LogD("AdsAid gen _aidAdControllerCp!");
-            _aidAdControllerCp = new AdController(AppIdCp, activity);
+            _aidAdControllerCp = new AdController(AppIdCp, activity) {
+                
+                //ポップアップの閉じるボタン押した
+                protected void dialogCloseButtonWasClicked(android.app.Dialog dialog, View view) {
+                    LogD("AdsAid dialogCloseButtonWasClicked!");
+                    super.dialogCloseButtonWasClicked(dialog, view);
+                    AdsWrapper.onAdsResult(mAdapter, AdsWrapper.RESULT_CODE_AdsReceived, "tap_btn_close");
+                }
+                //ポップアップの詳細をみるボタン押した
+                protected void dialogDetailButtonWasClicked(android.app.Dialog dialog, View view) {
+                    LogD("AdsAid dialogDetailButtonWasClicked!");
+                    super.dialogDetailButtonWasClicked(dialog, view);
+                    AdsWrapper.onAdsResult(mAdapter, AdsWrapper.RESULT_CODE_AdsReceived, "tap_btn_detail");
+                }
+                //backボタンでのポップアップキャンセルを不可にします
+                protected void dialogDidCreated(android.app.Dialog dialog) {
+                    dialog.setCancelable(false);
+                }
+            };
             _aidAdControllerCp.setCreativeStyle(AdController.CreativeStyle.PLAIN_TEXT);
             _aidAdControllerCp.startPreloading();
         }
