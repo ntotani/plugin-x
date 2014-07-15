@@ -140,8 +140,10 @@ public class AdsAsta implements InterfaceAds {
       PluginWrapper.runOnMainThread(new Runnable() {
           @Override
           public void run() {
-              _iconLoader.stopLoading();
-              _adMain.setVisibility(View.INVISIBLE);
+              if (_iconLoader != null) {
+                  _iconLoader.stopLoading();
+                  _adMain.setVisibility(View.INVISIBLE);
+              }
           }
       });
   }
