@@ -70,7 +70,22 @@ public class AdsAppvador implements InterfaceAds {
         bannerAppId = devInfo.get("AppvadorBannerID");
 	}
     
+    public void removeAdView() {
+        LogD("AppVador removeMainView!");
+        
+        _adView.stop();
+        _adMain.removeView(_adView);
+        _adView = null;
+        
+        Activity activity = mContext;
+        View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
+        ((ViewGroup)contentView).removeView(_adMain);
+        _adMain = null;
+    }
+    
     public void initAppvador() {
+        LogD("AppVador hide!");
+        
         Activity activity = mContext;
         _adView = new AdView(activity, bannerAppId, false, bDebug);
         _adView.setAdListener(new AppvadorAdsListener());
@@ -80,12 +95,11 @@ public class AdsAppvador implements InterfaceAds {
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         
+        _adView.setVisibility(View.INVISIBLE);
         _adMain.addView(_adView, layoutParams);
         
         View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
         ((ViewGroup)contentView).addView(_adMain);
-        
-        _adView.adStart();
     }
 
 	@Override
@@ -93,10 +107,13 @@ public class AdsAppvador implements InterfaceAds {
 		PluginWrapper.runOnMainThread(new Runnable() {
 			@Override
 			public void run() {
-                if (_adMain == null) {
-                    initAppvador();
+                if (_adMain != null) {
+                    removeAdView();
                 }
-                //_adMain.setVisibility(View.VISIBLE);
+                initAppvador();
+                
+                _adView.setVisibility(View.VISIBLE);
+                _adView.adStart();
 			}
 		});
 	}
@@ -108,16 +125,11 @@ public class AdsAppvador implements InterfaceAds {
 			public void run() {
                 LogD("AppVador hideAds!");
                 if (_adMain != null) {
-                    LogD("hideAds!");
+                    LogD("AppVador hide!");
                     //削除
-                    _adView.stop();
-                    _adMain.removeView(_adView);
-                    _adView = null;
-                    
-                    Activity activity = mContext;
-                    View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
-                    ((ViewGroup)contentView).removeView(_adMain);
-                    _adMain = null;
+                    removeAdView();
+                    //削除するとなぜか音が調整できなくなるので、initして非表示にしておく
+                    initAppvador();
                 }
 			}
 		});
