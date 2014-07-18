@@ -184,4 +184,9 @@ THE SOFTWARE.
     [[UIApplication sharedApplication] openURL:[NSURL URLWithString:reviewUrl]];
 }
 
+- (NSString*) createUUID
+{
+    return [[NSUUID UUID] UUIDString];
+}
+
 @end

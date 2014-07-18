@@ -59,5 +59,6 @@ THE SOFTWARE.
 - (void) logTimedEventEndWithParams: (NSMutableDictionary*) params;
 
 - (void) openReviewPage:(NSString*)storeId;
+- (NSString*) createUUID;
 
 @end
