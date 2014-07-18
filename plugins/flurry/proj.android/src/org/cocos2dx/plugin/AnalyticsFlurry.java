@@ -25,6 +25,7 @@ package org.cocos2dx.plugin;
 
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.UUID;
 
 import org.json.JSONObject;
 
@@ -344,6 +345,10 @@ public class AnalyticsFlurry implements InterfaceAnalytics {
                 Uri.parse("https://play.google.com/store/apps/details?id="
                     + mContext.getPackageName() + "&hl=ja"));
         mContext.startActivity(intent);
+    }
+
+    public String createUUID() {
+        return UUID.randomUUID().toString();
     }
 
 }
