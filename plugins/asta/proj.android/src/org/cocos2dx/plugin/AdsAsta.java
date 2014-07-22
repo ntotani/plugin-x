@@ -115,7 +115,7 @@ public class AdsAsta implements InterfaceAds {
           iconAdView.addView(iconAdSubView);
       }
       _adMain.addView(iconAdView);
-      _adMain.setVisibility(View.INVISIBLE);
+      _adMain.setVisibility(View.GONE);
       View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
       ((ViewGroup)contentView).addView(_adMain);
       _iconLoader = iconLoader;
@@ -142,7 +142,7 @@ public class AdsAsta implements InterfaceAds {
           public void run() {
               if (_iconLoader != null) {
                   _iconLoader.stopLoading();
-                  _adMain.setVisibility(View.INVISIBLE);
+                  _adMain.setVisibility(View.GONE);
               }
           }
       });

@@ -95,7 +95,7 @@ public class AdsAppvador implements InterfaceAds {
         layoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
         layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         
-        _adView.setVisibility(View.INVISIBLE);
+        _adView.setVisibility(View.GONE);
         _adMain.addView(_adView, layoutParams);
         
         View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
@@ -158,14 +158,9 @@ public class AdsAppvador implements InterfaceAds {
         public void failedToReceiveAd(AdResult args0) {
             LogD("AppVador failedToReceiveAd!");
             //削除
-            _adView.stop();
-            _adMain.removeView(_adView);
-            _adView = null;
-            
-            Activity activity = mContext;
-            View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
-            ((ViewGroup)contentView).removeView(_adMain);
-            _adMain = null;
+            removeAdView();
+            //削除するとなぜか音が調整できなくなるので、initして非表示にしておく
+            initAppvador();
             
             AdsWrapper.onAdsResult(mAdapter, AdsWrapper.RESULT_CODE_UnknownError, "banner");
         }
