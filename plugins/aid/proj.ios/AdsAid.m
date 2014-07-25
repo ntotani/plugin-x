@@ -29,10 +29,9 @@
 
 @implementation AdsAid
 {
-    AidAdAgent* aidAgent;
-    AidAdAgent* aidAgentCp;
     NSString* AppId;
     NSString* AppIdCp;
+    NSString* AppIdInterstitial;
 }
 
 @synthesize debug = __debug;
@@ -82,19 +81,23 @@
     OUTPUT_LOG(@"AdsAid configDeveloperInfo!");
     AppId = (NSString*) [devInfo objectForKey:@"AidID"];
     AppIdCp = (NSString*) [devInfo objectForKey:@"AidIDCp"];
+    AppIdInterstitial = (NSString*) [devInfo objectForKey:@"AidIDInterstitial"];
     
     if (![AppId isEqualToString:@""]) {
         //広告の取得を開始します
         OUTPUT_LOG(@"AdsAid gen aidAgent");
-        aidAgent = [AidAd agentForMedia:AppId];
-        [aidAgent startLoading];
+        [[AidAd agentForMedia:AppId] startLoading];
     }
     if (![AppIdCp isEqualToString:@""]) {
         //自社広告の取得を開始します
         OUTPUT_LOG(@"AdsAid gen aidAgentCp");
-        aidAgentCp = [AidAd agentForMedia:AppIdCp];
-        [aidAgentCp startLoading];
-        [aidAgentCp setDelegate:self];
+        [[AidAd agentForMedia:AppIdCp] startLoading];
+        [[AidAd agentForMedia:AppIdCp] setDelegate:self];
+    }
+    if (![AppIdInterstitial isEqualToString:@""]) {
+        OUTPUT_LOG(@"AdsAid gen aidAgent");
+        [[AidAd agentForMedia:AppIdInterstitial] setPreferredCreativeStyle:kAidAdCreativeStyle_POPUP_IMAGE];
+        [[AidAd agentForMedia:AppIdInterstitial] startLoading];
     }
 }
 
@@ -105,20 +108,26 @@
     
     AidAdAgent* agent;
     if ([mode isEqualToString:@"cp"]) {
-        agent = aidAgentCp;
+        agent = [AidAd agentForMedia:AppIdCp];
+    } else if ([mode isEqualToString:@"interstitial"]) {
+        agent = [AidAd agentForMedia:AppIdInterstitial];
     } else {
-        agent = aidAgent;
+        agent = [AidAd agentForMedia:AppId];
     }
     
     if (agent)
     {
-        // 取得完了した事を定期的にチェックさせるタイマー
-        NSDictionary* userInfo = @{@"agent":agent, @"started":[NSDate date]};
-        [NSTimer scheduledTimerWithTimeInterval:1
-                                         target:self
-                                       selector:@selector(showDialogAfterLoad:)
-                                       userInfo:userInfo
-                                        repeats:YES];
+        if ([agent hasLoadedContent]) {
+            [agent showDialog];
+        } else {
+            // 取得完了した事を定期的にチェックさせるタイマー
+            NSDictionary* userInfo = @{@"agent":agent, @"started":[NSDate date]};
+            [NSTimer scheduledTimerWithTimeInterval:1
+                                             target:self
+                                           selector:@selector(showDialogAfterLoad:)
+                                           userInfo:userInfo
+                                            repeats:YES];
+        }
     }
 }
 
