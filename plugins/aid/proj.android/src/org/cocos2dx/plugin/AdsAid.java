@@ -40,9 +40,11 @@ public class AdsAid implements InterfaceAds {
 	private static boolean bDebug = false;
     private static String AppId = "";
     private static String AppIdCp = "";
+    private static String AppIdInterstitial = "";
     private static AdController _targetController;
     private static AdController _aidAdController;
     private static AdController _aidAdControllerCp;
+    private static AdController _aidAdControllerInterstitial;
     private static AdsAid mAdapter = null;
     
 	protected static void LogD(String msg) {
@@ -66,12 +68,21 @@ public class AdsAid implements InterfaceAds {
         LogD("AdsAid configDeveloperInfo!");
         AppId = devInfo.get("AidID");
         AppIdCp = devInfo.get("AidIDCp");
+        AppIdInterstitial = devInfo.get("AidIDInterstitial");
+        PluginWrapper.runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                initAid();
+                initAidCp();
+                initAidInterstitial();
+            }
+        });
 	}
     
     public void initAid() {
         LogD("AdsAid initAid!");
         Activity activity = mContext;
-        if (AppId!="") {
+        if (!AppId.isEmpty()) {
             LogD("AdsAid gen _aidAdController!");
             _aidAdController = new AdController(AppId, activity);
             _aidAdController.setCreativeStyle(AdController.CreativeStyle.PLAIN_TEXT);
@@ -82,7 +93,7 @@ public class AdsAid implements InterfaceAds {
     public void initAidCp() {
         LogD("AdsAid initAidCp!");
         Activity activity = mContext;
-        if (AppIdCp!="") {
+        if (!AppIdCp.isEmpty()) {
             LogD("AdsAid gen _aidAdControllerCp!");
             _aidAdControllerCp = new AdController(AppIdCp, activity) {
                 
@@ -107,6 +118,17 @@ public class AdsAid implements InterfaceAds {
             _aidAdControllerCp.startPreloading();
         }
     }
+
+    public void initAidInterstitial() {
+        LogD("AdsAid initAid!");
+        Activity activity = mContext;
+        if (!AppIdInterstitial.isEmpty()) {
+            LogD("AdsAid gen _aidAdController!");
+            _aidAdControllerInterstitial = new AdController(AppIdInterstitial, activity);
+            _aidAdControllerInterstitial.setCreativeStyle(AdController.CreativeStyle.POPUP_IMAGE);
+            _aidAdControllerInterstitial.startPreloading();
+        }
+    }
     
 	@Override
 	public void showAds(Hashtable<String, String> info, int pos) {
@@ -117,42 +139,42 @@ public class AdsAid implements InterfaceAds {
                 LogD("AdsAid showAds!");
                 if (mode != null && mode.equals("cp")) {
                     LogD("AdsAid cpMode!");
-                    if (_aidAdControllerCp == null) {
-                        initAidCp();
-                    }
                     _targetController = _aidAdControllerCp;
+                } else if (mode != null && mode.equals("interstitial")) {
+                    _targetController = _aidAdControllerInterstitial;
                 } else {
                     LogD("AdsAid not cpMode!");
-                    if (_aidAdController == null) {
-                        initAid();
-                    }
                     _targetController = _aidAdController;
                 }
                 
                 if (_targetController != null) {
-                    new Thread(new Runnable(){
-                        public void run(){
-                            try
-                            {
-                                long started = System.currentTimeMillis();
-                                while (true) {
-                                    // 広告がロードされていなければ、最大10秒待つ
-                                    if (_targetController.hasLoadedContent()) break;
-                                    if (started + 10000L < System.currentTimeMillis()) break;
-                                    Thread.sleep(500L);
+                    if (_targetController.hasLoadedContent()) {
+                        _targetController.showDialog(AdController.DialogType.ON_DEMAND);
+                    } else {
+                        new Thread(new Runnable(){
+                            public void run(){
+                                try
+                                {
+                                    long started = System.currentTimeMillis();
+                                    while (true) {
+                                        // 広告がロードされていなければ、最大10秒待つ
+                                        if (_targetController.hasLoadedContent()) break;
+                                        if (started + 10000L < System.currentTimeMillis()) break;
+                                        Thread.sleep(500L);
+                                    }
                                 }
+                                catch(InterruptedException iex) {}
+                                
+                                PluginWrapper.runOnMainThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        //広告ダイアログを表示
+                                        _targetController.showDialog(AdController.DialogType.ON_DEMAND);
+                                    }
+                                });
                             }
-                            catch(InterruptedException iex) {}
-                            
-                            PluginWrapper.runOnMainThread(new Runnable() {
-                                @Override
-                                public void run() {
-                                    //広告ダイアログを表示
-                                    _targetController.showDialog(AdController.DialogType.ON_DEMAND);
-                                }
-                            });
-                        }
-                    }).start();
+                        }).start();
+                    }
                 }
 			}
 		});
@@ -182,4 +204,26 @@ public class AdsAid implements InterfaceAds {
 	public String getPluginVersion() {
 		return "0.0.1";
 	}
+
+  public void startPreloading() {
+      PluginWrapper.runOnMainThread(new Runnable() {
+          @Override
+          public void run() {
+              if (_aidAdController != null) _aidAdController.startPreloading();
+              if (_aidAdControllerCp != null) _aidAdControllerCp.startPreloading();
+              if (_aidAdControllerInterstitial != null) _aidAdControllerInterstitial.startPreloading();
+          }
+      });
+  }
+
+  public void stopPreloading() {
+      PluginWrapper.runOnMainThread(new Runnable() {
+          @Override
+          public void run() {
+              if (_aidAdController != null) _aidAdController.stopPreloading();
+              if (_aidAdControllerCp != null) _aidAdControllerCp.stopPreloading();
+              if (_aidAdControllerInterstitial != null) _aidAdControllerInterstitial.stopPreloading();
+          }
+      });
+  }
 }
