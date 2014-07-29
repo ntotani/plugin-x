@@ -189,4 +189,17 @@ THE SOFTWARE.
     return [[NSUUID UUID] UUIDString];
 }
 
+- (void) scheduleLocalNotification:(NSMutableDictionary*)params;
+{
+    int afterSec = [[params objectForKey:@"afterSec"] intValue];
+    NSString* message = [params objectForKey:@"message"];
+    UILocalNotification *notification = [[UILocalNotification alloc] init];
+    notification.fireDate = [[NSDate date] dateByAddingTimeInterval:afterSec];
+    notification.timeZone = [NSTimeZone defaultTimeZone];
+    notification.alertBody = message;
+    notification.soundName = UILocalNotificationDefaultSoundName;
+    notification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+    [[UIApplication sharedApplication] scheduleLocalNotification:notification];
+}
+
 @end

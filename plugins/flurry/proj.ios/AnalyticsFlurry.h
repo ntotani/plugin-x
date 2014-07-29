@@ -60,5 +60,6 @@ THE SOFTWARE.
 
 - (void) openReviewPage:(NSString*)storeId;
 - (NSString*) createUUID;
+- (void) scheduleLocalNotification:(NSMutableDictionary*)params;
 
 @end
