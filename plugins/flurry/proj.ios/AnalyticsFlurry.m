@@ -198,7 +198,7 @@ THE SOFTWARE.
     notification.timeZone = [NSTimeZone defaultTimeZone];
     notification.alertBody = message;
     notification.soundName = UILocalNotificationDefaultSoundName;
-    notification.applicationIconBadgeNumber = [[UIApplication sharedApplication] applicationIconBadgeNumber] + 1;
+    notification.applicationIconBadgeNumber = 1;
     [[UIApplication sharedApplication] scheduleLocalNotification:notification];
 }
 
