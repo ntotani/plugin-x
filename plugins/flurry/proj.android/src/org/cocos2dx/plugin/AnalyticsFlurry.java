@@ -26,9 +26,12 @@ package org.cocos2dx.plugin;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.UUID;
+import java.util.Calendar;
 
 import org.json.JSONObject;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.util.Log;
@@ -349,6 +352,28 @@ public class AnalyticsFlurry implements InterfaceAnalytics {
 
     public String createUUID() {
         return UUID.randomUUID().toString();
+    }
+
+    public void scheduleLocalNotification(JSONObject params) {
+        try {
+            final int afterSec = Integer.parseInt(params.getString("afterSec"));
+            final String message = params.getString("message");
+            PluginWrapper.runOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    Intent intent = new Intent(mContext, LocalNotificationReceiver.class);
+                    intent.putExtra("message", message);
+                    PendingIntent sender = PendingIntent.getBroadcast(mContext, 0, intent, 0);
+                    Calendar calendar = Calendar.getInstance();
+                    calendar.setTimeInMillis(System.currentTimeMillis());
+                    calendar.add(Calendar.SECOND, afterSec);
+                    AlarmManager am = (AlarmManager)mContext.getSystemService(Context.ALARM_SERVICE);
+                    am.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), sender);
+                }
+            });
+        } catch (org.json.JSONException e) {
+            LogE("invalid param", e);
+        }
     }
 
 }
