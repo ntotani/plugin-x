@@ -30,6 +30,7 @@
 }
 
 @property BOOL debug;
+@property (copy, nonatomic) NSString* astaId;
 
 /**
  interfaces from InterfaceAds

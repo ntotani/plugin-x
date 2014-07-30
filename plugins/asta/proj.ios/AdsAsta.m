@@ -33,33 +33,13 @@
 }
 
 @synthesize debug = __debug;
+@synthesize astaId;
 
 #pragma mark InterfaceAds impl
 
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo
 {
-    NSString* astaId = [devInfo objectForKey:@"AstaID"];
-    int iconCount = [[devInfo objectForKey:@"iconCount"] integerValue];
-
-    UIView* root = [AdsWrapper getCurrentRootViewController].view;
-    CGSize screenSize = root.frame.size;
-    CGSize iconSize = CGSizeMake(50, 50);
-    CGFloat viewWidth = iconSize.width;
-    float iconMargin = (screenSize.width - viewWidth * iconCount) / (iconCount + 1);
-    float iconY = screenSize.height - iconSize.height - 3.0f;
-    iconLoader = [[MrdIconLoader alloc] init];
-    for (int i = 0; i < iconCount; i++) {
-        CGRect frame;
-        frame.origin = CGPointMake(iconMargin * (i + 1) + viewWidth * i, iconY);
-        frame.size = iconSize;
-        MrdIconCell* iconCell = [[[MrdIconCell alloc] initWithFrame:frame] autorelease];
-        iconCell.iconFrame = CGRectMake(0, 0, iconSize.width - 2, iconSize.height - 2);
-        iconCell.titleFrame = CGRectNull;
-        iconCell.hidden = YES;
-        [iconLoader addIconCell:iconCell];
-        [root addSubview:iconCell];
-    }
-    [iconLoader startLoadWithMediaCode:astaId];
+    self.astaId = [devInfo objectForKey:@"AstaID"];
 }
 
 - (void) dealloc
@@ -73,6 +53,41 @@
 
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos
 {
+    int iconCount = [[info objectForKey:@"iconCount"] integerValue];
+    int iconPerLine = [[info objectForKey:@"iconPerLine"] integerValue];
+    float posY = [[info objectForKey:@"posY"] floatValue];
+    
+    UIView* root = [AdsWrapper getCurrentRootViewController].view;
+    CGSize screenSize = root.frame.size;
+    CGSize iconSize = CGSizeMake(50, 50);
+    CGFloat viewWidth = iconSize.width;
+    float iconMargin = (screenSize.width - viewWidth * iconPerLine) / (iconPerLine + 1);
+    float iconY = iconSize.height + posY;
+    iconLoader = [[MrdIconLoader alloc] init];
+    
+    int idx = 0;
+    for (int i = 0; i < iconCount; i++) {
+        
+        if (i > 0 && i % iconPerLine == 0) {
+            //行替え
+            idx = 0;
+            iconY += iconSize.height + iconMargin;
+        }
+        
+        CGRect frame;
+        frame.origin = CGPointMake(iconMargin * (idx + 1) + viewWidth * idx, iconY);
+        frame.size = iconSize;
+        MrdIconCell* iconCell = [[[MrdIconCell alloc] initWithFrame:frame] autorelease];
+        iconCell.iconFrame = CGRectMake(0, 0, iconSize.width - 2, iconSize.height - 2);
+        iconCell.titleFrame = CGRectNull;
+        iconCell.hidden = YES;
+        [iconLoader addIconCell:iconCell];
+        [root addSubview:iconCell];
+        
+        ++idx;
+    }
+    [iconLoader startLoadWithMediaCode:self.astaId];
+    
     for (MrdIconCell* cell in [iconLoader iconCells]) {
         cell.hidden = NO;
     }
@@ -81,8 +96,11 @@
 - (void) hideAds: (NSMutableDictionary*) info
 {
     for (MrdIconCell* cell in [iconLoader iconCells]) {
-        cell.hidden = YES;
+        [cell removeFromSuperview];
     }
+    [iconLoader stop];
+    [iconLoader release];
+    iconLoader = nil;
 }
 
 - (void) queryPoints
