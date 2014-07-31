@@ -66,12 +66,12 @@
 
 - (void) queryPoints
 {
-    OUTPUT_LOG(@"Admob not support query points!");
+    OUTPUT_LOG(@"Nend not support query points!");
 }
 
 - (void) spendPoints: (int) points
 {
-    OUTPUT_LOG(@"Admob not support spend points!");
+    OUTPUT_LOG(@"Nend not support spend points!");
 }
 
 - (void) setDebugMode: (NSNumber*) isDebugMode
