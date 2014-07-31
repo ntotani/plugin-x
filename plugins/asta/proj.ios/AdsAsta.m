@@ -62,7 +62,7 @@
     CGSize iconSize = CGSizeMake(50, 50);
     CGFloat viewWidth = iconSize.width;
     float iconMargin = (screenSize.width - viewWidth * iconPerLine) / (iconPerLine + 1);
-    float iconY = iconSize.height + posY;
+    float iconY = posY;
     iconLoader = [[MrdIconLoader alloc] init];
     
     int idx = 0;
