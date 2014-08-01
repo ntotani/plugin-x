@@ -30,6 +30,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.util.Log;
+import android.provider.MediaStore;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
+import java.io.File;
+
+import org.json.JSONObject;
 
 public class ShareLine implements InterfaceShare {
 
@@ -73,9 +79,16 @@ public class ShareLine implements InterfaceShare {
             public void run() {
                 String text = mShareInfo.get(KEY_TEXT);
                 String imagePath = mShareInfo.get(KEY_IMAGE_PATH);
-                Intent intent = new Intent(Intent.ACTION_VIEW);
-                intent.setData(Uri.parse("line://msg/text/" + imagePath));
-                mContext.startActivity(intent);
+                
+                File f = new File(imagePath);
+                if(f.exists()) {
+                    //他のアプリからこの画像を読めるようにする
+                    f.setReadable(true, false);
+                    
+                    Intent intent = new Intent(Intent.ACTION_VIEW);
+                    intent.setData(Uri.parse("line://msg/image/" + imagePath));
+                    mContext.startActivity(intent);
+                }
             }
         });
     }
@@ -93,6 +106,62 @@ public class ShareLine implements InterfaceShare {
     @Override
     public String getPluginVersion() {
         return "0.0.1";
+    }
+    
+    public void saveImageToGallery(JSONObject params) {
+        try {
+            final String imgPath = params.getString("imagePath");
+            
+            PluginWrapper.runOnMainThread(new Runnable() {
+                @Override
+                public void run() {
+                    
+                    String uriStr;
+                    try {
+                        uriStr = MediaStore.Images.Media.insertImage(mContext.getContentResolver(), imgPath, "", "");
+                        if(uriStr!=null) {
+                            //保存成功
+                            AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+                            dialog.setTitle("");
+                            dialog.setMessage("保存しました。");
+                            dialog.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,int whichButton) {
+                                }
+                            });
+                            dialog.create();
+                            dialog.show();
+                            
+                        } else {
+                            //保存失敗
+                            AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+                            dialog.setTitle("エラー");
+                            dialog.setMessage("保存に失敗しました。");
+                            dialog.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog,int whichButton) {
+                                }
+                            });
+                            dialog.create();
+                            dialog.show();
+                        }
+                        
+                    }  catch (Exception e) {
+                        //エラー
+                        AlertDialog.Builder dialog = new AlertDialog.Builder(mContext);
+                        dialog.setTitle("エラー");
+                        dialog.setMessage("保存に失敗しました。");
+                        dialog.setPositiveButton("OK",new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,int whichButton) {
+                            }
+                        });
+                        dialog.create();
+                        dialog.show();
+                        LogE("Media.insertImage error", e);
+                    }
+                }
+            });
+        } catch (org.json.JSONException e) {
+            LogE("invalid param", e);
+        }
     }
 
 }
