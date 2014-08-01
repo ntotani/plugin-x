@@ -48,7 +48,6 @@ public class AdsAsta implements InterfaceAds {
 	private static Activity mContext = null;
 	private static boolean bDebug = false;
 	private static final int AST_ICON_SIZE = 50;
-	private static final int DEVICE_BASE_WIDTH = 360;
 	private String _MEDIA_CODE;
 	private static IconLoader<Integer> _iconLoader;
 	private static RelativeLayout _adMain;
@@ -83,6 +82,10 @@ public class AdsAsta implements InterfaceAds {
         IconLoader<Integer> iconLoader = new IconLoader<Integer>(_MEDIA_CODE, activity);
         iconLoader.setRefreshInterval(15);
         
+        //コンテントビュー
+        View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
+        
+        
         //メインレイアウト生成
         final int FILL_PARENT = LinearLayout.LayoutParams.FILL_PARENT;
         final int WRAP_CONTENT = LinearLayout.LayoutParams.WRAP_CONTENT;
@@ -95,7 +98,7 @@ public class AdsAsta implements InterfaceAds {
         
         //アイコン広告レイアウト
         int iconMargin = (int)(AST_ICON_SIZE * metrics.density * 1.5);
-        int iconY = (int)(posY * metrics.density * 1.5);
+        int iconY = (int)(contentView.getHeight() * posY);
         LinearLayout iconAdLayout = new LinearLayout(activity);
         RelativeLayout.LayoutParams iconAdLayoutParams = new RelativeLayout.LayoutParams(FILL_PARENT, WRAP_CONTENT);
         iconAdLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -106,7 +109,7 @@ public class AdsAsta implements InterfaceAds {
         for (int i = 0; i < iconCount; i++) {
             if (i > 0 && i % iconPerLine == 0) {
                 //行替え
-                iconY += iconMargin;
+                iconY += iconMargin * 1.25;
                 _adMain.addView(iconAdLayout);
                 
                 //アイコン広告レイアウト
@@ -129,7 +132,6 @@ public class AdsAsta implements InterfaceAds {
         }
         _adMain.addView(iconAdLayout);
         _adMain.setVisibility(View.GONE);
-        View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
         ((ViewGroup)contentView).addView(_adMain);
         
         _iconLoader = iconLoader;
