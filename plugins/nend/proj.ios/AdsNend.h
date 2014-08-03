@@ -45,10 +45,10 @@
 
 /**
  interfaces from NADViewDelegate
+ */
 - (void)nadViewDidFinishLoad:(NADView *)adView;
 - (void)nadViewDidClickAd:(NADView *)adView;
 - (void)nadViewDidReceiveAd:(NADView *)adView;
- - (void)nadViewDidFailToReceiveAd:(NADView *)adView;
- */
+- (void)nadViewDidFailToReceiveAd:(NADView *)adView;
 
 @end

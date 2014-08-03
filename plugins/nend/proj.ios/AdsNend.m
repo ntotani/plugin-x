@@ -92,27 +92,21 @@
     return @"0.0.1";
 }
 
-/*
-#pragma mark NADViewDelegate impl
-
-// Since we've received an ad, let's go ahead and set the frame to display it.
-- (void)adViewDidReceiveAd:(GADBannerView *)adView {
-    NSLog(@"Received ad");
-    [AdsWrapper onAdsResult:self withRet:kAdsReceived withMsg:@"Ads request received success!"];
+- (void)nadViewDidFinishLoad:(NADView *)adView
+{
 }
 
-- (void)adView:(GADBannerView *)view didFailToReceiveAdWithError:(GADRequestError *)error {
-    NSLog(@"Failed to receive ad with error: %@", [error localizedFailureReason]);
-    int errorNo = kUnknownError;
-    switch ([error code]) {
-    case kGADErrorNetworkError:
-        errorNo = kNetworkError;
-        break;
-    default:
-        break;
-    }
-    [AdsWrapper onAdsResult:self withRet:errorNo withMsg:[error localizedDescription]];
-    
+- (void)nadViewDidClickAd:(NADView *)adView
+{
+    [AdsWrapper onAdsResult:self withRet:kAdsShown withMsg:@"nend"];
 }
-*/
+
+- (void)nadViewDidReceiveAd:(NADView *)adView
+{
+}
+
+- (void)nadViewDidFailToReceiveAd:(NADView *)adView
+{
+}
+
 @end

@@ -86,6 +86,7 @@
     if (![AppId isEqualToString:@""]) {
         //広告の取得を開始します
         OUTPUT_LOG(@"AdsAid gen aidAgent");
+        [[AidAd agentForMedia:AppId] setDelegate:self];
         [[AidAd agentForMedia:AppId] startLoading];
     }
     if (![AppIdCp isEqualToString:@""]) {
@@ -97,6 +98,7 @@
     if (![AppIdInterstitial isEqualToString:@""]) {
         OUTPUT_LOG(@"AdsAid gen aidAgent");
         [[AidAd agentForMedia:AppIdInterstitial] setPreferredCreativeStyle:kAidAdCreativeStyle_POPUP_IMAGE];
+        [[AidAd agentForMedia:AppIdInterstitial] setDelegate:self];
         [[AidAd agentForMedia:AppIdInterstitial] startLoading];
     }
 }
@@ -181,6 +183,7 @@
 {
     OUTPUT_LOG(@"AdsAid adAgentDidDetectDetailButtonWasTapped!");
     [self aidCallback:@"tap_btn_detail" code:kAdsReceived];
+    [AdsWrapper onAdsResult:self withRet:kAdsShown withMsg:[NSString stringWithFormat:@"aid_%@", agent.mediaCode]];
 }
 
 @end

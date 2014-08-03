@@ -24,8 +24,9 @@
 
 #import <Foundation/Foundation.h>
 #import "InterfaceAds.h"
+#import <MrdIconSDK/MrdIconSDK.h>
 
-@interface AdsAsta : NSObject <InterfaceAds>
+@interface AdsAsta : NSObject <InterfaceAds, MrdIconLoaderDelegate>
 {
 }
 
@@ -43,5 +44,10 @@
 - (void) setDebugMode: (NSNumber*) isDebugMode;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
+
+- (void)loader:(MrdIconLoader*)loader didReceiveContentForCells:(NSArray*)cells;
+- (void)loader:(MrdIconLoader*)loader didFailToLoadContentForCells:(NSArray*)cells;
+- (BOOL)loader:(MrdIconLoader*)loader willHandleTapOnCell:(MrdIconCell*)aCell;
+- (void)loader:(MrdIconLoader*)loader willOpenURL:(NSURL*)url cell:(MrdIconCell*)aCell;
 
 @end

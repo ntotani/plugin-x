@@ -22,7 +22,6 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#import <MrdIconSDK/MrdIconSDK.h>
 #import "AdsAsta.h"
 #import "AdsWrapper.h"
 
@@ -30,6 +29,7 @@
 
 @implementation AdsAsta {
     MrdIconLoader* iconLoader;
+    int lastIconCount;
 }
 
 @synthesize debug = __debug;
@@ -86,11 +86,13 @@
         
         ++idx;
     }
+    iconLoader.delegate = self;
     [iconLoader startLoadWithMediaCode:self.astaId];
     
     for (MrdIconCell* cell in [iconLoader iconCells]) {
         cell.hidden = NO;
     }
+    lastIconCount = iconCount;
 }
 
 - (void) hideAds: (NSMutableDictionary*) info
@@ -126,6 +128,34 @@
 - (NSString*) getPluginVersion
 {
     return @"0.0.1";
+}
+
+// Called after the loader changes cells with valid contents.
+- (void)loader:(MrdIconLoader*)loader didReceiveContentForCells:(NSArray*)cells
+{
+}
+
+// Called when the loader failed to get contents for cells.
+// This may be called after -loader:didReceiveContentForCells: when
+//  found contents is less than count of added cells.
+- (void)loader:(MrdIconLoader*)loader didFailToLoadContentForCells:(NSArray*)cells
+{
+}
+
+// Called as soon as the view was tapped.
+// You can prevent opening browser with returning NO.
+// Also you might do something before your app will be suspended.
+// (e.g.; pause game, save user`s data, logging, etc.)
+// When YES is returned or delegate does not implement this, the app will open url.
+- (BOOL)loader:(MrdIconLoader*)loader willHandleTapOnCell:(MrdIconCell*)aCell
+{
+    [AdsWrapper onAdsResult:self withRet:kAdsShown withMsg:[NSString stringWithFormat:@"asta%d", lastIconCount]];
+    return YES;
+}
+
+// Called before app will open url
+- (void)loader:(MrdIconLoader*)loader willOpenURL:(NSURL*)url cell:(MrdIconCell*)aCell
+{
 }
 
 @end
