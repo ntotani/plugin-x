@@ -140,6 +140,7 @@
 //  found contents is less than count of added cells.
 - (void)loader:(MrdIconLoader*)loader didFailToLoadContentForCells:(NSArray*)cells
 {
+    [AdsWrapper onAdsResult:self withRet:kNetworkError withMsg:@"asta"];
 }
 
 // Called as soon as the view was tapped.
