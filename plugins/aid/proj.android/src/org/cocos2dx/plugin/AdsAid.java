@@ -137,11 +137,15 @@ public class AdsAid implements InterfaceAds {
 			@Override
 			public void run() {
                 LogD("AdsAid showAds!");
+                AdController.DialogType instType = AdController.DialogType.ON_DEMAND;
                 if (mode != null && mode.equals("cp")) {
                     LogD("AdsAid cpMode!");
                     _targetController = _aidAdControllerCp;
                 } else if (mode != null && mode.equals("interstitial")) {
                     _targetController = _aidAdControllerInterstitial;
+                } else if (mode != null && mode.equals("exit")) {
+                    _targetController = _aidAdControllerInterstitial;
+                    instType = AdController.DialogType.ON_EXIT;
                 } else {
                     LogD("AdsAid not cpMode!");
                     _targetController = _aidAdController;
@@ -149,8 +153,9 @@ public class AdsAid implements InterfaceAds {
                 
                 if (_targetController != null) {
                     if (_targetController.hasLoadedContent()) {
-                        _targetController.showDialog(AdController.DialogType.ON_DEMAND);
+                        _targetController.showDialog(instType);
                     } else {
+                        final AdController.DialogType dt = instType;
                         new Thread(new Runnable(){
                             public void run(){
                                 try
@@ -169,7 +174,7 @@ public class AdsAid implements InterfaceAds {
                                     @Override
                                     public void run() {
                                         //広告ダイアログを表示
-                                        _targetController.showDialog(AdController.DialogType.ON_DEMAND);
+                                        _targetController.showDialog(dt);
                                     }
                                 });
                             }
