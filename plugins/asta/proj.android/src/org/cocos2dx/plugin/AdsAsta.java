@@ -165,7 +165,9 @@ public class AdsAsta implements InterfaceAds {
                 LogD("Asta:hideAds!");
                 if (_iconLoader != null) {
                     _iconLoader.stopLoading();
-                    _adMain.setVisibility(View.GONE);
+                    _iconLoader = null;
+                    View contentView = ((ViewGroup)mContext.findViewById(android.R.id.content)).getChildAt(0);
+                    ((ViewGroup)contentView).removeView(_adMain);
                 }
             }
         });
