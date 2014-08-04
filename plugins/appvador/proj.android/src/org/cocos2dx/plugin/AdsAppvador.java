@@ -99,7 +99,9 @@ public class AdsAppvador implements InterfaceAds {
         _adMain.addView(_adView, layoutParams);
         
         View contentView = ((ViewGroup)activity.findViewById(android.R.id.content)).getChildAt(0);
+        View focus = activity.getCurrentFocus();
         ((ViewGroup)contentView).addView(_adMain);
+        focus.requestFocus();
     }
 
 	@Override
