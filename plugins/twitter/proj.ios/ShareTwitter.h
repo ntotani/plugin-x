@@ -23,8 +23,9 @@
  ****************************************************************************/
 
 #import "InterfaceShare.h"
+#import "InterfaceUser.h"
 
-@interface ShareTwitter : NSObject <InterfaceShare>
+@interface ShareTwitter : NSObject <InterfaceShare, InterfaceUser>
 {
     
 }
@@ -37,8 +38,18 @@
  */
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo;
 - (void) share: (NSMutableDictionary*) shareInfo;
-- (void) setDebugMode: (BOOL) debug;
+- (void) setDebugMode: (NSNumber*) debug;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
+
+/**
+ * @brief interfaces of protocol : InterfaceUser
+ */
+- (void) login;
+- (void) logout;
+- (BOOL) isLogined;
+- (NSString*) getSessionID;
+
+- (void) fetchFriends:(NSString*)cursor;
 
 @end

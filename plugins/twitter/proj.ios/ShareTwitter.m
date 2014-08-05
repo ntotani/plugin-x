@@ -23,27 +23,23 @@
  ****************************************************************************/
 
 #import "ShareTwitter.h"
-#import "FHSTwitterEngine.h"
 #import "ShareWrapper.h"
+#import "UserWrapper.h"
 #import <Social/Social.h>
+#import <Accounts/Accounts.h>
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
-@implementation ShareTwitter
+@implementation ShareTwitter {
+    ACAccountStore* accountStore;
+    ACAccountType* accountType;
+}
 
 @synthesize mShareInfo;
 @synthesize debug = __debug;
 
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo
 {
-    NSString* appKey = [cpInfo objectForKey:@"TwitterKey"];
-    NSString* appSecret = [cpInfo objectForKey:@"TwitterSecret"];
-
-    if (nil == appKey || nil == appSecret) {
-        return;
-    }
-
-    [[FHSTwitterEngine sharedEngine]permanentlySetConsumerKey:appKey andSecret:appSecret];
 }
 
 - (void) share: (NSMutableDictionary*) shareInfo
@@ -68,9 +64,95 @@
     [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:cvc animated:YES completion:nil];
 }
 
-- (void) setDebugMode: (BOOL) debug
+- (void) login
 {
-    self.debug = debug;
+    accountStore = [[ACAccountStore alloc] init];
+    accountType = [accountStore accountTypeWithAccountTypeIdentifier:ACAccountTypeIdentifierTwitter];
+    [accountStore requestAccessToAccountsWithType:accountType options:nil completion:^(BOOL granted, NSError *error) {
+        if (error) {
+            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:[error localizedDescription]];
+            return;
+        }
+        NSArray* accounts = [accountStore accountsWithAccountType:accountType];
+        if ([accounts count] == 0) {
+            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"no_accounts"];
+            return;
+        }
+        [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:@""];
+    }];
+}
+
+- (void) fetchFriends:(NSString*)cursor
+{
+    ACAccount* account = [accountStore accountsWithAccountType:accountType].firstObject;
+    NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/friends/list.json"];
+    NSDictionary* params = @{@"screen_name" : [account username],
+                             @"cursor" : cursor,
+                             @"count" : @"200",
+                             @"skip_status" : @"t",
+                             @"include_user_entities" : @"t"};
+    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                            requestMethod:SLRequestMethodGET
+                                                      URL:url
+                                               parameters:params];
+    request.account = account;
+    [request performRequestWithHandler:^(NSData* responseData,
+                                         NSHTTPURLResponse* urlResponse,
+                                         NSError* error) {
+        if (error) {
+            OUTPUT_LOG(@"%@, %@", urlResponse, error);
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"unknown\"}"];
+            return;
+        }
+        if (200 <= urlResponse.statusCode && urlResponse.statusCode < 300) {
+            NSString* json = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
+            NSError* e = nil;
+            NSDictionary* jsonData = [NSJSONSerialization
+                                      JSONObjectWithData:responseData
+                                      options:NSJSONReadingAllowFragments error:&e];
+            if (e) {
+                OUTPUT_LOG(@"%@", e);
+                [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"invalid\"}"];
+                return;
+            }
+            /*
+             if (jsonData.count > 0) {
+             NSLog(@"%@", [jsonData.firstObject objectForKey:@"next_cursor"]);
+             NSLog(@"%@", jsonData);
+             }
+             */
+            NSLog(@"%@", [jsonData objectForKey:@"next_cursor_str"]);
+            NSArray* users = [jsonData objectForKey:@"users"];
+            for (NSDictionary* user in users) {
+                NSLog(@"%@", [user objectForKey:@"screen_name"]);
+            }
+        } else {
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"network\"}"];
+        }
+    }];
+}
+
+- (void) logout
+{
+}
+
+- (BOOL) isLogined
+{
+    if (accountStore == nil) {
+        return NO;
+    }
+    return [accountStore accountsWithAccountType:accountType].count > 0;
+}
+
+- (NSString*) getSessionID
+{
+    return @"";
+}
+
+- (void) setDebugMode: (NSNumber*) debug
+{
+    self.debug = [debug boolValue];
 }
 
 - (NSString*) getSDKVersion
@@ -81,36 +163,6 @@
 - (NSString*) getPluginVersion
 {
     return @"0.2.0";
-}
-
-- (void) doShare
-{
-    if (nil == mShareInfo) {
-        [ShareWrapper onShareResult:self withRet:kShareFail withMsg:@"Shared info error"];
-        return;
-    }
-
-    NSString* strText = [mShareInfo objectForKey:@"SharedText"];
-    NSString* strImagePath = [mShareInfo objectForKey:@"SharedImagePath"];
-
-    BOOL oldConfig = [UIApplication sharedApplication].networkActivityIndicatorVisible;
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = YES;
-    
-    NSError* returnCode = nil;
-    if (nil != strImagePath) {
-        NSData* data = [NSData dataWithContentsOfFile:strImagePath];
-        returnCode = [[FHSTwitterEngine sharedEngine] postTweet:strText withImageData:data];
-    } else {
-        returnCode = [[FHSTwitterEngine sharedEngine]postTweet:strText];
-    }
-    [UIApplication sharedApplication].networkActivityIndicatorVisible = oldConfig;
-
-    if (returnCode) {
-        NSString* strErrorCode = [NSString stringWithFormat:@"ErrorCode %d", returnCode.code];
-        [ShareWrapper onShareResult:self withRet:kShareFail withMsg:strErrorCode];
-    } else {
-        [ShareWrapper onShareResult:self withRet:kShareSuccess withMsg:@"Share Succeed"];
-    }
 }
 
 - (UIViewController *)getCurrentRootViewController {
