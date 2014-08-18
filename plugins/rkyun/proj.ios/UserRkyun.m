@@ -8,8 +8,10 @@
 @implementation UserRkyun {
     BOOL _debug;
     ACAccount* _account;
-    NSString* _heroine;
     NSMutableDictionary* _friendScore;
+    NSMutableArray* _playerTimeline;
+    NSMutableArray* _heroineTimeline;
+    NSMutableArray* _enemyTimeline;
 }
 
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo
@@ -67,12 +69,17 @@
 
 - (void) process:(NSString*)heroine
 {
-    _heroine = heroine;
     _friendScore = [@{} mutableCopy];
-    [self fetchIds:_account.username withCursor:@"-1"];
+    _playerTimeline = [@[] mutableCopy];
+    _heroineTimeline = [@[] mutableCopy];
+    _enemyTimeline = [@[] mutableCopy];
+    [self fetchIds:_account.username
+        withCursor:@"-1"
+       withAccount:_account
+       withHeroine:heroine];
 }
 
-- (void)fetchIds:(NSString*)screenName withCursor:(NSString*)cursor
+- (void)fetchIds:(NSString*)screenName withCursor:(NSString*)cursor withAccount:(ACAccount*)account withHeroine:(NSString*)heroine
 {
     NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/friends/ids.json"];
     NSDictionary* params = @{@"screen_name":screenName, @"cursor":cursor, @"count":@"5000"};
@@ -80,7 +87,7 @@
                                             requestMethod:SLRequestMethodGET
                                                       URL:url
                                                parameters:params];
-    request.account = _account;
+    request.account = account;
     [request performRequestWithHandler:^(NSData* responseData,
                                          NSHTTPURLResponse* urlResponse,
                                          NSError* error) {
@@ -99,7 +106,7 @@
                 [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"invalid\"}"];
                 return;
             }
-            BOOL isPlayer = ![screenName isEqualToString:_heroine];
+            BOOL isPlayer = ![screenName isEqualToString:heroine];
             if (isPlayer) {
                 for (NSNumber* e in jsonData[@"ids"]) {
                     _friendScore[e] = @0;
@@ -107,20 +114,96 @@
             } else {
                 for (NSNumber* e in jsonData[@"ids"]) {
                     if (_friendScore[e]) {
-                        _friendScore[e] = @1;
+                        _friendScore[e] = @10;
                     }
                 }
             }
             NSString* nextCursor = jsonData[@"next_cursor_str"];
             if (![nextCursor isEqualToString:@"0"]) {
-                [self fetchIds:screenName withCursor:nextCursor];
+                [self fetchIds:screenName withCursor:nextCursor withAccount:account withHeroine:heroine];
             } else {
                 if (isPlayer) {
-                    [self fetchIds:_heroine withCursor:@"-1"];
+                    [self fetchIds:heroine withCursor:@"-1" withAccount:account withHeroine:heroine];
                 } else {
-                    // next step
-                    OUTPUT_LOG(@"%@", _friendScore);
+                    [self fetchPlayerTimeline:account];
                 }
+            }
+        } else {
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"network\"}"];
+        }
+    }];
+}
+
+-(void)fetchPlayerTimeline:(ACAccount*)account
+{
+    NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/user_timeline.json"];
+    NSDictionary* params = @{@"screen_name":account.username, @"trim_user":@"t"};
+    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                            requestMethod:SLRequestMethodGET
+                                                      URL:url
+                                               parameters:params];
+    request.account = account;
+    [request performRequestWithHandler:^(NSData* responseData,
+                                         NSHTTPURLResponse* urlResponse,
+                                         NSError* error) {
+        if (error) {
+            OUTPUT_LOG(@"%@, %@", urlResponse, error);
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"unknown\"}"];
+            return;
+        }
+        if (200 <= urlResponse.statusCode && urlResponse.statusCode < 300) {
+            NSError* err = nil;
+            NSArray* jsonData = [NSJSONSerialization
+                                      JSONObjectWithData:responseData
+                                      options:NSJSONReadingAllowFragments error:&err];
+            for (NSDictionary* e in jsonData) {
+                NSNumber* reply = e[@"in_reply_to_user_id"];
+                if (reply && _friendScore[reply]) {
+                    _friendScore[reply] = @([_friendScore[reply] intValue] + 1);
+                }
+                [_playerTimeline addObject:e[@"text"]];
+            }
+            NSMutableArray* friends = [@[] mutableCopy];
+            for (NSNumber* e in _friendScore) {
+                [friends addObject:@{@"id": e, @"score":_friendScore[e]}];
+            }
+            [friends sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+                NSNumber* a = obj1[@"score"];
+                NSNumber* b = obj2[@"score"];
+                return [b compare:a];
+            }];
+            // next step
+            OUTPUT_LOG(@"%@", friends);
+        } else {
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"network\"}"];
+        }
+    }];
+}
+
+-(void)fetchHeroineTimeline:(NSString*)heroine withAccount:(ACAccount*)account
+{
+    NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/user_timeline.json"];
+    NSDictionary* params = @{@"screen_name":heroine, @"trim_user":@"t"};
+    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
+                                            requestMethod:SLRequestMethodGET
+                                                      URL:url
+                                               parameters:params];
+    request.account = account;
+    [request performRequestWithHandler:^(NSData* responseData,
+                                         NSHTTPURLResponse* urlResponse,
+                                         NSError* error) {
+        if (error) {
+            OUTPUT_LOG(@"%@, %@", urlResponse, error);
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"unknown\"}"];
+            return;
+        }
+        if (200 <= urlResponse.statusCode && urlResponse.statusCode < 300) {
+            NSError* err = nil;
+            NSArray* jsonData = [NSJSONSerialization
+                                 JSONObjectWithData:responseData
+                                 options:NSJSONReadingAllowFragments error:&err];
+            for (NSDictionary* e in jsonData) {
+                [_heroineTimeline addObject:e[@"text"]];
             }
         } else {
             [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"network\"}"];
