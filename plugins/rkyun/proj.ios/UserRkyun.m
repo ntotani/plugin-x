@@ -186,8 +186,8 @@
                 }
             }
         };
-        //addText(playerTimeline);
-        //addText(heroineTimeline);
+        addText(playerTimeline);
+        addText(heroineTimeline);
         addText(enemyTimeline);
         NSString* sentence = [allTexts componentsJoinedByString:@"。"];
         OUTPUT_LOG(@"%@", sentence);
