@@ -2,16 +2,33 @@
 #import "UserWrapper.h"
 #import <Social/Social.h>
 #import <Accounts/Accounts.h>
+#import "XMLReader.h"
 
 #define OUTPUT_LOG(...)    if (_debug) NSLog(__VA_ARGS__);
 
 @implementation UserRkyun {
     BOOL _debug;
     ACAccount* _account;
+    NSString* _yahooAppId;
+}
+
+- (void)dealloc
+{
+    if (_account) {
+        [_account release];
+        _account = nil;
+    }
+    if (_yahooAppId) {
+        [_yahooAppId release];
+        _yahooAppId = nil;
+    }
+    [super dealloc];
 }
 
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo
 {
+    _yahooAppId = cpInfo[@"YahooAppID"];
+    [_yahooAppId retain];
 }
 
 - (void) login
@@ -29,96 +46,14 @@
             return;
         }
         _account = accounts.firstObject;
+        [_account retain];
         [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:@""];
     }];
 }
 
-- (void) fetchFriends:(NSString*)cursor
+-(id)fetchSync:(NSString*)api withParams:(NSDictionary*)params withEncode:(BOOL)encode
 {
-    NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/friends/list.json"];
-    NSDictionary* params = @{@"screen_name" : [_account username],
-                             @"cursor" : cursor,
-                             @"count" : @"200",
-                             @"skip_status" : @"t",
-                             @"include_user_entities" : @"t"};
-    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
-                                            requestMethod:SLRequestMethodGET
-                                                      URL:url
-                                               parameters:params];
-    request.account = _account;
-    [request performRequestWithHandler:^(NSData* responseData,
-                                         NSHTTPURLResponse* urlResponse,
-                                         NSError* error) {
-        if (error) {
-            OUTPUT_LOG(@"%@, %@", urlResponse, error);
-            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"unknown\"}"];
-            return;
-        }
-        if (200 <= urlResponse.statusCode && urlResponse.statusCode < 300) {
-            NSString* json = [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
-            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
-        } else {
-            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"network\"}"];
-        }
-    }];
-}
-
-- (void) process:(NSString*)heroine
-{
-    [_account retain];
-    dispatch_async(dispatch_queue_create("org.cocos2dx.plugin.rkyun", NULL), ^{
-        NSMutableDictionary* friendScore = [@{} mutableCopy];
-        NSString* cursor = @"-1";
-        while (![cursor isEqualToString:@"0"]) {
-            NSDictionary* jsonData = [self fetchIds:_account.username withCursor:cursor];
-            if (!jsonData) {
-                return;
-            }
-            for (NSNumber* e in jsonData[@"ids"]) {
-                friendScore[e] = @0;
-            }
-            cursor = jsonData[@"next_cursor_str"];
-        }
-        cursor = @"-1";
-        while (![cursor isEqualToString:@"0"]) {
-            NSDictionary* jsonData = [self fetchIds:heroine withCursor:cursor];
-            if (!jsonData) {
-                return;
-            }
-            for (NSNumber* e in jsonData[@"ids"]) {
-                if (friendScore[e]) {
-                    friendScore[e] = @10;
-                }
-            }
-            cursor = jsonData[@"next_cursor_str"];
-        }
-        NSArray* jsonData = [self fetchPlayerTimeline];
-        for (NSDictionary* e in jsonData) {
-            NSNumber* reply = e[@"in_reply_to_user_id"];
-            if (reply && friendScore[reply]) {
-                friendScore[reply] = @([friendScore[reply] intValue] + 1);
-            }
-            //[_playerTimeline addObject:e[@"text"]];
-        }
-        NSMutableArray* friends = [@[] mutableCopy];
-        for (NSNumber* e in friendScore) {
-            [friends addObject:@{@"id": e, @"score":friendScore[e]}];
-        }
-        [friends sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
-            NSNumber* a = obj1[@"score"];
-            NSNumber* b = obj2[@"score"];
-            return [b compare:a];
-        }];
-        // next step
-        OUTPUT_LOG(@"%@", friends);
-        [_account release];
-    });
-}
-
--(id)fetchIds:(NSString*)screenName withCursor:(NSString*)cursor
-{
-    NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/friends/ids.json"];
-    NSDictionary* params = @{@"screen_name":screenName, @"cursor":cursor, @"count":@"5000"};
+    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com/1.1/%@.json", api]];
     SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
                                             requestMethod:SLRequestMethodGET
                                                       URL:url
@@ -133,6 +68,9 @@
         return nil;
     }
     if (200 <= urlResponse.statusCode && urlResponse.statusCode < 300) {
+        if (encode) {
+            return [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
+        }
         NSError* err = nil;
         id jsonData = [NSJSONSerialization
                        JSONObjectWithData:responseData
@@ -150,38 +88,191 @@
     return nil;
 }
 
--(id)fetchPlayerTimeline
+- (void) fetchFriends:(NSString*)cursor
 {
-    NSURL* url = [NSURL URLWithString:@"https://api.twitter.com/1.1/statuses/user_timeline.json"];
-    NSDictionary* params = @{@"screen_name":_account.username, @"trim_user":@"t"};
-    SLRequest *request = [SLRequest requestForServiceType:SLServiceTypeTwitter
-                                            requestMethod:SLRequestMethodGET
-                                                      URL:url
-                                               parameters:params];
-    request.account = _account;
-    NSHTTPURLResponse* urlResponse = nil;
-    NSError* error = nil;
-    NSData* responseData = [NSURLConnection sendSynchronousRequest:[request preparedURLRequest] returningResponse:&urlResponse error:&error];
-    if (error) {
-        OUTPUT_LOG(@"%@, %@", urlResponse, error);
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSDictionary* params = @{@"screen_name" : [_account username],
+                                 @"cursor" : cursor,
+                                 @"count" : @"200",
+                                 @"skip_status" : @"t",
+                                 @"include_user_entities" : @"t"};
+        NSString* friendsList = [self fetchSync:@"friends/list" withParams:params withEncode:YES];
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:friendsList];
+    });
+}
+
+- (void) process:(NSString*)heroine
+{
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableDictionary* friendScore = [@{} mutableCopy];
+        BOOL (^scoreForId)(NSString*, void(^)(NSNumber*)) = ^BOOL(NSString* screenName, void(^callback)(NSNumber*)) {
+            NSString* cursor = @"-1";
+            while (![cursor isEqualToString:@"0"]) {
+                NSDictionary* jsonData = [self fetchIds:screenName withCursor:cursor];
+                if (!jsonData) {
+                    return YES;
+                }
+                for (NSNumber* e in jsonData[@"ids"]) {
+                    callback(e);
+                }
+                cursor = jsonData[@"next_cursor_str"];
+            }
+            return NO;
+        };
+        if (scoreForId(_account.username, ^(NSNumber* e) {
+            friendScore[e] = @0;
+        })) { return; };
+        if (scoreForId(heroine, ^(NSNumber* e) {
+            if (friendScore[e]) {
+                friendScore[e] = @10;
+            }
+        })) { return; };
+
+        // score reply
+        NSArray* playerTimeline = [self fetchTimeline:_account.username];
+        if (!playerTimeline) {
+            return;
+        }
+        for (NSDictionary* e in playerTimeline) {
+            NSNumber* reply = e[@"in_reply_to_user_id"];
+            if (reply && friendScore[reply]) {
+                friendScore[reply] = @([friendScore[reply] intValue] + 1);
+            }
+        }
+
+        // rank friends
+        NSMutableArray* friends = [@[] mutableCopy];
+        for (NSNumber* e in friendScore) {
+            [friends addObject:@{@"id": e, @"score":friendScore[e]}];
+        }
+        [friends sortUsingComparator:^NSComparisonResult(id obj1, id obj2) {
+            NSNumber* a = obj1[@"score"];
+            NSNumber* b = obj2[@"score"];
+            return [b compare:a];
+        }];
+
+        // fetch timelines
+        NSArray* heroineTimeline = [self fetchTimeline:heroine];
+        if (!heroineTimeline) {
+            return;
+        }
+        NSNumber* heroineId = @0;
+        for (NSDictionary* e in heroineTimeline) {
+            if (!e[@"retweeted"]) {
+                heroineId = e[@"user"][@"id"];
+                break;
+            }
+        }
+        NSNumber* enemyId = @0;
+        for (NSDictionary* e in friends) {
+            if (![e[@"id"] isEqualToNumber:heroineId]) {
+                enemyId = e[@"id"];
+                break;
+            }
+        }
+
+        NSArray* enemyTimeline = [self fetchTimelineById:enemyId];
+        if (!enemyTimeline) {
+            return;
+        }
+
+        NSMutableArray* allTexts = [@[] mutableCopy];
+        NSRegularExpression *regexp = [NSRegularExpression regularExpressionWithPattern:@"@[a-z0-9_]+" options:NSRegularExpressionCaseInsensitive error:nil];
+        void (^addText)(NSArray*) = ^void(NSArray* timeline) {
+            for (NSDictionary* e in timeline) {
+                NSString* text = e[@"text"];
+                if (![text hasPrefix:@"RT "]) {
+                    [allTexts addObject:[regexp stringByReplacingMatchesInString:text options:NSMatchingReportProgress range:NSMakeRange(0, text.length) withTemplate:@""]];
+                }
+            }
+        };
+        //addText(playerTimeline);
+        //addText(heroineTimeline);
+        addText(enemyTimeline);
+        NSString* sentence = [allTexts componentsJoinedByString:@"。"];
+        OUTPUT_LOG(@"%@", sentence);
+        //NSArray* words = [self fetchNouns:sentence];
+        NSArray* words = [self fetchKeyPhrase:sentence];
+        for (NSString* e in words) {
+            OUTPUT_LOG(@"%@", e);
+        }
+    });
+}
+
+-(id)fetchIds:(NSString*)screenName withCursor:(NSString*)cursor
+{
+    NSDictionary* params = @{@"screen_name":screenName, @"cursor":cursor, @"count":@"5000"};
+    return [self fetchSync:@"friends/ids" withParams:params withEncode:NO];
+}
+
+-(id)fetchTimeline:(NSString*)screenName
+{
+    NSDictionary* params = @{@"screen_name":screenName, @"trim_user":@"t"};
+    return [self fetchSync:@"statuses/user_timeline" withParams:params withEncode:NO];
+}
+
+-(id)fetchTimelineById:(NSNumber*)userId
+{
+    NSDictionary* params = @{@"user_id":[userId stringValue], @"trim_user":@"t"};
+    return [self fetchSync:@"statuses/user_timeline" withParams:params withEncode:NO];
+}
+
+-(NSArray*)fetchKeyPhrase:(NSString*)sentence
+{
+    NSData* responseData = [self fetchWords:@"KeyphraseService/V1/extract" withSentence:sentence withParams:@{@"output": @"json"}];
+    if (!responseData) {
+        return nil;
+    }
+    NSError* err = nil;
+    NSDictionary* jsonData = [NSJSONSerialization JSONObjectWithData:responseData options:NSJSONReadingAllowFragments error:&err];
+    if (err) {
+        OUTPUT_LOG(@"%@", err);
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"invalid\"}"];
+        return nil;
+    }
+    return [jsonData allKeys];
+}
+
+-(NSArray*)fetchNouns:(NSString*)sentence
+{
+    NSData* responseData = [self fetchWords:@"MAService/V1/parse" withSentence:sentence withParams:@{@"response": @"surface", @"filter": @"9"}];
+    if (!responseData) {
+        return nil;
+    }
+    NSError* err = nil;
+    NSDictionary* xml = [XMLReader dictionaryForXMLData:responseData error:&err];
+    NSMutableArray* wordList = [@[] mutableCopy];
+    for (NSDictionary* e in xml[@"ResultSet"][@"ma_result"][@"word_list"][@"word"]) {
+        [wordList addObject:e[@"surface"][@"text"]];
+    }
+    return wordList;
+}
+
+-(NSData*)fetchWords:(NSString*)api withSentence:(NSString*)sentence withParams:(NSDictionary*)params
+{
+    NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"http://jlp.yahooapis.jp/%@", api]];
+    NSMutableArray* paramArr = [@[[NSString stringWithFormat:@"appid=%@", _yahooAppId], [NSString stringWithFormat:@"sentence=%@", [sentence stringByAddingPercentEscapesUsingEncoding:NSUTF8StringEncoding]]] mutableCopy];
+    for (NSString* e in params) {
+        [paramArr addObject:[NSString stringWithFormat:@"%@=%@", e, params[e]]];
+    }
+    NSString* param = [paramArr componentsJoinedByString:@"&"];
+    NSMutableURLRequest* req = [[NSMutableURLRequest alloc] initWithURL:url];
+    [req setHTTPMethod:@"POST"];
+    [req setHTTPBody:[param dataUsingEncoding:NSUTF8StringEncoding]];
+    NSHTTPURLResponse* res = nil;
+    NSError* err = nil;
+    NSData* responseData = [NSURLConnection sendSynchronousRequest:req returningResponse:&res error:&err];
+    if (err) {
+        OUTPUT_LOG(@"%@", err);
         [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"unknown\"}"];
         return nil;
     }
-    if (200 <= urlResponse.statusCode && urlResponse.statusCode < 300) {
-        NSError* err = nil;
-        NSArray* jsonData = [NSJSONSerialization
-                             JSONObjectWithData:responseData
-                             options:NSJSONReadingAllowFragments error:&err];
-        if (err) {
-            OUTPUT_LOG(@"%@", err);
-            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"invalid\"}"];
-            return nil;
-        }
-        return jsonData;
-    } else {
+    if (200 > res.statusCode || res.statusCode >= 300) {
+        OUTPUT_LOG(@"%d", res.statusCode);
         [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:@"{\"error\":\"network\"}"];
+        return nil;
     }
-    return nil;
+    return responseData;
 }
 
 - (void) logout

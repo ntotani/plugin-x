@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		9795491C19A2E60F001B377D /* XMLReader.m in Sources */ = {isa = PBXBuildFile; fileRef = 9795491B19A2E60F001B377D /* XMLReader.m */; settings = {COMPILER_FLAGS = "-fobjc-arc"; }; };
 		97EFFE94193C6C2F0035382A /* Social.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 97EFFE90193C64F60035382A /* Social.framework */; };
 		C6BAF6EE198CE82B001FCB28 /* Accounts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C6BAF6ED198CE82B001FCB28 /* Accounts.framework */; };
 		FAC2A8001777F9D400035D22 /* UserRkyun.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC2A7FF1777F9D400035D22 /* UserRkyun.m */; };
@@ -27,6 +28,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		9795491A19A2E60F001B377D /* XMLReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XMLReader.h; sourceTree = "<group>"; };
+		9795491B19A2E60F001B377D /* XMLReader.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = XMLReader.m; sourceTree = "<group>"; };
 		97EFFE90193C64F60035382A /* Social.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Social.framework; path = System/Library/Frameworks/Social.framework; sourceTree = SDKROOT; };
 		C6BAF6ED198CE82B001FCB28 /* Accounts.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Accounts.framework; path = System/Library/Frameworks/Accounts.framework; sourceTree = SDKROOT; };
 		FAC2A7FE1777F9D400035D22 /* UserRkyun.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserRkyun.h; sourceTree = "<group>"; };
@@ -58,6 +61,8 @@
 				FAC2A7FE1777F9D400035D22 /* UserRkyun.h */,
 				FAC2A7FF1777F9D400035D22 /* UserRkyun.m */,
 				FACAD8CB1762C76800D75ADE /* PluginRkyun-Prefix.pch */,
+				9795491A19A2E60F001B377D /* XMLReader.h */,
+				9795491B19A2E60F001B377D /* XMLReader.m */,
 				FACAD88A1762C1B500D75ADE /* Frameworks */,
 				FACAD8891762C1B500D75ADE /* Products */,
 			);
@@ -133,6 +138,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				9795491C19A2E60F001B377D /* XMLReader.m in Sources */,
 				FAC2A8001777F9D400035D22 /* UserRkyun.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
