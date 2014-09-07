@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6B7067B19BC1F9900492D40 /* UserTwitter.m in Sources */ = {isa = PBXBuildFile; fileRef = C6B7067A19BC1F9900492D40 /* UserTwitter.m */; };
 		FAC2A8001777F9D400035D22 /* ShareTwitter.m in Sources */ = {isa = PBXBuildFile; fileRef = FAC2A7FF1777F9D400035D22 /* ShareTwitter.m */; };
 		FACAD88C1762C1B500D75ADE /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FACAD88B1762C1B500D75ADE /* Foundation.framework */; };
 		FACAD8BA1762C61A00D75ADE /* FHSTwitterEngine.m in Sources */ = {isa = PBXBuildFile; fileRef = FACAD8A51762C61A00D75ADE /* FHSTwitterEngine.m */; };
@@ -34,6 +35,8 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C6B7067919BC1F9900492D40 /* UserTwitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UserTwitter.h; sourceTree = "<group>"; };
+		C6B7067A19BC1F9900492D40 /* UserTwitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UserTwitter.m; sourceTree = "<group>"; };
 		FAC2A7FE1777F9D400035D22 /* ShareTwitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ShareTwitter.h; sourceTree = "<group>"; };
 		FAC2A7FF1777F9D400035D22 /* ShareTwitter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = ShareTwitter.m; sourceTree = "<group>"; };
 		FACAD8881762C1B500D75ADE /* libPluginTwitter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginTwitter.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -77,6 +80,8 @@
 		FACAD87D1762C1B500D75ADE = {
 			isa = PBXGroup;
 			children = (
+				C6B7067919BC1F9900492D40 /* UserTwitter.h */,
+				C6B7067A19BC1F9900492D40 /* UserTwitter.m */,
 				FAC2A7FE1777F9D400035D22 /* ShareTwitter.h */,
 				FAC2A7FF1777F9D400035D22 /* ShareTwitter.m */,
 				FACAD8CB1762C76800D75ADE /* PluginTwitter-Prefix.pch */,
@@ -209,6 +214,7 @@
 				FACAD8BC1762C61A00D75ADE /* Base64TranscoderFHS.c in Sources */,
 				FACAD8BD1762C61A00D75ADE /* OAConsumer.m in Sources */,
 				FACAD8BE1762C61A00D75ADE /* OAHMAC_SHA1SignatureProvider.m in Sources */,
+				C6B7067B19BC1F9900492D40 /* UserTwitter.m in Sources */,
 				FACAD8BF1762C61A00D75ADE /* OAMutableURLRequest.m in Sources */,
 				FACAD8C01762C61A00D75ADE /* OARequestParameter.m in Sources */,
 				FACAD8C11762C61A00D75ADE /* OAServiceTicket.m in Sources */,
