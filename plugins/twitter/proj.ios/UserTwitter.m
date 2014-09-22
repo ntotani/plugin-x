@@ -62,7 +62,7 @@
 
 - (NSString*) getSessionID
 {
-    return [_account username];
+    return [_account valueForKeyPath:@"properties.user_id"];
 }
 
 - (void) setDebugMode: (BOOL) debug
