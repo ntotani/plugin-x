@@ -90,7 +90,7 @@ NSString *_accessToken = @"";
     return [ParseUtils MakeJsonStringWithObject:_accessToken andKey:@"acessToken"];
 }
 - (NSString*) getSessionID{
-    return @"";
+    return _userId;
 }
 - (void) setDebugMode: (BOOL) debug{
     __debug = debug;
@@ -131,9 +131,12 @@ NSString *_accessToken = @"";
         _accessToken = session.accessTokenData.accessToken;
         _isLogin = true;
         OUTPUT_LOG(@"Session opened");
-        NSMutableDictionary *result = [NSMutableDictionary dictionaryWithObjectsAndKeys:[FBSession.activeSession permissions],@"permissions",session.accessTokenData.accessToken,@"accessToken", nil];
-        NSString *msg = [ParseUtils NSDictionaryToNSString:result];
-        [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:msg];
+        [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
+            _userId = user[@"id"];
+            NSDictionary *result = @{@"permissions": [FBSession.activeSession permissions], @"accessToken":_accessToken};
+            NSString *msg = [ParseUtils NSDictionaryToNSString:result];
+            [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:msg];
+        }];
     }
     if (state == FBSessionStateClosed || state == FBSessionStateClosedLoginFailed){
         NSString *msg = [ParseUtils MakeJsonStringWithObject:@"loginFail Session closed" andKey:@"error_message"];
@@ -162,7 +165,7 @@ NSString *_accessToken = @"";
         }
         errorText = [ParseUtils MakeJsonStringWithObject:errorText andKey:@"error_message"];
         [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:errorText];
-        OUTPUT_LOG(errorText);
+        OUTPUT_LOG(@"%@", errorText);
         [FBSession.activeSession closeAndClearTokenInformation];
     }
 }
