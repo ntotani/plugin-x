@@ -35,6 +35,7 @@
 @synthesize debug = __debug;
 bool _isLogin = false;
 NSString *_userId = @"";
+NSString *_userName = @"";
 NSString *_accessToken = @"";
 
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo{
@@ -74,6 +75,9 @@ NSString *_accessToken = @"";
 }
 - (NSString *)getUserId{
     return _userId;
+}
+- (NSString *)getUserName {
+    return _userName;
 }
 
 -(NSString *) getPermissionList{
@@ -133,6 +137,7 @@ NSString *_accessToken = @"";
         OUTPUT_LOG(@"Session opened");
         [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *user, NSError *error) {
             _userId = user[@"id"];
+            _userName = user[@"name"];
             NSDictionary *result = @{@"permissions": [FBSession.activeSession permissions], @"accessToken":_accessToken};
             NSString *msg = [ParseUtils NSDictionaryToNSString:result];
             [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:msg];
@@ -205,24 +210,25 @@ NSString *_accessToken = @"";
     NSString * method = methodID == 0? @"GET":methodID == 1?@"POST":@"DELETE";
     NSDictionary *param = [params objectForKey:@"Param3"];
     int cbId = [[params objectForKey:@"Param4"] intValue];
-    [FBRequestConnection startWithGraphPath:graphPath
-                                 parameters:param HTTPMethod:method
-                          completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
-                              if(!error){
-                                  NSString *msg = [ParseUtils NSDictionaryToNSString:(NSDictionary *)result];
-                                  if(nil == msg){
-                                       NSString *msg = [ParseUtils MakeJsonStringWithObject:@"parse result failed" andKey:@"error_message"];
-                                      [UserWrapper onGraphResult:self withRet:kGraphResultFail withMsg:msg withCallback:cbId];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [FBRequestConnection startWithGraphPath:graphPath
+                                     parameters:param HTTPMethod:method
+                              completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                  if(!error){
+                                      NSString *msg = [ParseUtils NSDictionaryToNSString:(NSDictionary *)result];
+                                      if(nil == msg){
+                                          NSString *msg = [ParseUtils MakeJsonStringWithObject:@"parse result failed" andKey:@"error_message"];
+                                          [UserWrapper onGraphResult:self withRet:kGraphResultFail withMsg:msg withCallback:cbId];
+                                      }else{
+                                          OUTPUT_LOG(@"success");
+                                          [UserWrapper onGraphResult:self withRet:kGraphResultSuccess withMsg:msg withCallback:cbId];
+                                      }
                                   }else{
-                                      OUTPUT_LOG(@"success");
-                                      [UserWrapper onGraphResult:self withRet:kGraphResultSuccess withMsg:msg withCallback:cbId];
+                                      NSString *msg = [ParseUtils MakeJsonStringWithObject:error.description andKey:@"error_message"];
+                                      [UserWrapper onGraphResult:self withRet:(int)error.code withMsg:msg withCallback:cbId];
+                                      OUTPUT_LOG(@"error %@", error.description);
                                   }
-                              }else{
-                                   NSString *msg = [ParseUtils MakeJsonStringWithObject:error.description andKey:@"error_message"];
-                                  [UserWrapper onGraphResult:self withRet:(int)error.code withMsg:msg withCallback:cbId];
-                                  OUTPUT_LOG(@"error %@", error.description);
-                              }
-                              
-                          }];
+                              }];
+    });
 }
 @end
