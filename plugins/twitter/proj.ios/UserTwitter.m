@@ -96,12 +96,7 @@
     NSError* error = nil;
     NSData* responseData = [NSURLConnection sendSynchronousRequest:[request preparedURLRequest] returningResponse:&urlResponse error:&error];
     if (error) {
-        OUTPUT_LOG(@"%@, %@", urlResponse, [error localizedDescription]);
-        return [NSString stringWithFormat:@"{\"error\":\"%@\"}", [error localizedDescription]];
-    }
-    if (urlResponse.statusCode > 200 && 300 >= urlResponse.statusCode) {
-        OUTPUT_LOG(@"Network Error: status code %ld", (long)urlResponse.statusCode);
-        return @"{\"error\":\"network\"}";
+        return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
     return [[NSString alloc] initWithData:responseData encoding:NSUTF8StringEncoding];
 }
