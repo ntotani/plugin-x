@@ -7,6 +7,8 @@
 
 @property BOOL debug;
 
+- (NSString*) parseNoun: (NSString*) text;
+
 /**
  interfaces of protocol : InterfaceAnalytics
  */
