@@ -217,14 +217,14 @@ NSString *_accessToken = @"";
                                   if(!error){
                                       NSString *msg = [ParseUtils NSDictionaryToNSString:(NSDictionary *)result];
                                       if(nil == msg){
-                                          NSString *msg = [ParseUtils MakeJsonStringWithObject:@"parse result failed" andKey:@"error_message"];
+                                          NSString *msg = [ParseUtils MakeJsonStringWithObject:@"network" andKey:@"error"];
                                           [UserWrapper onGraphResult:self withRet:kGraphResultFail withMsg:msg withCallback:cbId];
+                                          OUTPUT_LOG(@"parse result failed");
                                       }else{
-                                          OUTPUT_LOG(@"success");
                                           [UserWrapper onGraphResult:self withRet:kGraphResultSuccess withMsg:msg withCallback:cbId];
                                       }
                                   }else{
-                                      NSString *msg = [ParseUtils MakeJsonStringWithObject:error.description andKey:@"error_message"];
+                                      NSString *msg = [ParseUtils MakeJsonStringWithObject:@"server" andKey:@"error"];
                                       [UserWrapper onGraphResult:self withRet:(int)error.code withMsg:msg withCallback:cbId];
                                       OUTPUT_LOG(@"error %@", error.description);
                                   }
