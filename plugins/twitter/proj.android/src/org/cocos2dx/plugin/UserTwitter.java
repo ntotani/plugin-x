@@ -4,9 +4,14 @@ import java.util.Hashtable;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.util.Log;
+
+import twitter4j.*;
+import twitter4j.auth.*;
 
 public class UserTwitter implements InterfaceUser {
 
@@ -14,6 +19,7 @@ public class UserTwitter implements InterfaceUser {
     private static Activity mContext = null;
     private static InterfaceUser mAdapter = null;
     protected static boolean bDebug = false;
+    private AsyncTwitter twttr;
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -43,7 +49,16 @@ public class UserTwitter implements InterfaceUser {
 
     @Override
     public void login() {
-        LogD("login");
+        twttr = new AsyncTwitterFactory().getInstance();
+        twttr.setOAuthConsumer("jjAGuCTPEhTwbdkGRBNUmw", "Ad5wMzwcbAbJGMy5NCj0T8QMAlssdXJcj6BPVWbMb1A");
+        twttr.addListener(new TwitterAdapter() {
+            @Override
+            public void gotOAuthRequestToken(RequestToken token){
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(token.getAuthorizationURL()));
+                mContext.startActivity(intent);
+            }
+        });
+        twttr.getOAuthRequestTokenAsync("net-uracon-rkyun://twitter-auth-callback");
     }
 
     @Override
