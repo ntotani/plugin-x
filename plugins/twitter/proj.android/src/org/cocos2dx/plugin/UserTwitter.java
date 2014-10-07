@@ -1,6 +1,9 @@
 package org.cocos2dx.plugin;
 
 import java.util.Hashtable;
+import java.io.ObjectOutputStream;
+import java.io.ObjectInputStream;
+import java.io.FileNotFoundException;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +12,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import twitter4j.*;
 import twitter4j.auth.*;
 
 public class UserTwitter implements InterfaceUser {
@@ -19,6 +23,9 @@ public class UserTwitter implements InterfaceUser {
     protected static boolean bDebug = false;
     public static final String CONSUMER_KEY = "jjAGuCTPEhTwbdkGRBNUmw";
     public static final String CONSUMER_SECRET = "Ad5wMzwcbAbJGMy5NCj0T8QMAlssdXJcj6BPVWbMb1A";
+    private static final String ACCESS_TOKEN_FILE_NAME = "twitter_access_token";
+    private final Twitter _twttr;
+    private AccessToken _accessToken;
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -34,6 +41,17 @@ public class UserTwitter implements InterfaceUser {
     public UserTwitter(Context context) {
         mContext = (Activity) context;
         instance = this;
+        _twttr = new TwitterFactory().getInstance();
+        _twttr.setOAuthConsumer(CONSUMER_KEY, CONSUMER_SECRET);
+        try {
+            ObjectInputStream in = new ObjectInputStream(context.openFileInput(ACCESS_TOKEN_FILE_NAME));
+            _accessToken = (AccessToken)in.readObject();
+            in.close();
+            _twttr.setOAuthAccessToken(_accessToken);
+        } catch (FileNotFoundException e) {
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -48,24 +66,50 @@ public class UserTwitter implements InterfaceUser {
 
     @Override
     public void login() {
-        Intent intent = new Intent(mContext, TwitterAuthActivity.class);
-        mContext.startActivity(intent);
+        if (isLogined()) {
+            UserWrapper.onActionResult(this, UserWrapper.ACTION_RET_LOGIN_SUCCEED, _accessToken.getScreenName());
+        } else {
+            Intent intent = new Intent(mContext, TwitterAuthActivity.class);
+            mContext.startActivity(intent);
+        }
     }
 
     public void onLoginSuccess(AccessToken token) {
-        LogD("onLoginSuccess");
-        LogD(token.toString());
+        _accessToken = token;
+        _twttr.setOAuthAccessToken(token);
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(mContext.openFileOutput(ACCESS_TOKEN_FILE_NAME, Context.MODE_PRIVATE));
+            out.writeObject(token);
+            out.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        UserWrapper.onActionResult(this, UserWrapper.ACTION_RET_LOGIN_SUCCEED, token.getScreenName());
     }
 
     public void onLoginCancel() {
-        LogD("onLoginCancel");
+        UserWrapper.onActionResult(this, UserWrapper.ACTION_RET_LOGIN_FAILED, "cancel");
     }
+
+    /*
+    public String api(JSONObject params) {
+        String path = params.getString("Param1");
+        String method = params.getString("Param2");
+        String param = params.getJSONObject("Param3");
+
+        conf = twttr.getConfiguration();
+        HttpClient http = HttpClientFactory.getInstance(conf.getHttpClientConfiguration());
+        HttpParameter[] httpParams = {};
+        Authorization auth = twttr.getAuthorization();
+        return http.get(conf.getRestBaseURL() + path + ".json", httpParams, auth, twttr).asString();
+    }
+    */
 
     @Override
     public void logout() {}
 
     @Override
-    public boolean isLogined() { return false; }
+    public boolean isLogined() { return _accessToken != null; }
 
     @Override
     public String getSessionID() { return ""; }
