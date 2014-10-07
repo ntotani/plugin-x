@@ -7,19 +7,18 @@ import android.content.Context;
 import android.content.Intent;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.net.Uri;
 import android.util.Log;
 
-import twitter4j.*;
 import twitter4j.auth.*;
 
 public class UserTwitter implements InterfaceUser {
 
     private static final String LOG_TAG = "UserTwitter";
     private static Activity mContext = null;
-    private static InterfaceUser mAdapter = null;
+    public static UserTwitter instance = null;
     protected static boolean bDebug = false;
-    private AsyncTwitter twttr;
+    public static final String CONSUMER_KEY = "jjAGuCTPEhTwbdkGRBNUmw";
+    public static final String CONSUMER_SECRET = "Ad5wMzwcbAbJGMy5NCj0T8QMAlssdXJcj6BPVWbMb1A";
 
     protected static void LogE(String msg, Exception e) {
         Log.e(LOG_TAG, msg, e);
@@ -34,7 +33,7 @@ public class UserTwitter implements InterfaceUser {
 
     public UserTwitter(Context context) {
         mContext = (Activity) context;
-        mAdapter = this;
+        instance = this;
     }
 
     @Override
@@ -49,16 +48,17 @@ public class UserTwitter implements InterfaceUser {
 
     @Override
     public void login() {
-        twttr = new AsyncTwitterFactory().getInstance();
-        twttr.setOAuthConsumer("jjAGuCTPEhTwbdkGRBNUmw", "Ad5wMzwcbAbJGMy5NCj0T8QMAlssdXJcj6BPVWbMb1A");
-        twttr.addListener(new TwitterAdapter() {
-            @Override
-            public void gotOAuthRequestToken(RequestToken token){
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(token.getAuthorizationURL()));
-                mContext.startActivity(intent);
-            }
-        });
-        twttr.getOAuthRequestTokenAsync("net-uracon-rkyun://twitter-auth-callback");
+        Intent intent = new Intent(mContext, TwitterAuthActivity.class);
+        mContext.startActivity(intent);
+    }
+
+    public void onLoginSuccess(AccessToken token) {
+        LogD("onLoginSuccess");
+        LogD(token.toString());
+    }
+
+    public void onLoginCancel() {
+        LogD("onLoginCancel");
     }
 
     @Override
