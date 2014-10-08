@@ -122,14 +122,14 @@ std::map<std::string, std::string> AgentManager::getPluginConfigure()
 {
 	std::map<std::string, std::string> configure;
 
-	PluginJniMethodInfo t;
+	JniMethodInfo t;
 	JNIEnv* env = PluginUtils::getEnv();
 
-	if(PluginJniHelper::getStaticMethodInfo(t, "org/cocos2dx/plugin/PluginWrapper", "getPluginConfigure", "()Ljava/util/Hashtable;"))
+	if(JniHelper::getStaticMethodInfo(t, "org/cocos2dx/plugin/PluginWrapper", "getPluginConfigure", "()Ljava/util/Hashtable;"))
 	{
 		jobject jhashtable = t.env->CallStaticObjectMethod(t.classID, t.methodID);
-		PluginJniMethodInfo tGetMethod;
-		if(PluginJniHelper::getMethodInfo(tGetMethod, "java/util/Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"))
+		JniMethodInfo tGetMethod;
+		if(JniHelper::getMethodInfo(tGetMethod, "java/util/Hashtable", "get", "(Ljava/lang/Object;)Ljava/lang/Object;"))
 		{
 			jstring jKey;
 			jstring jValue;
@@ -139,7 +139,7 @@ std::map<std::string, std::string> AgentManager::getPluginConfigure()
 			{
 				jKey = env->NewStringUTF((*iter).c_str());
 				jValue = (jstring) (env->CallObjectMethod(jhashtable,tGetMethod.methodID,jKey));
-				stdValue = PluginJniHelper::jstring2string(jValue);
+				stdValue = JniHelper::jstring2string(jValue);
 				if(!stdValue.empty())
 					configure.insert(std::make_pair(*iter, stdValue));
 			}
