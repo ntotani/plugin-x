@@ -26,11 +26,11 @@ echo Now have ${length} plugins
 echo
 
 #publish protocols
-echo
-echo Now publish protocols
-echo ---------------------------------
-./toolsForPublish/publishPlugin.sh "protocols" ${TARGET_ROOT} ${PLUGIN_ROOT}
-echo ---------------------------------
+#echo
+#echo Now publish protocols
+#echo ---------------------------------
+#./toolsForPublish/publishPlugin.sh "protocols" ${TARGET_ROOT} ${PLUGIN_ROOT}
+#echo ---------------------------------
 
 #publish plugins
 for plugin_name in ${plugins[@]}

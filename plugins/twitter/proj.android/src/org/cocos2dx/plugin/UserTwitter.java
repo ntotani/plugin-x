@@ -1,9 +1,14 @@
 package org.cocos2dx.plugin;
 
 import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.ArrayList;
+/*
 import java.io.ObjectOutputStream;
 import java.io.ObjectInputStream;
 import java.io.FileNotFoundException;
+*/
+import java.io.*;
 
 import android.app.Activity;
 import android.content.Context;
@@ -91,19 +96,36 @@ public class UserTwitter implements InterfaceUser {
         UserWrapper.onActionResult(this, UserWrapper.ACTION_RET_LOGIN_FAILED, "cancel");
     }
 
-    /*
-    public String api(JSONObject params) {
-        String path = params.getString("Param1");
-        String method = params.getString("Param2");
-        String param = params.getJSONObject("Param3");
-
-        conf = twttr.getConfiguration();
-        HttpClient http = HttpClientFactory.getInstance(conf.getHttpClientConfiguration());
-        HttpParameter[] httpParams = {};
-        Authorization auth = twttr.getAuthorization();
-        return http.get(conf.getRestBaseURL() + path + ".json", httpParams, auth, twttr).asString();
+    public String api(org.json.JSONObject params) {
+        try {
+            String path = params.getString("Param1");
+            String method = params.getString("Param2");
+            org.json.JSONObject param = params.getJSONObject("Param3");
+            Iterator<String> it = param.keys();
+            ArrayList<String> keys = new ArrayList<String>();
+            while (it.hasNext()) {
+                String key = it.next();
+                keys.add(key);
+            }
+            twitter4j.conf.Configuration conf = _twttr.getConfiguration();
+            HttpClient http = HttpClientFactory.getInstance(conf.getHttpClientConfiguration());
+            HttpParameter[] httpParams = new HttpParameter[keys.size()];
+            for (int i = 0; i < keys.size(); i++) {
+                String key = keys.get(i);
+                String value = param.getString(key);
+                httpParams[i] = new HttpParameter(key, value);
+            }
+            Authorization auth = _twttr.getAuthorization();
+            return http.get(conf.getRestBaseURL() + path + ".json", httpParams, auth, null).asString();
+        } catch (org.json.JSONException e) {
+            e.printStackTrace();
+        } catch (TwitterException e) {
+            e.printStackTrace();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "{\"errors\":[{\"message\":\"invalid params\",\"code\":999}]}";
     }
-    */
 
     @Override
     public void logout() {}
