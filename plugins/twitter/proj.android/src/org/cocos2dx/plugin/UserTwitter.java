@@ -134,7 +134,7 @@ public class UserTwitter implements InterfaceUser {
     public boolean isLogined() { return _accessToken != null; }
 
     @Override
-    public String getSessionID() { return ""; }
+    public String getSessionID() { return _accessToken.getUserId() + ""; }
 
     @Override
     public void setDebugMode(boolean debug) {
