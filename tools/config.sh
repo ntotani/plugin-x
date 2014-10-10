@@ -1,5 +1,5 @@
 #define plugins array 
-export ALL_PLUGINS=("facebook" "parse" "twitter")
+export ALL_PLUGINS=("facebook" "parse" "twitter" "morph")
 
 # define the plugin root directory & publish target directory
 export TARGET_DIR_NAME="publish"
