@@ -39,7 +39,7 @@
 - (void) hideAds: (NSMutableDictionary*) info;
 - (void) queryPoints;
 - (void) spendPoints: (int) points;
-- (void) setDebugMode: (NSNumber*) isDebugMode;
+- (void) setDebugMode: (BOOL) isDebugMode;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 

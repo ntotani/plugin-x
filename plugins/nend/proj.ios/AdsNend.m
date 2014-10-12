@@ -74,9 +74,9 @@
     OUTPUT_LOG(@"Nend not support spend points!");
 }
 
-- (void) setDebugMode: (NSNumber*) isDebugMode
+- (void) setDebugMode: (BOOL) isDebugMode
 {
-    self.debug = [isDebugMode boolValue];
+    self.debug = isDebugMode;
     if (self.bannerView) {
         [self.bannerView setIsOutputLog:self.debug];
     }
@@ -84,7 +84,7 @@
 
 - (NSString*) getSDKVersion
 {
-    return @"2.4.1";
+    return @"2.5.5";
 }
 
 - (NSString*) getPluginVersion
@@ -107,6 +107,30 @@
 
 - (void)nadViewDidFailToReceiveAd:(NADView *)adView
 {
+    OUTPUT_LOG(@"delegate nadViewDidFailToLoad:");
+    NSError* error = adView.error;
+    NSString* domain = error.domain;
+    int errorCode = error.code;
+    OUTPUT_LOG(@"%@",[NSString stringWithFormat: @"code=%d, message=%@", errorCode, domain]);
+    switch (errorCode) {
+        case NADVIEW_AD_SIZE_TOO_LARGE:
+            OUTPUT_LOG(@"広告サイズがディスプレイサイズよりも大きい");
+            break;
+        case NADVIEW_INVALID_RESPONSE_TYPE:
+            OUTPUT_LOG(@"不明な広告ビュータイプ");
+            break;
+        case NADVIEW_FAILED_AD_REQUEST:
+            OUTPUT_LOG(@"広告取得失敗");
+            break;
+        case NADVIEW_FAILED_AD_DOWNLOAD:
+            OUTPUT_LOG(@"広告画像の取得失敗");
+            break;
+        case NADVIEW_AD_SIZE_DIFFERENCES:
+            OUTPUT_LOG(@"リクエストしたサイズと取得したサイズが異なる");
+            break;
+        default:
+            break;
+    }
 }
 
 @end

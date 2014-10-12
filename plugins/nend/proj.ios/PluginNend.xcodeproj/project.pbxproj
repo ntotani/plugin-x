@@ -30,6 +30,7 @@
 		9771DE9E1938CACE0046C175 /* NADIconLoader.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADIconLoader.h; sourceTree = "<group>"; };
 		9771DE9F1938CACE0046C175 /* NADIconView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADIconView.h; sourceTree = "<group>"; };
 		9771DEA01938CACE0046C175 /* NADView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = NADView.h; sourceTree = "<group>"; };
+		C6464E9A19EA67F700D68DCA /* NADInterstitial.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NADInterstitial.h; sourceTree = "<group>"; };
 		FADC44A7176EA82000B2D5ED /* libPluginNend.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginNend.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FADC44AA176EA82000B2D5ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FADC44C3176EA84500B2D5ED /* AdsNend.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AdsNend.h; sourceTree = "<group>"; };
@@ -57,6 +58,7 @@
 				9771DE9D1938CACE0046C175 /* NADIconArrayView.h */,
 				9771DE9E1938CACE0046C175 /* NADIconLoader.h */,
 				9771DE9F1938CACE0046C175 /* NADIconView.h */,
+				C6464E9A19EA67F700D68DCA /* NADInterstitial.h */,
 				9771DEA01938CACE0046C175 /* NADView.h */,
 			);
 			path = NendAd;
