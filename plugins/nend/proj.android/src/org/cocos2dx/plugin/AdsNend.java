@@ -65,15 +65,16 @@ public class AdsNend implements InterfaceAds {
 
     @Override
     public void configDeveloperInfo(Hashtable<String, String> devInfo) {
-        try {
-            String apiKey = devInfo.get("ApiKey");
-            String spotId = devInfo.get("SpotId");
-            LogD("init ids ApiKey:" + apiKey + ", SpotId:" + spotId);
-            adView = new NendAdView(mContext, Integer.parseInt(spotId), apiKey);
-            adView.loadAd();
-        } catch (Exception e) {
-            LogE("initAppInfo, The format of appInfo is wrong", e);
-        }
+        final String apiKey = devInfo.get("ApiKey");
+        final String spotId = devInfo.get("SpotId");
+        LogD("init ids ApiKey:" + apiKey + ", SpotId:" + spotId);
+        PluginWrapper.runOnMainThread(new Runnable() {
+            @Override
+            public void run() {
+                adView = new NendAdView(mContext, Integer.parseInt(spotId), apiKey);
+                adView.loadAd();
+            }
+        });
     }
 
     @Override
@@ -108,7 +109,7 @@ public class AdsNend implements InterfaceAds {
 
     @Override
     public String getSDKVersion() {
-        return "2.4.1";
+        return "2.5.1";
     }
 
     @Override
