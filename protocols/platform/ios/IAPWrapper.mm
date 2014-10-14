@@ -39,9 +39,7 @@ using namespace cocos2d::plugin;
     ProtocolIAP::ProtocolIAPCallback callback = iapPlugin->getCallback();
     const char* chMsg = [msg UTF8String];
     PayResultCode cRet = (PayResultCode) ret;
-    if (iapPlugin) {
-        iapPlugin->onPayResult(cRet, chMsg);
-    }else if(callback){
+    if (callback) {
         std::string stdmsg(chMsg);
         callback(cRet,stdmsg);
     } else {
