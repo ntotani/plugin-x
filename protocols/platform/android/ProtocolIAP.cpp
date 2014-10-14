@@ -42,10 +42,6 @@ extern "C" {
 			ProtocolIAP* pIAP = dynamic_cast<ProtocolIAP*>(pPlugin);
 			if (pIAP != NULL)
 			{
-				pIAP->onPayResult((PayResultCode) ret, strMsg.c_str());
-			}
-			else
-			{
 				ProtocolIAP::ProtocolIAPCallback callback = pIAP->getCallback();
 				if(callback)
 					callback(ret, strMsg);
