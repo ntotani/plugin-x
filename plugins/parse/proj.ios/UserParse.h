@@ -14,12 +14,13 @@
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo;
 - (void) login;
 - (void) logout;
-- (NSNumber*) isLogined;
+- (NSNumber*) isLoggedIn;
 - (NSString*) getSessionID;
 - (void) setDebugMode: (BOOL) debug;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 
+- (void)loginWithTwitter;
 - (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user;
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error;
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController;

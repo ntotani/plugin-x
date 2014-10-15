@@ -16,6 +16,9 @@
     if (twitterConsumerKey != nil && twitterConsumerSecret != nil) {
         [PFTwitterUtils initializeWithConsumerKey:twitterConsumerKey consumerSecret:twitterConsumerSecret];
     }
+    PFACL *defaultACL = [PFACL ACL];
+    [defaultACL setPublicReadAccess:YES];
+    [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
 }
 
 - (void) login
@@ -26,11 +29,27 @@
     [[AdsWrapper getCurrentRootViewController] presentViewController:vc animated:YES completion:nil];
 }
 
+- (void) loginWithTwitter
+{
+    [PFTwitterUtils logInWithBlock:^(PFUser *user, NSError *error) {
+        if (error) {
+            OUTPUT_LOG(@"%@", [error userInfo][@"error"]);
+            NSString *msg = @"unkown";
+            if ([error code] == kPFErrorConnectionFailed) { msg = @"network"; }
+            else if ([error code] == kPFErrorInternalServer) { msg = @"server"; }
+            else if ([error code] == kPFErrorExceededQuota) { msg = @"overquota"; }
+            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:msg];
+            return;
+        }
+        [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:user.username];
+    }];
+}
+
 - (void) logout
 {
 }
 
-- (NSNumber*) isLogined
+- (NSNumber*) isLoggedIn
 {
     return [PFUser currentUser] == nil ? @0 : @1;
 }
@@ -76,9 +95,6 @@
 - (void)enableAutomaticUser
 {
     [PFUser enableAutomaticUser];
-    PFACL *defaultACL = [PFACL ACL];
-    [defaultACL setPublicReadAccess:YES];
-    [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
 }
 
 - (void)saveUserAttr:(NSMutableDictionary*)attrs
