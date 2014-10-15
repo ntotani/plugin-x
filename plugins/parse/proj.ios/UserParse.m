@@ -50,7 +50,7 @@
 
 - (NSString*) getSDKVersion
 {
-    return @"1.2.20";
+    return @"1.4.1";
 }
 
 - (NSString*) getPluginVersion
