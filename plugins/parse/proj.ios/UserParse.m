@@ -92,6 +92,11 @@
     [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"cancel"];
 }
 
+- (NSString*)getTwitterID
+{
+    return [PFTwitterUtils twitter].userId;
+}
+
 - (void)enableAutomaticUser
 {
     [PFUser enableAutomaticUser];
@@ -156,8 +161,7 @@
     NSError* error = nil;
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     if (error) {
-        OUTPUT_LOG(@"%@", [error localizedDescription]);
-        return @"";
+        return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }

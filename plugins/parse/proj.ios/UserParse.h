@@ -25,6 +25,7 @@
 - (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error;
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController;
 
+- (NSString*)getTwitterID;
 - (void)enableAutomaticUser;
 - (void)saveUserAttr:(NSMutableDictionary*)attrs;
 - (NSNumber*)getUserAttr:(NSString*)attrName;
