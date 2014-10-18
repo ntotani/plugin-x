@@ -102,6 +102,28 @@
     [PFUser enableAutomaticUser];
 }
 
+- (void)fetchHeroine:(NSString *)ids
+{
+    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
+    NSMutableArray *numIds = [@[] mutableCopy];
+    for (NSString *e in [ids componentsSeparatedByString:@","]) {
+        [numIds addObject:[NSNumber numberWithLongLong:[e longLongValue]]];
+    }
+    [q whereKey:@"twID" containedIn:numIds];
+    [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
+        NSMutableArray *arr = [@[] mutableCopy];
+        for (PFObject *e in objects) {
+            NSDictionary *heroine = @{
+                                      @"twID":e[@"twID"],
+                                      @"turnMin":e[@"turnMin"],
+                                      @"lastTouch":[NSNumber numberWithDouble:[e[@"lastTouch"] timeIntervalSince1970]]};
+            [arr addObject:heroine];
+        }
+        NSString *json = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:arr options:kNilOptions error:nil] encoding:NSUTF8StringEncoding];
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
+    }];
+}
+
 - (void)saveUserAttr:(NSMutableDictionary*)attrs
 {
     NSNumber* runCount = attrs[@"Param1"];

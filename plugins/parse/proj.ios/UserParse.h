@@ -27,6 +27,8 @@
 
 - (NSString*)getTwitterID;
 - (void)enableAutomaticUser;
+- (void)fetchHeroine:(NSString *)ids;
+
 - (void)saveUserAttr:(NSMutableDictionary*)attrs;
 - (NSNumber*)getUserAttr:(NSString*)attrName;
 - (void)fetchScoreRank:(NSString*)col;
