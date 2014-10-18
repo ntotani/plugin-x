@@ -124,6 +124,22 @@
     }];
 }
 
+- (void)touchHeroine:(NSString*)twID
+{
+    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
+    NSNumber *numTwID = [NSNumber numberWithLongLong:[twID longLongValue]];
+    [q whereKey:@"twID" equalTo:numTwID];
+    [q getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (!object) {
+            object = [PFObject objectWithClassName:@"Heroine"];
+            object[@"twID"] = numTwID;
+            object[@"turnMin"] = @240;
+        }
+        object[@"lastTouch"] = [NSDate date];
+        [object saveInBackground];
+    }];
+}
+
 - (void)saveUserAttr:(NSMutableDictionary*)attrs
 {
     NSNumber* runCount = attrs[@"Param1"];

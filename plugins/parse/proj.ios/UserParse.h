@@ -28,6 +28,7 @@
 - (NSString*)getTwitterID;
 - (void)enableAutomaticUser;
 - (void)fetchHeroine:(NSString *)ids;
+- (void)touchHeroine:(NSString*)twID;
 
 - (void)saveUserAttr:(NSMutableDictionary*)attrs;
 - (NSNumber*)getUserAttr:(NSString*)attrName;
