@@ -136,6 +136,7 @@
             object[@"turnMin"] = @240;
         }
         object[@"lastTouch"] = [NSDate date];
+        object[@"hero"] = [PFUser currentUser];
         [object saveInBackground];
     }];
 }
