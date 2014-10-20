@@ -141,6 +141,23 @@
     }];
 }
 
+- (void)dateHeroine:(NSString*)twID
+{
+    PFUser *me = [PFUser currentUser];
+    NSDictionary *friendShips = me[@"friendShips"];
+    if (!friendShips) {
+        friendShips = @{};
+    }
+    int friendShip = 0;
+    if (friendShips[twID]) {
+        friendShip = [friendShips[twID] intValue];
+    }
+    NSMutableDictionary *newFriendShip = [friendShips mutableCopy];
+    newFriendShip[twID] = @(friendShip + 1);
+    me[@"friendShips"] = newFriendShip;
+    [me saveInBackground];
+}
+
 - (void)saveUserAttr:(NSMutableDictionary*)attrs
 {
     NSNumber* runCount = attrs[@"Param1"];
