@@ -139,6 +139,11 @@
         }
         object[@"lastTouch"] = [NSDate date];
         object[@"hero"] = [PFUser currentUser];
+        int friendShip = 0;
+        if (object[@"friendShip"]) {
+            friendShip = [object[@"friendShip"] intValue];
+        }
+        object[@"friendShip"] = @(friendShip + 1);
         [object saveInBackground];
     }];
 }
