@@ -113,10 +113,12 @@
     [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
         NSMutableArray *arr = [@[] mutableCopy];
         for (PFObject *e in objects) {
+            PFObject *hero = e[@"hero"];
             NSDictionary *heroine = @{
                                       @"twID":e[@"twID"],
                                       @"turnMin":e[@"turnMin"],
-                                      @"lastTouch":[NSNumber numberWithDouble:[e[@"lastTouch"] timeIntervalSince1970]]};
+                                      @"lastTouch":[NSNumber numberWithDouble:[e[@"lastTouch"] timeIntervalSince1970]],
+                                      @"isMyHeroine":@([hero.objectId isEqualToString:[PFUser currentUser].objectId])};
             [arr addObject:heroine];
         }
         NSString *json = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:arr options:kNilOptions error:nil] encoding:NSUTF8StringEncoding];
