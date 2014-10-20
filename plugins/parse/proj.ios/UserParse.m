@@ -148,7 +148,7 @@
     }];
 }
 
-- (void)dateHeroine:(NSString*)twID
+- (NSNumber*)dateHeroine:(NSString*)twID
 {
     PFUser *me = [PFUser currentUser];
     NSDictionary *friendShips = me[@"friendShips"];
@@ -159,10 +159,25 @@
     if (friendShips[twID]) {
         friendShip = [friendShips[twID] intValue];
     }
+    friendShip++;
+    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
+    [q whereKey:@"twID" equalTo:[NSNumber numberWithLongLong:[twID longLongValue]]];
+    PFObject *heroine = [q getFirstObject];
     NSMutableDictionary *newFriendShip = [friendShips mutableCopy];
-    newFriendShip[twID] = @(friendShip + 1);
+    NSNumber *ret = @0;
+    if (friendShip >= [heroine[@"friendShip"] intValue]) {
+        [newFriendShip removeObjectForKey:twID];
+        heroine[@"friendShip"] = @0;
+        heroine[@"hero"] = [PFUser currentUser];
+        heroine[@"lastTouch"] = [NSDate date];
+        [heroine saveInBackground];
+        ret = @1;
+    } else {
+        newFriendShip[twID] = @(friendShip + 1);
+    }
     me[@"friendShips"] = newFriendShip;
     [me saveInBackground];
+    return ret;
 }
 
 - (void)saveUserAttr:(NSMutableDictionary*)attrs
