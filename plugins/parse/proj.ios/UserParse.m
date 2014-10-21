@@ -102,6 +102,15 @@
     [PFUser enableAutomaticUser];
 }
 
+-(PFQuery*)heroineQuery:(NSString*)twID
+{
+    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
+    NSNumber *numTwID = [NSNumber numberWithLongLong:[twID longLongValue]];
+    [q whereKey:@"twID" equalTo:numTwID];
+    // TODO enable cache
+    return q;
+}
+
 - (void)fetchHeroine:(NSString *)ids
 {
     PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
@@ -128,17 +137,11 @@
 
 - (void)touchHeroine:(NSString*)twID
 {
-    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
-    NSNumber *numTwID = [NSNumber numberWithLongLong:[twID longLongValue]];
-    [q whereKey:@"twID" equalTo:numTwID];
-    [q getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if (!object) {
-            object = [PFObject objectWithClassName:@"Heroine"];
-            object[@"twID"] = numTwID;
-            object[@"turnMin"] = @240;
+    [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (error) {
+            return;
         }
         object[@"lastTouch"] = [NSDate date];
-        object[@"hero"] = [PFUser currentUser];
         int friendShip = 0;
         if (object[@"friendShip"]) {
             friendShip = [object[@"friendShip"] intValue];
@@ -160,13 +163,12 @@
         friendShip = [friendShips[twID] intValue];
     }
     friendShip++;
-    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
-    [q whereKey:@"twID" equalTo:[NSNumber numberWithLongLong:[twID longLongValue]]];
-    PFObject *heroine = [q getFirstObject];
+    PFObject *heroine = [[self heroineQuery:twID] getFirstObject];
     if (!heroine) {
         heroine = [PFObject objectWithClassName:@"Heroine"];
+        heroine.ACL = [PFACL ACL];
         heroine[@"twID"] = [NSNumber numberWithLongLong:[twID longLongValue]];
-        heroine[@"turnMin"] = @5;
+        heroine[@"turnMin"] = @240;
         heroine[@"friendShip"] = @0;
     }
     NSMutableDictionary *newFriendShip = [friendShips mutableCopy];
