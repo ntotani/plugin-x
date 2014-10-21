@@ -163,6 +163,12 @@
     PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
     [q whereKey:@"twID" equalTo:[NSNumber numberWithLongLong:[twID longLongValue]]];
     PFObject *heroine = [q getFirstObject];
+    if (!heroine) {
+        heroine = [PFObject objectWithClassName:@"Heroine"];
+        heroine[@"twID"] = [NSNumber numberWithLongLong:[twID longLongValue]];
+        heroine[@"turnMin"] = @5;
+        heroine[@"friendShip"] = @0;
+    }
     NSMutableDictionary *newFriendShip = [friendShips mutableCopy];
     NSNumber *ret = @0;
     if (friendShip >= [heroine[@"friendShip"] intValue]) {
