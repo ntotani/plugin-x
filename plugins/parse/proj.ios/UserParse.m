@@ -105,8 +105,7 @@
 -(PFQuery*)heroineQuery:(NSString*)twID
 {
     PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
-    NSNumber *numTwID = [NSNumber numberWithLongLong:[twID longLongValue]];
-    [q whereKey:@"twID" equalTo:numTwID];
+    [q whereKey:@"twID" equalTo:@([twID longLongValue])];
     // TODO enable cache
     return q;
 }
@@ -116,7 +115,7 @@
     PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
     NSMutableArray *numIds = [@[] mutableCopy];
     for (NSString *e in [ids componentsSeparatedByString:@","]) {
-        [numIds addObject:[NSNumber numberWithLongLong:[e longLongValue]]];
+        [numIds addObject:@([e longLongValue])];
     }
     [q whereKey:@"twID" containedIn:numIds];
     [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
@@ -167,8 +166,10 @@
     if (!heroine) {
         heroine = [PFObject objectWithClassName:@"Heroine"];
         heroine.ACL = [PFACL ACL];
-        heroine[@"twID"] = [NSNumber numberWithLongLong:[twID longLongValue]];
-        heroine[@"turnMin"] = @240;
+        [heroine.ACL setPublicReadAccess:YES];
+        [heroine.ACL setPublicWriteAccess:YES];
+        heroine[@"twID"] = @([twID longLongValue]);
+        heroine[@"turnMin"] = @5;
         heroine[@"friendShip"] = @0;
     }
     NSMutableDictionary *newFriendShip = [friendShips mutableCopy];
