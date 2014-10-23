@@ -28,6 +28,9 @@
 - (NSString*)getTwitterID;
 - (void)enableAutomaticUser;
 - (void)fetchHeroine:(NSString *)ids;
+- (NSNumber*)getProgress:(NSString*)twID;
+- (void)setProgress:(NSMutableDictionary*)params;
+- (void)winHeroine:(NSString*)twID;
 - (void)touchHeroine:(NSString*)twID;
 - (NSNumber*)dateHeroine:(NSString*)twID;
 

@@ -134,6 +134,50 @@
     }];
 }
 
+- (NSNumber*)getProgress:(NSString*)twID
+{
+    if ([PFUser currentUser][@"progress"] && [PFUser currentUser][@"progress"][twID]) {
+        return [PFUser currentUser][@"progress"][twID];
+    }
+    return @0;
+}
+
+- (void)setProgress:(NSMutableDictionary*)params
+{
+    NSString *twID = params[@"Param1"];
+    int progress = [params[@"Param2"] intValue];
+    NSMutableDictionary *dic = [@{} mutableCopy];
+    if ([PFUser currentUser][@"progress"]) {
+        dic = [[PFUser currentUser][@"progress"] mutableCopy];
+    }
+    if (progress == 0) {
+        [dic removeObjectForKey:twID];
+    } else {
+        dic[twID] = @(progress);
+    }
+    [PFUser currentUser][@"progress"] = dic;
+    [[PFUser currentUser] saveInBackground];
+}
+
+- (void)winHeroine:(NSString*)twID
+{
+    [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (!object) {
+            object = [PFObject objectWithClassName:@"Heroine"];
+            object.ACL = [PFACL ACL];
+            [object.ACL setPublicReadAccess:YES];
+            [object.ACL setPublicWriteAccess:YES];
+            object[@"twID"] = @([twID longLongValue]);
+            object[@"turnMin"] = @180;
+        }
+        object[@"friendShip"] = @100;
+        object[@"lastTouch"] = [NSDate date];
+        object[@"hero"] = [PFUser currentUser];
+        [object saveInBackground];
+        [self setProgress:[@{@"Param1":twID, @"Param2":@1} mutableCopy]];
+    }];
+}
+
 - (void)touchHeroine:(NSString*)twID
 {
     [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
