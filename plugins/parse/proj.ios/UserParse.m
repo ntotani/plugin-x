@@ -125,6 +125,7 @@
             NSDictionary *heroine = @{
                                       @"twID":e[@"twID"],
                                       @"turnMin":e[@"turnMin"],
+                                      @"friendShip":e[@"friendShip"],
                                       @"lastTouch":[NSNumber numberWithDouble:[e[@"lastTouch"] timeIntervalSince1970]],
                                       @"isMyHeroine":@([hero.objectId isEqualToString:[PFUser currentUser].objectId])};
             [arr addObject:heroine];
