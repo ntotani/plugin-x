@@ -179,18 +179,22 @@
     }];
 }
 
+- (int)currentFriendShip:(PFObject*)heroine
+{
+    double pastMin = [heroine[@"lastTouch"] timeIntervalSinceNow] / 60;
+    int pastTurn = pastMin / [heroine[@"turnMin"] intValue];
+    int friendShip = [heroine[@"friendShip"] intValue] - pastTurn * 4;
+    return MAX(friendShip, 0);
+}
+
 - (void)touchHeroine:(NSString*)twID
 {
     [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
         if (error) {
             return;
         }
+        object[@"friendShip"] = @(MIN([self currentFriendShip:object] + 30, 100));
         object[@"lastTouch"] = [NSDate date];
-        int friendShip = 0;
-        if (object[@"friendShip"]) {
-            friendShip = [object[@"friendShip"] intValue];
-        }
-        object[@"friendShip"] = @(friendShip + 1);
         [object saveInBackground];
     }];
 }
