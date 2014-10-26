@@ -29,6 +29,10 @@
 - (void)fetchHeroine:(NSString *)ids;
 - (NSNumber*)getProgress:(NSString*)twID;
 - (void)setProgress:(NSMutableDictionary*)params;
+- (NSNumber*)getReserve:(NSString*)twID;
+- (void)setReserve:(NSMutableDictionary*)params;
+- (NSNumber*)getTouch:(NSString*)twID;
+- (void)setTouch:(NSMutableDictionary*)params;
 - (void)winHeroine:(NSString*)twID;
 - (void)touchHeroine:(NSString*)twID;
 

@@ -41,7 +41,11 @@
             [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:msg];
             return;
         }
-        [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:user.username];
+        if (!user) {
+            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"cancel"];
+        } else {
+            [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:user.username];
+        }
     }];
 }
 
@@ -130,29 +134,59 @@
     }];
 }
 
-- (NSNumber*)getProgress:(NSString*)twID
+- (NSNumber*)getUserAttr:(NSString*)twID attr:(NSString*)attr
 {
-    if ([PFUser currentUser][@"progress"] && [PFUser currentUser][@"progress"][twID]) {
-        return [PFUser currentUser][@"progress"][twID];
+    if ([PFUser currentUser][attr] && [PFUser currentUser][attr][twID]) {
+        return [PFUser currentUser][attr][twID];
     }
     return @0;
 }
 
-- (void)setProgress:(NSMutableDictionary*)params
+- (void)setUserAttr:(NSMutableDictionary*)params attr:(NSString*)attr
 {
     NSString *twID = params[@"Param1"];
     int progress = [params[@"Param2"] intValue];
     NSMutableDictionary *dic = [@{} mutableCopy];
-    if ([PFUser currentUser][@"progress"]) {
-        dic = [[PFUser currentUser][@"progress"] mutableCopy];
+    if ([PFUser currentUser][attr]) {
+        dic = [[PFUser currentUser][attr] mutableCopy];
     }
     if (progress == 0) {
         [dic removeObjectForKey:twID];
     } else {
         dic[twID] = @(progress);
     }
-    [PFUser currentUser][@"progress"] = dic;
-    [[PFUser currentUser] saveInBackground];
+    [PFUser currentUser][attr] = dic;
+    [[PFUser currentUser] saveEventually];
+}
+
+- (NSNumber*)getProgress:(NSString*)twID
+{
+    return [self getUserAttr:twID attr:@"progress"];
+}
+
+- (void)setProgress:(NSMutableDictionary*)params
+{
+    [self setUserAttr:params attr:@"progress"];
+}
+
+- (NSNumber*)getReserve:(NSString*)twID
+{
+    return [self getUserAttr:twID attr:@"reserve"];
+}
+
+- (void)setReserve:(NSMutableDictionary*)params
+{
+    [self setUserAttr:params attr:@"reserve"];
+}
+
+- (NSNumber*)getTouch:(NSString*)twID
+{
+    return [self getUserAttr:twID attr:@"touch"];
+}
+
+- (void)setTouch:(NSMutableDictionary*)params
+{
+    [self setUserAttr:params attr:@"touch"];
 }
 
 - (void)winHeroine:(NSString*)twID
