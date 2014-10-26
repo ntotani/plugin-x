@@ -97,11 +97,6 @@
     return [PFTwitterUtils twitter].userId;
 }
 
-- (void)enableAutomaticUser
-{
-    [PFUser enableAutomaticUser];
-}
-
 -(PFQuery*)heroineQuery:(NSString*)twID
 {
     PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
@@ -196,89 +191,6 @@
         object[@"friendShip"] = @(MIN([self currentFriendShip:object] + 30, 100));
         object[@"lastTouch"] = [NSDate date];
         [object saveInBackground];
-    }];
-}
-
-- (NSNumber*)dateHeroine:(NSString*)twID
-{
-    PFUser *me = [PFUser currentUser];
-    NSDictionary *friendShips = me[@"friendShips"];
-    if (!friendShips) {
-        friendShips = @{};
-    }
-    int friendShip = 0;
-    if (friendShips[twID]) {
-        friendShip = [friendShips[twID] intValue];
-    }
-    friendShip++;
-    PFObject *heroine = [[self heroineQuery:twID] getFirstObject];
-    if (!heroine) {
-        heroine = [PFObject objectWithClassName:@"Heroine"];
-        heroine.ACL = [PFACL ACL];
-        [heroine.ACL setPublicReadAccess:YES];
-        [heroine.ACL setPublicWriteAccess:YES];
-        heroine[@"twID"] = @([twID longLongValue]);
-        heroine[@"turnMin"] = @5;
-        heroine[@"friendShip"] = @0;
-    }
-    NSMutableDictionary *newFriendShip = [friendShips mutableCopy];
-    NSNumber *ret = @0;
-    if (friendShip >= [heroine[@"friendShip"] intValue]) {
-        [newFriendShip removeObjectForKey:twID];
-        heroine[@"friendShip"] = @0;
-        heroine[@"hero"] = [PFUser currentUser];
-        heroine[@"lastTouch"] = [NSDate date];
-        [heroine saveInBackground];
-        ret = @1;
-    } else {
-        newFriendShip[twID] = @(friendShip + 1);
-    }
-    me[@"friendShips"] = newFriendShip;
-    [me saveInBackground];
-    return ret;
-}
-
-- (void)saveUserAttr:(NSMutableDictionary*)attrs
-{
-    NSNumber* runCount = attrs[@"Param1"];
-    NSNumber* goalCount = attrs[@"Param2"];
-    NSNumber* cupCount = attrs[@"Param3"];
-    PFUser* user = [PFUser currentUser];
-    user[@"runCount"] = runCount;
-    user[@"goalCount"] = goalCount;
-    user[@"cupCount"] = cupCount;
-    [user saveInBackground];
-}
-
-- (NSNumber*)getUserAttr:(NSString*)attrName
-{
-    return [PFUser currentUser][attrName];
-}
-
-- (void)fetchScoreRank:(NSString*)col
-{
-    PFQuery *query = [PFUser query];
-    query.limit = 100;
-    [query orderByDescending:col];
-    [query findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        NSMutableArray *rank = [@[] mutableCopy];
-        for (PFObject *e in objects) {
-            [rank addObject:e[col]];
-        }
-        NSString* json = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:rank options:kNilOptions error:nil] encoding:NSUTF8StringEncoding];
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
-    }];
-}
-
-- (void)fetchUserRank:(NSString *)col
-{
-    PFQuery* query = [PFUser query];
-    NSNumber* myScore = [self getUserAttr:col];
-    myScore = myScore ? myScore : @0;
-    [query whereKey:col greaterThan:myScore];
-    [query countObjectsInBackgroundWithBlock:^(int number, NSError *error) {
-        NSString* json = [NSString stringWithFormat:@"{\"rank\":%d}", number + 1];
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
     }];
 }
 
