@@ -109,6 +109,32 @@
     return q;
 }
 
+-(NSDictionary*)pfobj2dic:(PFObject*)heroine
+{
+    PFObject *hero = heroine[@"hero"];
+    int turnSec = [heroine[@"turnMin"] intValue] * 60;
+    NSDate *now = [NSDate date];
+    NSDate *dateEnd = [NSDate dateWithTimeInterval:turnSec sinceDate:heroine[@"lastTouch"]];
+    NSDate *restEnd = [self getRestEnd:heroine[@"twID"] tunrSec:turnSec];
+    NSDate *releaseAt = dateEnd;
+    if ([dateEnd compare:restEnd] == NSOrderedAscending) {
+        releaseAt = restEnd;
+    }
+    return @{
+             @"isMyHeroine":@([hero.objectId isEqualToString:[PFUser currentUser].objectId]),
+             @"anyHero":@YES,
+             @"dateNow":[now compare:dateEnd] == NSOrderedAscending ? @YES : @NO,
+             @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
+             @"releaseAt":@((int)[releaseAt timeIntervalSince1970]),
+             @"okRate":@(100 - 70 * [self currentFriendShip:heroine] / 100)};
+}
+
+-(NSDate*)getRestEnd:(NSNumber*)twID tunrSec:(int)turnSec
+{
+    int myTouch = [[self getTouch:[twID stringValue]] intValue];
+    return [NSDate dateWithTimeIntervalSince1970:myTouch + turnSec];
+}
+
 - (void)fetchHeroine:(NSString *)ids
 {
     PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
@@ -118,18 +144,23 @@
     }
     [q whereKey:@"twID" containedIn:numIds];
     [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        NSMutableArray *arr = [@[] mutableCopy];
-        for (PFObject *e in objects) {
-            PFObject *hero = e[@"hero"];
-            NSDictionary *heroine = @{
-                                      @"twID":e[@"twID"],
-                                      @"turnMin":e[@"turnMin"],
-                                      @"friendShip":e[@"friendShip"],
-                                      @"lastTouch":[NSNumber numberWithDouble:[e[@"lastTouch"] timeIntervalSince1970]],
-                                      @"isMyHeroine":@([hero.objectId isEqualToString:[PFUser currentUser].objectId])};
-            [arr addObject:heroine];
+        NSMutableDictionary *heroines = [@{} mutableCopy];
+        NSDate *now = [NSDate date];
+        for (NSNumber *e in numIds) {
+            NSDate *restEnd = [self getRestEnd:e tunrSec:180 * 60];
+            heroines[[e stringValue]] = @{
+                                          @"isMyHeroine":@NO,
+                                          @"anyHero":@NO,
+                                          @"dateNow":@NO,
+                                          @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
+                                          @"releaseAt":@((int)[restEnd timeIntervalSince1970]),
+                                          @"okRate":@100};
         }
-        NSString *json = [[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:arr options:kNilOptions error:nil] encoding:NSUTF8StringEncoding];
+        for (PFObject *e in objects) {
+            heroines[[e[@"twID"] stringValue]] = [self pfobj2dic:e];
+        }
+        NSData *d = [NSJSONSerialization dataWithJSONObject:heroines options:kNilOptions error:nil];
+        NSString *json = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
         [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
     }];
 }
@@ -156,7 +187,7 @@
         dic[twID] = @(progress);
     }
     [PFUser currentUser][attr] = dic;
-    [[PFUser currentUser] saveEventually];
+    [[PFUser currentUser] saveInBackground];
 }
 
 - (NSNumber*)getProgress:(NSString*)twID
@@ -210,7 +241,7 @@
 
 - (int)currentFriendShip:(PFObject*)heroine
 {
-    double pastMin = [heroine[@"lastTouch"] timeIntervalSinceNow] / 60;
+    int pastMin = [[NSDate date] timeIntervalSinceDate:heroine[@"lastTouch"]] / 60;
     int pastTurn = pastMin / [heroine[@"turnMin"] intValue];
     int friendShip = [heroine[@"friendShip"] intValue] - pastTurn * 4;
     return MAX(friendShip, 0);
