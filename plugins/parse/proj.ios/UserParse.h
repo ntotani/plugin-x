@@ -33,6 +33,7 @@
 - (void)setReserve:(NSMutableDictionary*)params;
 - (NSNumber*)getTouch:(NSString*)twID;
 - (void)setTouch:(NSMutableDictionary*)params;
+- (void)commitUser;
 - (void)winHeroine:(NSString*)twID;
 - (void)touchHeroine:(NSString*)twID;
 

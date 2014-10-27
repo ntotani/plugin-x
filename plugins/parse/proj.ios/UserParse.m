@@ -187,7 +187,6 @@
         dic[twID] = @(progress);
     }
     [PFUser currentUser][attr] = dic;
-    [[PFUser currentUser] saveInBackground];
 }
 
 - (NSNumber*)getProgress:(NSString*)twID
@@ -220,6 +219,11 @@
     [self setUserAttr:params attr:@"touch"];
 }
 
+- (void)commitUser
+{
+    [[PFUser currentUser] saveInBackground];
+}
+
 - (void)winHeroine:(NSString*)twID
 {
     [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -234,8 +238,8 @@
         object[@"friendShip"] = @100;
         object[@"lastTouch"] = [NSDate date];
         object[@"hero"] = [PFUser currentUser];
-        [object saveInBackground];
         [self setProgress:[@{@"Param1":twID, @"Param2":@1} mutableCopy]];
+        [object saveInBackground];
     }];
 }
 
