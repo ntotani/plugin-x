@@ -25,6 +25,7 @@
 #import "ShareTwitter.h"
 #import "FHSTwitterEngine.h"
 #import "ShareWrapper.h"
+#import <Social/Social.h>
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
@@ -47,20 +48,23 @@
 
 - (void) share: (NSMutableDictionary*) shareInfo
 {
-    self.mShareInfo = shareInfo;
-    if ([[FHSTwitterEngine sharedEngine]isAuthorized])
-    {
-        [self doShare];
-    } else {
-        UIViewController* controller = [self getCurrentRootViewController];
-        [[FHSTwitterEngine sharedEngine]showOAuthLoginControllerFromViewController:controller withCompletion:^(BOOL success) {
-            if (success) {
-                [self doShare];
-            } else {
-                [ShareWrapper onShareResult:self withRet:kShareFail withMsg:@"Login Failed"];
-            }
-        }];
+    SLComposeViewController *cvc = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeTwitter];
+    [cvc setInitialText:[NSString stringWithFormat:@"%@", shareInfo[@"SharedText"]]];
+    NSString* imgPath = shareInfo[@"SharedImagePath"];
+    if (imgPath) {
+        [cvc addImage:[UIImage imageWithContentsOfFile:imgPath]];
     }
+    [cvc setCompletionHandler:^(SLComposeViewControllerResult result) {
+        switch(result){
+            case SLComposeViewControllerResultCancelled:
+                [ShareWrapper onShareResult:self withRet:kShareCancel withMsg:@"Share Cancelled"];
+                break;
+            case SLComposeViewControllerResultDone:
+                [ShareWrapper onShareResult:self withRet:kShareSuccess withMsg:@"Share Succeed"];
+                break;
+        }
+    }];
+    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:cvc animated:YES completion:nil];
 }
 
 - (void) setDebugMode: (BOOL) debug
