@@ -165,6 +165,12 @@
     }];
 }
 
+- (void)fetchGainedHeroine
+{
+    NSDictionary *progress = [PFUser currentUser][@"progress"];
+    [self fetchHeroine:[progress.allKeys componentsJoinedByString:@","]];
+}
+
 - (NSNumber*)getUserAttr:(NSString*)twID attr:(NSString*)attr
 {
     if ([PFUser currentUser][attr] && [PFUser currentUser][attr][twID]) {
@@ -238,8 +244,11 @@
         object[@"friendShip"] = @100;
         object[@"lastTouch"] = [NSDate date];
         object[@"hero"] = [PFUser currentUser];
-        [self setProgress:[@{@"Param1":twID, @"Param2":@1} mutableCopy]];
-        [object saveInBackground];
+        [self setProgress:[@{@"Param1":twID, @"Param2":@([[self getProgress:twID] intValue] + 1)} mutableCopy]];
+        NSMutableDictionary *reset = [@{@"Param1":twID, @"Param2":@0} mutableCopy];
+        [self setReserve:reset];
+        [self setTouch:reset];
+        [PFObject saveAllInBackground:@[object, [PFUser currentUser]]];
     }];
 }
 

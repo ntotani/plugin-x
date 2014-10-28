@@ -27,6 +27,7 @@
 
 - (NSString*)getTwitterID;
 - (void)fetchHeroine:(NSString *)ids;
+- (void)fetchGainedHeroine;
 - (NSNumber*)getProgress:(NSString*)twID;
 - (void)setProgress:(NSMutableDictionary*)params;
 - (NSNumber*)getReserve:(NSString*)twID;
