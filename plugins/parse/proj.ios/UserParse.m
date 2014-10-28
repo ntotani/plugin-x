@@ -126,6 +126,7 @@
              @"dateNow":[now compare:dateEnd] == NSOrderedAscending ? @YES : @NO,
              @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
              @"releaseAt":@((int)[releaseAt timeIntervalSince1970]),
+             @"friendShip":@([self currentFriendShip:heroine]),
              @"okRate":@(100 - 70 * [self currentFriendShip:heroine] / 100)};
 }
 
@@ -154,6 +155,7 @@
                                           @"dateNow":@NO,
                                           @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
                                           @"releaseAt":@((int)[restEnd timeIntervalSince1970]),
+                                          @"friendShip":@0,
                                           @"okRate":@100};
         }
         for (PFObject *e in objects) {
