@@ -3,6 +3,7 @@
 #import "AdsWrapper.h"
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
+#define LOVER_PROGRESS 100
 
 @implementation UserParse
 
@@ -120,14 +121,18 @@
     if ([dateEnd compare:restEnd] == NSOrderedAscending) {
         releaseAt = restEnd;
     }
+    BOOL anyFriendShip = [self currentFriendShip:heroine] > 0;
+    BOOL isMyHeroine = anyFriendShip && [hero.objectId isEqualToString:[PFUser currentUser].objectId];
+    int prog = [[self getProgress:[heroine[@"twID"] stringValue]] intValue];
     return @{
-             @"isMyHeroine":@([hero.objectId isEqualToString:[PFUser currentUser].objectId]),
-             @"anyHero":@YES,
+             @"isMyHeroine":isMyHeroine ? @YES : @NO,
+             @"anyHero":anyFriendShip ? @YES : @NO,
              @"dateNow":[now compare:dateEnd] == NSOrderedAscending ? @YES : @NO,
              @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
              @"releaseAt":@((int)[releaseAt timeIntervalSince1970]),
              @"friendShip":@([self currentFriendShip:heroine]),
-             @"okRate":@(100 - 70 * [self currentFriendShip:heroine] / 100)};
+             @"okRate":@(100 - 70 * [self currentFriendShip:heroine] / 100),
+             @"broken":prog >= LOVER_PROGRESS && !isMyHeroine ? @YES : @NO};
 }
 
 -(NSDate*)getRestEnd:(NSNumber*)twID tunrSec:(int)turnSec
@@ -156,7 +161,8 @@
                                           @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
                                           @"releaseAt":@((int)[restEnd timeIntervalSince1970]),
                                           @"friendShip":@0,
-                                          @"okRate":@100};
+                                          @"okRate":@100,
+                                          @"broken":@NO};
         }
         for (PFObject *e in objects) {
             heroines[[e[@"twID"] stringValue]] = [self pfobj2dic:e];
@@ -246,7 +252,7 @@
         object[@"friendShip"] = @100;
         object[@"lastTouch"] = [NSDate date];
         object[@"hero"] = [PFUser currentUser];
-        [self setProgress:[@{@"Param1":twID, @"Param2":@([[self getProgress:twID] intValue] + 1)} mutableCopy]];
+        [self setProgress:[@{@"Param1":twID, @"Param2":@(LOVER_PROGRESS)} mutableCopy]];
         NSMutableDictionary *reset = [@{@"Param1":twID, @"Param2":@0} mutableCopy];
         [self setReserve:reset];
         [self setTouch:reset];
