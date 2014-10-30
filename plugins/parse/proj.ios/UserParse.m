@@ -4,6 +4,7 @@
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 #define LOVER_PROGRESS 100
+#define TURNMIN_DEFAULT 180
 
 @implementation UserParse
 
@@ -132,7 +133,8 @@
              @"releaseAt":@((int)[releaseAt timeIntervalSince1970]),
              @"friendShip":@([self currentFriendShip:heroine]),
              @"okRate":@(100 - 70 * [self currentFriendShip:heroine] / 100),
-             @"broken":prog >= LOVER_PROGRESS && !isMyHeroine ? @YES : @NO};
+             @"broken":prog >= LOVER_PROGRESS && !isMyHeroine ? @YES : @NO,
+             @"turnSec":@(turnSec)};
 }
 
 -(NSDate*)getRestEnd:(NSNumber*)twID tunrSec:(int)turnSec
@@ -153,7 +155,7 @@
         NSMutableDictionary *heroines = [@{} mutableCopy];
         NSDate *now = [NSDate date];
         for (NSNumber *e in numIds) {
-            NSDate *restEnd = [self getRestEnd:e tunrSec:180 * 60];
+            NSDate *restEnd = [self getRestEnd:e tunrSec:TURNMIN_DEFAULT * 60];
             heroines[[e stringValue]] = @{
                                           @"isMyHeroine":@NO,
                                           @"anyHero":@NO,
@@ -162,7 +164,8 @@
                                           @"releaseAt":@((int)[restEnd timeIntervalSince1970]),
                                           @"friendShip":@0,
                                           @"okRate":@100,
-                                          @"broken":@NO};
+                                          @"broken":@NO,
+                                          @"turnSec":@(TURNMIN_DEFAULT * 60)};
         }
         for (PFObject *e in objects) {
             heroines[[e[@"twID"] stringValue]] = [self pfobj2dic:e];
@@ -247,7 +250,7 @@
             [object.ACL setPublicReadAccess:YES];
             [object.ACL setPublicWriteAccess:YES];
             object[@"twID"] = @([twID longLongValue]);
-            object[@"turnMin"] = @180;
+            object[@"turnMin"] = @(TURNMIN_DEFAULT);
         }
         object[@"friendShip"] = @100;
         object[@"lastTouch"] = [NSDate date];
