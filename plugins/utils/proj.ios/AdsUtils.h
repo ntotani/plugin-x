@@ -43,4 +43,6 @@
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 
+- (void)saveImage:(NSString*)path;
+
 @end

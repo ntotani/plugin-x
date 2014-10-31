@@ -24,6 +24,7 @@
 
 #import "AdsUtils.h"
 #import "AdsWrapper.h"
+#import <AssetsLibrary/AssetsLibrary.h>
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
@@ -32,6 +33,27 @@
 @synthesize debug = __debug;
 
 #pragma mark InterfaceAds impl
+
+- (void)saveImage:(NSString*)path
+{
+    ALAssetsLibrary *lib = [[ALAssetsLibrary alloc] init];
+    UIImage *img = [UIImage imageWithContentsOfFile:path];
+    [lib writeImageToSavedPhotosAlbum:img.CGImage orientation:(ALAssetOrientation)img.imageOrientation completionBlock:^(NSURL *assetURL, NSError *error) {
+        NSString *title = @"";
+        NSString *message = @"保存しました";
+        if (error) {
+            title = @"エラー";
+            message = @"写真へのアクセスが許可されていません。\n設定からアクセスを許可してください。";
+        }
+        UIAlertView *alertView = [[UIAlertView alloc]
+                                  initWithTitle:title
+                                  message:message
+                                  delegate:nil
+                                  cancelButtonTitle:@"OK"
+                                  otherButtonTitles:nil];
+        [alertView show];
+    }];
+}
 
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo{}
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos{}
