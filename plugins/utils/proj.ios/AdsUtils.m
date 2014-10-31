@@ -22,48 +22,36 @@
  THE SOFTWARE.
  ****************************************************************************/
 
-#import <Foundation/Foundation.h>
-#import "InterfaceAds.h"
-#import "GADBannerView.h"
-#import "GADBannerViewDelegate.h"
+#import "AdsUtils.h"
+#import "AdsWrapper.h"
 
-typedef enum {
-    kSizeBanner = 1,
-    kSizeIABMRect,
-    kSizeIABBanner,
-    kSizeIABLeaderboard,
-    kSizeSkyscraper,
-} AdmobSizeEnum;
+#define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
-typedef enum {
-    kTypeBanner = 1,
-    kTypeFullScreen,
-} AdmobType;
+@implementation AdsUtils
 
-@interface AdsAdmob : NSObject <InterfaceAds, GADBannerViewDelegate>
+@synthesize debug = __debug;
+
+#pragma mark InterfaceAds impl
+
+- (void) configDeveloperInfo: (NSMutableDictionary*) devInfo{}
+- (void) showAds: (NSMutableDictionary*) info position:(int) pos{}
+- (void) hideAds: (NSMutableDictionary*) info{}
+- (void) queryPoints{}
+- (void) spendPoints: (int) points{}
+
+- (void) setDebugMode: (BOOL) isDebugMode
 {
+    self.debug = isDebugMode;
 }
 
-@property BOOL debug;
-@property (copy, nonatomic) NSString* strPublishID;
-@property (assign, nonatomic) GADBannerView* bannerView;
-@property (assign, nonatomic) NSMutableArray* testDeviceIDs;
+- (NSString*) getSDKVersion
+{
+    return @"0.0.0";
+}
 
-/**
- interfaces from InterfaceAds
- */
-- (void) configDeveloperInfo: (NSMutableDictionary*) devInfo;
-- (void) showAds: (NSMutableDictionary*) info position:(int) pos;
-- (void) hideAds: (NSMutableDictionary*) info;
-- (void) queryPoints;
-- (void) spendPoints: (int) points;
-- (void) setDebugMode: (BOOL) isDebugMode;
-- (NSString*) getSDKVersion;
-- (NSString*) getPluginVersion;
-
-/**
- interface for Admob SDK
- */
-- (void) addTestDevice: (NSString*) deviceID;
+- (NSString*) getPluginVersion
+{
+    return @"0.0.1";
+}
 
 @end
