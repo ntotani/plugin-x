@@ -116,7 +116,7 @@
 -(NSDictionary*)pfobj2dic:(PFObject*)heroine
 {
     PFObject *hero = heroine[@"hero"];
-    int turnSec = [heroine[@"turnMin"] intValue] * 60;
+    int turnSec = [self currentTurnMin:heroine] * 60;
     NSDate *now = [NSDate date];
     NSDate *dateEnd = [NSDate dateWithTimeInterval:turnSec sinceDate:heroine[@"fsUpdated"]];
     NSDate *restEnd = [self getRestEnd:heroine[@"twID"] tunrSec:turnSec];
@@ -243,6 +243,21 @@
     [[PFUser currentUser] saveInBackground];
 }
 
+- (void)dateHeroine:(NSString*)twID
+{
+    [self setReserve:[@{@"Param1":twID, @"Param2":@0} mutableCopy]];
+    [self setTouch:[@{@"Param1":twID, @"Param2":@((int)[[NSDate date] timeIntervalSince1970])} mutableCopy]];
+    [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
+        if (!error) {
+            int turnMin = [self currentTurnMin:object];
+            object[@"turnMin"] = @(MAX(turnMin - TURNMIN_LOSS, TURNMIN_MIN));
+            [PFObject saveAllInBackground:@[object, [PFUser currentUser]]];
+        } else {
+            [self commitUser];
+        }
+    }];
+}
+
 - (void)winHeroine:(NSString*)twID
 {
     [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
@@ -265,10 +280,17 @@
     }];
 }
 
+-(int)currentTurnMin:(PFObject*)heroine
+{
+    int pastSec = [[NSDate date] timeIntervalSinceDate:heroine[@"tmUpdated"]];
+    int turnMin = [heroine[@"turnMin"] intValue] + TURNMIN_DEFAULT * pastSec / 259200;
+    return MIN(turnMin, TURNMIN_DEFAULT);
+}
+
 - (int)currentFriendShip:(PFObject*)heroine
 {
     int pastMin = [[NSDate date] timeIntervalSinceDate:heroine[@"fsUpdated"]] / 60;
-    int pastTurn = pastMin / [heroine[@"turnMin"] intValue];
+    int pastTurn = pastMin / [self currentTurnMin:heroine];
     int friendShip = [heroine[@"friendShip"] intValue] - pastTurn * 4;
     return MAX(friendShip, 0);
 }

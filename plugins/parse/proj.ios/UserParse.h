@@ -35,6 +35,7 @@
 - (NSNumber*)getTouch:(NSString*)twID;
 - (void)setTouch:(NSMutableDictionary*)params;
 - (void)commitUser;
+- (void)dateHeroine:(NSString*)twID;
 - (void)winHeroine:(NSString*)twID;
 - (void)touchHeroine:(NSString*)twID;
 
