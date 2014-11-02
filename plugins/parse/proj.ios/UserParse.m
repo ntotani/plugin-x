@@ -5,6 +5,8 @@
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 #define LOVER_PROGRESS 100
 #define TURNMIN_DEFAULT 180
+#define TURNMIN_LOSS 10
+#define TURNMIN_MIN 10
 
 @implementation UserParse
 
@@ -116,7 +118,7 @@
     PFObject *hero = heroine[@"hero"];
     int turnSec = [heroine[@"turnMin"] intValue] * 60;
     NSDate *now = [NSDate date];
-    NSDate *dateEnd = [NSDate dateWithTimeInterval:turnSec sinceDate:heroine[@"lastTouch"]];
+    NSDate *dateEnd = [NSDate dateWithTimeInterval:turnSec sinceDate:heroine[@"fsUpdated"]];
     NSDate *restEnd = [self getRestEnd:heroine[@"twID"] tunrSec:turnSec];
     NSDate *releaseAt = dateEnd;
     if ([dateEnd compare:restEnd] == NSOrderedAscending) {
@@ -253,7 +255,7 @@
             object[@"turnMin"] = @(TURNMIN_DEFAULT);
         }
         object[@"friendShip"] = @100;
-        object[@"lastTouch"] = [NSDate date];
+        object[@"fsUpdated"] = [NSDate date];
         object[@"hero"] = [PFUser currentUser];
         [self setProgress:[@{@"Param1":twID, @"Param2":@(LOVER_PROGRESS)} mutableCopy]];
         NSMutableDictionary *reset = [@{@"Param1":twID, @"Param2":@0} mutableCopy];
@@ -265,7 +267,7 @@
 
 - (int)currentFriendShip:(PFObject*)heroine
 {
-    int pastMin = [[NSDate date] timeIntervalSinceDate:heroine[@"lastTouch"]] / 60;
+    int pastMin = [[NSDate date] timeIntervalSinceDate:heroine[@"fsUpdated"]] / 60;
     int pastTurn = pastMin / [heroine[@"turnMin"] intValue];
     int friendShip = [heroine[@"friendShip"] intValue] - pastTurn * 4;
     return MAX(friendShip, 0);
@@ -278,7 +280,7 @@
             return;
         }
         object[@"friendShip"] = @(MIN([self currentFriendShip:object] + 30, 100));
-        object[@"lastTouch"] = [NSDate date];
+        object[@"fsUpdated"] = [NSDate date];
         [object saveInBackground];
     }];
 }
