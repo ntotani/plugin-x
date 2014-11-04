@@ -228,6 +228,13 @@
     }];
 }
 
+- (void)attack:(NSString*)twID
+{
+    [PFCloud callFunctionInBackground:@"attack" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
+    }];
+}
+
 - (void)winHeroine:(NSString*)twID
 {
     [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
