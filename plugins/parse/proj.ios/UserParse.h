@@ -38,6 +38,7 @@
 - (void)dateHeroine:(NSString*)twID;
 - (void)attack:(NSString*)twID;
 - (void)breakHeroine:(NSString*)twID;
+- (void)reserve:(NSString*)twID;
 - (void)winHeroine:(NSString*)twID;
 - (void)touchHeroine:(NSString*)twID;
 
