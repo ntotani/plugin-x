@@ -231,7 +231,11 @@
 - (void)attack:(NSString*)twID
 {
     [PFCloud callFunctionInBackground:@"attack" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
+        NSString *msg = object;
+        if (!object) {
+            msg = @"ng";
+        }
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:msg];
     }];
 }
 
