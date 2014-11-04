@@ -180,8 +180,9 @@
 
 - (void)fetchGainedHeroine
 {
-    NSDictionary *progress = [PFUser currentUser][@"progress"];
-    [self fetchHeroine:[progress.allKeys componentsJoinedByString:@","]];
+    [PFCloud callFunctionInBackground:@"heroines" withParameters:@{} block:^(id object, NSError *error) {
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
+    }];
 }
 
 - (NSNumber*)getUserAttr:(NSString*)twID attr:(NSString*)attr
