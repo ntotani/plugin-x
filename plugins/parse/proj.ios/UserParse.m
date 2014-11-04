@@ -224,16 +224,7 @@
 
 - (void)dateHeroine:(NSString*)twID
 {
-    [self setReserve:[@{@"Param1":twID, @"Param2":@0} mutableCopy]];
-    [self setTouch:[@{@"Param1":twID, @"Param2":@((int)[[NSDate date] timeIntervalSince1970])} mutableCopy]];
-    [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if (!error) {
-            int turnMin = [self currentTurnMin:object];
-            object[@"turnMin"] = @(MAX(turnMin - TURNMIN_LOSS, TURNMIN_MIN));
-            [PFObject saveAllInBackground:@[object, [PFUser currentUser]]];
-        } else {
-            [self commitUser];
-        }
+    [PFCloud callFunctionInBackground:@"date" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
     }];
 }
 
