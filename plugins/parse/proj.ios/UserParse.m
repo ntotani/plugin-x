@@ -147,34 +147,12 @@
 
 - (void)fetchHeroine:(NSString *)ids
 {
-    PFQuery *q = [PFQuery queryWithClassName:@"Heroine"];
     NSMutableArray *numIds = [@[] mutableCopy];
     for (NSString *e in [ids componentsSeparatedByString:@","]) {
         [numIds addObject:@([e longLongValue])];
     }
-    [q whereKey:@"twID" containedIn:numIds];
-    [q findObjectsInBackgroundWithBlock:^(NSArray *objects, NSError *error) {
-        NSMutableDictionary *heroines = [@{} mutableCopy];
-        NSDate *now = [NSDate date];
-        for (NSNumber *e in numIds) {
-            NSDate *restEnd = [self getRestEnd:e tunrSec:TURNMIN_DEFAULT * 60];
-            heroines[[e stringValue]] = @{
-                                          @"isMyHeroine":@NO,
-                                          @"anyHero":@NO,
-                                          @"dateNow":@NO,
-                                          @"restNow":[now compare:restEnd] == NSOrderedAscending ? @YES : @NO,
-                                          @"releaseAt":@((int)[restEnd timeIntervalSince1970]),
-                                          @"friendShip":@0,
-                                          @"okRate":@100,
-                                          @"broken":@NO,
-                                          @"turnSec":@(TURNMIN_DEFAULT * 60)};
-        }
-        for (PFObject *e in objects) {
-            heroines[[e[@"twID"] stringValue]] = [self pfobj2dic:e];
-        }
-        NSData *d = [NSJSONSerialization dataWithJSONObject:heroines options:kNilOptions error:nil];
-        NSString *json = [[NSString alloc] initWithData:d encoding:NSUTF8StringEncoding];
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:json];
+    [PFCloud callFunctionInBackground:@"heroines" withParameters:@{@"ids":numIds} block:^(id object, NSError *error) {
+        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
     }];
 }
 
