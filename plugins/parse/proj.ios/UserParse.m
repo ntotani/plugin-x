@@ -290,13 +290,7 @@
 
 - (void)touchHeroine:(NSString*)twID
 {
-    [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
-        if (error) {
-            return;
-        }
-        object[@"friendShip"] = @(MIN([self currentFriendShip:object] + 30, 100));
-        object[@"fsUpdated"] = [NSDate date];
-        [object saveInBackground];
+    [PFCloud callFunctionInBackground:@"touch" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
     }];
 }
 
