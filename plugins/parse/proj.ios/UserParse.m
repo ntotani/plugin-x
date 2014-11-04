@@ -239,6 +239,12 @@
     }];
 }
 
+- (void)breakHeroine:(NSString*)twID
+{
+    [PFCloud callFunctionInBackground:@"break" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
+    }];
+}
+
 - (void)winHeroine:(NSString*)twID
 {
     [[self heroineQuery:twID] getFirstObjectInBackgroundWithBlock:^(PFObject *object, NSError *error) {
