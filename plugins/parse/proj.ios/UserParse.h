@@ -26,14 +26,7 @@
 - (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController;
 
 - (NSString*)getTwitterID;
-- (void)fetchHeroine:(NSString *)ids;
-- (void)fetchGainedHeroine;
-- (void)dateHeroine:(NSString*)twID;
-- (void)attack:(NSString*)twID;
-- (void)breakHeroine:(NSString*)twID;
-- (void)reserve:(NSString*)twID;
-- (void)touchHeroine:(NSString*)twID;
-
 - (NSString*)twitterApi:(NSMutableDictionary*)params;
+- (void)cloudFunc:(NSMutableDictionary*)params;
 
 @end

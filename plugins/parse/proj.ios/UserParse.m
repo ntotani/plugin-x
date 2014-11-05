@@ -102,59 +102,6 @@
     return [PFTwitterUtils twitter].userId;
 }
 
-- (void)fetchHeroine:(NSString *)ids
-{
-    NSMutableArray *numIds = [@[] mutableCopy];
-    for (NSString *e in [ids componentsSeparatedByString:@","]) {
-        [numIds addObject:@([e longLongValue])];
-    }
-    [PFCloud callFunctionInBackground:@"heroines" withParameters:@{@"ids":numIds} block:^(id object, NSError *error) {
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
-    }];
-}
-
-- (void)fetchGainedHeroine
-{
-    [PFCloud callFunctionInBackground:@"heroines" withParameters:@{} block:^(id object, NSError *error) {
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
-    }];
-}
-
-- (void)dateHeroine:(NSString*)twID
-{
-    [PFCloud callFunctionInBackground:@"date" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
-    }];
-}
-
-- (void)attack:(NSString*)twID
-{
-    [PFCloud callFunctionInBackground:@"attack" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
-        NSString *msg = object;
-        if (!object) {
-            msg = @"ng";
-        }
-        [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:msg];
-    }];
-}
-
-- (void)breakHeroine:(NSString*)twID
-{
-    [PFCloud callFunctionInBackground:@"break" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
-    }];
-}
-
-- (void)reserve:(NSString*)twID
-{
-    [PFCloud callFunctionInBackground:@"reserve" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
-    }];
-}
-
-- (void)touchHeroine:(NSString*)twID
-{
-    [PFCloud callFunctionInBackground:@"touch" withParameters:@{@"twID":@([twID intValue])} block:^(id object, NSError *error) {
-    }];
-}
-
 - (NSString*)twitterApi:(NSMutableDictionary*)params
 {
     NSString* api = params[@"Param1"];
@@ -173,6 +120,22 @@
         return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+}
+
+- (void)cloudFunc:(NSMutableDictionary*)params
+{
+    NSString *name = params[@"Param1"];
+    NSMutableDictionary *prms = params[@"Param2"];
+    if (prms[@"twID"]) {
+        prms[@"twID"] = @([prms[@"twID"] longLongValue]);
+    }
+    [PFCloud callFunctionInBackground:name withParameters:prms block:^(id object, NSError *error) {
+        if (error || !object) {
+            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"error"];
+        } else {
+            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
+        }
+    }];
 }
 
 @end
