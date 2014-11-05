@@ -20,9 +20,6 @@
     if (twitterConsumerKey != nil && twitterConsumerSecret != nil) {
         [PFTwitterUtils initializeWithConsumerKey:twitterConsumerKey consumerSecret:twitterConsumerSecret];
     }
-    PFACL *defaultACL = [PFACL ACL];
-    [defaultACL setPublicReadAccess:YES];
-    [PFACL setDefaultACL:defaultACL withAccessForCurrentUser:YES];
 }
 
 - (void) login
