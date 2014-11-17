@@ -35,7 +35,7 @@
     [PFTwitterUtils logInWithBlock:^(PFUser *user, NSError *error) {
         if (error) {
             OUTPUT_LOG(@"%@", [error userInfo][@"error"]);
-            NSString *msg = @"unkown";
+            NSString *msg = @"unknown";
             if ([error code] == kPFErrorConnectionFailed) { msg = @"network"; }
             else if ([error code] == kPFErrorInternalServer) { msg = @"server"; }
             else if ([error code] == kPFErrorExceededQuota) { msg = @"overquota"; }
