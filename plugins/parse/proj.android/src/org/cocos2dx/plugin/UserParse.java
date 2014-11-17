@@ -53,6 +53,9 @@ public class UserParse implements InterfaceUser {
 
     @Override
     public void login() {
+    }
+
+    public void loginWithTwitter() {
         final InterfaceUser that = this;
         PluginWrapper.runOnMainThread(new Runnable() {
             @Override
@@ -62,9 +65,24 @@ public class UserParse implements InterfaceUser {
                         if (e == null && user != null) {
                             UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGIN_SUCCEED, user.getUsername());
                         } else if (user == null) {
-                            UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGIN_FAILED, "usernameOrPasswordIsInvalid");
+                            UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGIN_FAILED, "cancel");
                         } else {
-                            UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGIN_FAILED, "somethingWentWrong");
+                            String msg;
+                            switch(e.getCode()) {
+                                case ParseException.CONNECTION_FAILED:
+                                    msg = "network";
+                                    break;
+                                case ParseException.EXCEEDED_QUOTA:
+                                    msg = "overquota";
+                                    break;
+                                case ParseException.INTERNAL_SERVER_ERROR:
+                                case ParseException.TIMEOUT:
+                                    msg = "server";
+                                    break;
+                                default:
+                                    msg = "unknown";
+                            }
+                            UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGIN_FAILED, msg);
                         }
                     }
                 });
@@ -102,65 +120,6 @@ public class UserParse implements InterfaceUser {
     @Override
     public String getPluginVersion() {
         return "0.0.1";
-    }
-
-    public void enableAutomaticUser() {
-        ParseUser.enableAutomaticUser();
-    }
-
-    public void saveUserAttr(JSONObject args) {
-        try {
-            ParseUser user = ParseUser.getCurrentUser();
-            user.put("runCount", Integer.parseInt(args.getString("Param1")));
-            user.put("goalCount", Integer.parseInt(args.getString("Param2")));
-            user.put("cupCount", Integer.parseInt(args.getString("Param3")));
-            user.saveInBackground();
-        } catch(org.json.JSONException e) {
-            LogE("Exception in saveUserAttr", e);
-        }
-    }
-
-    public int getUserAttr(String attr) {
-        return Integer.parseInt(ParseUser.getCurrentUser().get(attr).toString());
-    }
-
-    public void fetchUserRank(String col) {
-        final InterfaceUser that = this;
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.whereGreaterThan(col, getUserAttr(col));
-        query.countInBackground(new CountCallback() {
-            public void done(int count, ParseException e) {
-                if (e == null) {
-                    // The query was successful.
-                    UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, String.format("{\"rank\":%d}", count + 1));
-                } else {
-                    // Something went wrong.
-                    UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, String.format("{\"rank\":%d}", 0));
-                }
-            }
-        });
-    }
-
-    public void fetchScoreRank(String col) {
-        final InterfaceUser that = this;
-        ParseQuery<ParseUser> query = ParseUser.getQuery();
-        query.setLimit(100);
-        query.orderByDescending(col);
-        final String _col = col;
-        query.findInBackground(new FindCallback<ParseUser>() {
-            public void done(List<ParseUser> users, ParseException e) {
-                if (e == null) {
-                    JSONArray arr = new JSONArray();
-                    for (ParseObject user : users) {
-                        arr.put(Integer.parseInt(user.get(_col).toString()));
-                    }
-                    UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, arr.toString());
-                } else {
-                    LogE(e.getMessage(), e);
-                    UserWrapper.onActionResult(that, UserWrapper.ACTION_RET_LOGOUT_SUCCEED, "[]");
-                }
-            }
-        });
     }
 
 }
