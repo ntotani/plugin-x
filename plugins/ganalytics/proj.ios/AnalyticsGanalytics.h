@@ -14,7 +14,7 @@
 - (void) stopSession;
 - (void) setSessionContinueMillis: (long) millis;
 - (void) setCaptureUncaughtException: (BOOL) isEnabled;
-- (void) setDebugMode: (BOOL) isDebugMode;
+- (void) setDebugMode: (NSNumber*) isDebugMode;
 - (void) logError: (NSString*) errorId withMsg:(NSString*) message;
 - (void) logEvent: (NSString*) eventId;
 - (void) logEvent: (NSString*) eventId withParam:(NSMutableDictionary*) paramMap;
@@ -22,5 +22,9 @@
 - (void) logTimedEventEnd: (NSString*) eventId;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
+
+// GoogleAnalytics
+- (void)setUserID:(NSString*)userID;
+- (void)screen:(NSString*)name;
 
 @end

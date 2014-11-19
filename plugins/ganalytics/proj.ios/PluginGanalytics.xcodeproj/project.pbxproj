@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		C6BC264C1A1BA22600C856A9 /* libGoogleAnalyticsServices.a in Frameworks */ = {isa = PBXBuildFile; fileRef = C6BC26451A1BA00E00C856A9 /* libGoogleAnalyticsServices.a */; };
 		FA09A376168AFD41008C1C7B /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FA09A375168AFD41008C1C7B /* Foundation.framework */; };
 		FAB6DFE01756F29800C90D89 /* AnalyticsGanalytics.m in Sources */ = {isa = PBXBuildFile; fileRef = FAB6DFDF1756F29800C90D89 /* AnalyticsGanalytics.m */; };
 /* End PBXBuildFile section */
@@ -24,6 +25,18 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		C6BC263B1A1BA00E00C856A9 /* GAI.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAI.h; sourceTree = "<group>"; };
+		C6BC263C1A1BA00E00C856A9 /* GAIDictionaryBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIDictionaryBuilder.h; sourceTree = "<group>"; };
+		C6BC263D1A1BA00E00C856A9 /* GAIEcommerceFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceFields.h; sourceTree = "<group>"; };
+		C6BC263E1A1BA00E00C856A9 /* GAIEcommerceProduct.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProduct.h; sourceTree = "<group>"; };
+		C6BC263F1A1BA00E00C856A9 /* GAIEcommerceProductAction.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommerceProductAction.h; sourceTree = "<group>"; };
+		C6BC26401A1BA00E00C856A9 /* GAIEcommercePromotion.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIEcommercePromotion.h; sourceTree = "<group>"; };
+		C6BC26411A1BA00E00C856A9 /* GAIFields.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAIFields.h; sourceTree = "<group>"; };
+		C6BC26421A1BA00E00C856A9 /* GAILogger.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAILogger.h; sourceTree = "<group>"; };
+		C6BC26431A1BA00E00C856A9 /* GAITrackedViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAITrackedViewController.h; sourceTree = "<group>"; };
+		C6BC26441A1BA00E00C856A9 /* GAITracker.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = GAITracker.h; sourceTree = "<group>"; };
+		C6BC26451A1BA00E00C856A9 /* libGoogleAnalyticsServices.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGoogleAnalyticsServices.a; sourceTree = "<group>"; };
+		C6BC264D1A1BA27C00C856A9 /* libsqlite3.0.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libsqlite3.0.dylib; path = usr/lib/libsqlite3.0.dylib; sourceTree = SDKROOT; };
 		FA09A372168AFD41008C1C7B /* libPluginGanalytics.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginGanalytics.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FA09A375168AFD41008C1C7B /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		FA73FC9017A11B84007E23C2 /* PluginGanalytics-Prefix.pch */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "PluginGanalytics-Prefix.pch"; sourceTree = "<group>"; };
@@ -37,6 +50,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				C6BC264C1A1BA22600C856A9 /* libGoogleAnalyticsServices.a in Frameworks */,
 				FA09A376168AFD41008C1C7B /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -44,12 +58,31 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		C6BC263A1A1BA00E00C856A9 /* GoogleAnalytics */ = {
+			isa = PBXGroup;
+			children = (
+				C6BC263B1A1BA00E00C856A9 /* GAI.h */,
+				C6BC263C1A1BA00E00C856A9 /* GAIDictionaryBuilder.h */,
+				C6BC263D1A1BA00E00C856A9 /* GAIEcommerceFields.h */,
+				C6BC263E1A1BA00E00C856A9 /* GAIEcommerceProduct.h */,
+				C6BC263F1A1BA00E00C856A9 /* GAIEcommerceProductAction.h */,
+				C6BC26401A1BA00E00C856A9 /* GAIEcommercePromotion.h */,
+				C6BC26411A1BA00E00C856A9 /* GAIFields.h */,
+				C6BC26421A1BA00E00C856A9 /* GAILogger.h */,
+				C6BC26431A1BA00E00C856A9 /* GAITrackedViewController.h */,
+				C6BC26441A1BA00E00C856A9 /* GAITracker.h */,
+				C6BC26451A1BA00E00C856A9 /* libGoogleAnalyticsServices.a */,
+			);
+			path = GoogleAnalytics;
+			sourceTree = "<group>";
+		};
 		FA09A367168AFD41008C1C7B = {
 			isa = PBXGroup;
 			children = (
 				FA73FC9017A11B84007E23C2 /* PluginGanalytics-Prefix.pch */,
 				FAB6DFDE1756F29800C90D89 /* AnalyticsGanalytics.h */,
 				FAB6DFDF1756F29800C90D89 /* AnalyticsGanalytics.m */,
+				C6BC263A1A1BA00E00C856A9 /* GoogleAnalytics */,
 				FA09A374168AFD41008C1C7B /* Frameworks */,
 				FA09A373168AFD41008C1C7B /* Products */,
 			);
@@ -66,6 +99,7 @@
 		FA09A374168AFD41008C1C7B /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C6BC264D1A1BA27C00C856A9 /* libsqlite3.0.dylib */,
 				FA86650E168BE22D0073E055 /* SystemConfiguration.framework */,
 				FA09A375168AFD41008C1C7B /* Foundation.framework */,
 			);
@@ -202,7 +236,10 @@
 				GCC_PREFIX_HEADER = "PluginGanalytics-Prefix.pch";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../protocols/platform/ios";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GoogleAnalytics",
+				);
 				ONLY_ACTIVE_ARCH = NO;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = PluginGanalytics;
@@ -221,7 +258,10 @@
 				GCC_PREFIX_HEADER = "PluginGanalytics-Prefix.pch";
 				HEADER_SEARCH_PATHS = "$(SRCROOT)/../../../protocols/platform/ios";
 				IPHONEOS_DEPLOYMENT_TARGET = 5.1.1;
-				LIBRARY_SEARCH_PATHS = "$(inherited)";
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GoogleAnalytics",
+				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = PluginGanalytics;
 				SKIP_INSTALL = YES;
