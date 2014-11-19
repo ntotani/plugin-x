@@ -27,6 +27,12 @@
     [tracker send:[[GAIDictionaryBuilder createScreenView] build]];
 }
 
+- (void)social:(NSMutableDictionary *)param
+{
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createSocialWithNetwork:param[@"network"] action:param[@"action"] target:nil] build]];
+}
+
 - (void) stopSession
 {
 }

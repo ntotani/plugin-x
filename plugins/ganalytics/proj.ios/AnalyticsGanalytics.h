@@ -26,5 +26,6 @@
 // GoogleAnalytics
 - (void)setUserID:(NSString*)userID;
 - (void)screen:(NSString*)name;
+- (void)social:(NSMutableDictionary*)param;
 
 @end
