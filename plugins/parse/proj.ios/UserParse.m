@@ -131,9 +131,9 @@
     }
     [PFCloud callFunctionInBackground:name withParameters:prms block:^(id object, NSError *error) {
         if (error || !object) {
-            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"error"];
+            [UserWrapper onActionResult:self withRet:1 withMsg:@"error"];
         } else {
-            [UserWrapper onActionResult:self withRet:kLogoutSucceed withMsg:object];
+            [UserWrapper onActionResult:self withRet:0 withMsg:object];
         }
     }];
 }
