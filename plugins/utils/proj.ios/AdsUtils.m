@@ -58,10 +58,19 @@
 - (void)showDialog:(NSMutableDictionary*)params
 {
     UIAlertController *ac = [UIAlertController alertControllerWithTitle:params[@"title"] message:params[@"message"] preferredStyle:UIAlertControllerStyleAlert];
-    [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:nil]];
-    [ac addAction:[UIAlertAction actionWithTitle:params[@"ok"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-        [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
-    }]];
+    if (params[@"cancel"]) {
+        [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:nil]];
+    }
+    if (params[@"ok"]) {
+        [ac addAction:[UIAlertAction actionWithTitle:params[@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+            [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
+        }]];
+    }
+    if (params[@"red"]) {
+        [ac addAction:[UIAlertAction actionWithTitle:params[@"red"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+            [AdsWrapper onAdsResult:self withRet:0 withMsg:@"red"];
+        }]];
+    }
     [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
 }
 
