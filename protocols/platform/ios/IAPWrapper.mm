@@ -66,7 +66,15 @@ using namespace cocos2d::plugin;
             }
             listener->onRequestProductsResult((IAPProductRequest )ret,pdlist);
         }else if(callback){
-            NSString *productInfo =  [ParseUtils NSDictionaryToNSString:products];
+            NSMutableArray *arr = [@[] mutableCopy];
+            NSNumberFormatter *numberFormatter = [[NSNumberFormatter alloc] init];
+            [numberFormatter setFormatterBehavior:NSNumberFormatterBehavior10_4];
+            [numberFormatter setNumberStyle:NSNumberFormatterCurrencyStyle];
+            for (SKProduct *e in products) {
+                [numberFormatter setLocale:e.priceLocale];
+                [arr addObject:@{@"productID":e.productIdentifier, @"title":e.localizedTitle, @"price":[numberFormatter stringFromNumber:e.price], @"desc":e.localizedDescription}];
+            }
+            NSString *productInfo =  [ParseUtils NSDictionaryToNSString:arr];
             const char *charProductInfo;
             if(productInfo !=nil){
                 charProductInfo =[productInfo UTF8String];
