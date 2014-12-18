@@ -44,5 +44,6 @@
 - (NSString*) getPluginVersion;
 
 - (void)saveImage:(NSString*)path;
+- (void)showDialog:(NSMutableDictionary*)params;
 
 @end

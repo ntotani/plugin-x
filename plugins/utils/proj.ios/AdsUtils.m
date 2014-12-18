@@ -55,6 +55,16 @@
     }];
 }
 
+- (void)showDialog:(NSMutableDictionary*)params
+{
+    UIAlertController *ac = [UIAlertController alertControllerWithTitle:params[@"title"] message:params[@"message"] preferredStyle:UIAlertControllerStyleAlert];
+    [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:nil]];
+    [ac addAction:[UIAlertAction actionWithTitle:params[@"ok"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+        [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
+    }]];
+    [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
+}
+
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo{}
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos{}
 - (void) hideAds: (NSMutableDictionary*) info{}
