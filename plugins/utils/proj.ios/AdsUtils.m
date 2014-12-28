@@ -29,6 +29,11 @@
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
 @implementation AdsUtils
+{
+    UIImageView *dollView;
+    id onShutter;
+    id onRetake;
+}
 
 @synthesize debug = __debug;
 
@@ -74,21 +79,45 @@
     [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
 }
 
-- (void) showCamera:(NSString*)path
+- (UIImage*)convertImg:(NSString*)path with:(int)idx
 {
-    UIImagePickerController *pc = [[UIImagePickerController alloc] init];
-    pc.sourceType = UIImagePickerControllerSourceTypeCamera;
-    pc.delegate = self;
-    UIImage *img = [[UIImage alloc] initWithContentsOfFile:path];
+    UIImage *img = [[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:path, idx]];
     CGRect clip = CGRectMake(0, 0, img.size.width, img.size.height * 2 / 3);
     CGImageRef trim = CGImageCreateWithImageInRect(img.CGImage, clip);
     img = [UIImage imageWithCGImage:trim];
     CGImageRelease(trim);
-    CGRect s = [UIScreen mainScreen].bounds;
-    UIImageView *iv = [[UIImageView alloc] initWithImage:img];
-    iv.frame = CGRectMake(s.size.width / 4, s.size.height / 5, s.size.width, s.size.height * 2 / 3);
-    pc.cameraOverlayView = iv;
+    return img;
+}
+
+- (void) showCamera:(NSMutableDictionary*)params
+{
+    if (![UIImagePickerController isSourceTypeAvailable:UIImagePickerControllerSourceTypeCamera]) {
+        [AdsWrapper onAdsResult:self withRet:1 withMsg:@"no_camera"];
+        return;
+    }
+    CGSize size = [UIScreen mainScreen].bounds.size;
+    CGRect frame = CGRectMake(size.width / 4, size.height / 5, size.width, size.height * 2 / 3);
+    dollView = [[UIImageView alloc] initWithFrame:frame];
+    dollView.image = [self convertImg:params[@"path"] with:0];
+    NSMutableArray *imgs = [NSMutableArray array];
+    for (int i = 1; i < [params[@"frames"] intValue]; i++) {
+        [imgs addObject:[self convertImg:params[@"path"] with:i]];
+    }
+    dollView.animationImages = imgs;
+    dollView.animationDuration = [params[@"frames"] intValue] / [params[@"fps"] intValue];
+    dollView.animationRepeatCount = 0;
+    [dollView startAnimating];
+    UIImagePickerController *pc = [[UIImagePickerController alloc] init];
+    pc.sourceType = UIImagePickerControllerSourceTypeCamera;
+    pc.delegate = self;
+    pc.cameraOverlayView = dollView;
     [[AdsWrapper getCurrentRootViewController] presentViewController:pc animated:YES completion:nil];
+    onShutter = [[NSNotificationCenter defaultCenter] addObserverForName:@"_UIImagePickerControllerUserDidCaptureItem" object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [dollView stopAnimating];
+    }];
+    onRetake = [[NSNotificationCenter defaultCenter] addObserverForName:@"_UIImagePickerControllerUserDidRejectItem" object:nil queue:nil usingBlock:^(NSNotification *note) {
+        [dollView startAnimating];
+    }];
 }
 
 - (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
@@ -102,6 +131,16 @@
     } else {
         [AdsWrapper onAdsResult:self withRet:1 withMsg:path];
     }
+    [[NSNotificationCenter defaultCenter] removeObserver:onShutter];
+    [[NSNotificationCenter defaultCenter] removeObserver:onRetake];
+    [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
+- (void)imagePickerControllerDidCancel:(UIImagePickerController *)picker
+{
+    [AdsWrapper onAdsResult:self withRet:1 withMsg:@"cancel"];
+    [[NSNotificationCenter defaultCenter] removeObserver:onShutter];
+    [[NSNotificationCenter defaultCenter] removeObserver:onRetake];
     [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
 }
 

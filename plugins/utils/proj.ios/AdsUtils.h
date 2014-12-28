@@ -46,6 +46,6 @@
 
 - (void)saveImage:(NSString*)path;
 - (void)showDialog:(NSMutableDictionary*)params;
-- (void)showCamera:(NSString*)path;
+- (void)showCamera:(NSMutableDictionary*)params;
 
 @end
