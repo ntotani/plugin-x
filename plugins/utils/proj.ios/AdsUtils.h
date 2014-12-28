@@ -22,10 +22,11 @@
  THE SOFTWARE.
  ****************************************************************************/
 
+#import <UIKit/UIKit.h>
 #import <Foundation/Foundation.h>
 #import "InterfaceAds.h"
 
-@interface AdsUtils : NSObject <InterfaceAds>
+@interface AdsUtils : NSObject <InterfaceAds, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
 {
 }
 
@@ -39,11 +40,12 @@
 - (void) hideAds: (NSMutableDictionary*) info;
 - (void) queryPoints;
 - (void) spendPoints: (int) points;
-- (void) setDebugMode: (BOOL) isDebugMode;
+- (void) setDebugMode: (NSNumber*) isDebugMode;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 
 - (void)saveImage:(NSString*)path;
 - (void)showDialog:(NSMutableDictionary*)params;
+- (void)showCamera:(NSString*)path;
 
 @end

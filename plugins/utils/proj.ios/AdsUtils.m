@@ -74,15 +74,46 @@
     [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
 }
 
+- (void) showCamera:(NSString*)path
+{
+    UIImagePickerController *pc = [[UIImagePickerController alloc] init];
+    pc.sourceType = UIImagePickerControllerSourceTypeCamera;
+    pc.delegate = self;
+    UIImage *img = [[UIImage alloc] initWithContentsOfFile:path];
+    CGRect clip = CGRectMake(0, 0, img.size.width, img.size.height * 2 / 3);
+    CGImageRef trim = CGImageCreateWithImageInRect(img.CGImage, clip);
+    img = [UIImage imageWithCGImage:trim];
+    CGImageRelease(trim);
+    CGRect s = [UIScreen mainScreen].bounds;
+    UIImageView *iv = [[UIImageView alloc] initWithImage:img];
+    iv.frame = CGRectMake(s.size.width / 4, s.size.height / 5, s.size.width, s.size.height * 2 / 3);
+    pc.cameraOverlayView = iv;
+    [[AdsWrapper getCurrentRootViewController] presentViewController:pc animated:YES completion:nil];
+}
+
+- (void)imagePickerController:(UIImagePickerController *)picker didFinishPickingMediaWithInfo:(NSDictionary *)info
+{
+    NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
+    NSString *path = [NSString stringWithFormat:@"%@/camera.png", paths[0]];
+    UIImage *img = info[UIImagePickerControllerOriginalImage];
+    NSData *data = UIImagePNGRepresentation(img);
+    if ([data writeToFile:path atomically:YES]) {
+        [AdsWrapper onAdsResult:self withRet:0 withMsg:path];
+    } else {
+        [AdsWrapper onAdsResult:self withRet:1 withMsg:path];
+    }
+    [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo{}
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos{}
 - (void) hideAds: (NSMutableDictionary*) info{}
 - (void) queryPoints{}
 - (void) spendPoints: (int) points{}
 
-- (void) setDebugMode: (BOOL) isDebugMode
+- (void) setDebugMode: (NSNumber*) isDebugMode
 {
-    self.debug = isDebugMode;
+    self.debug = [isDebugMode boolValue];
 }
 
 - (NSString*) getSDKVersion
