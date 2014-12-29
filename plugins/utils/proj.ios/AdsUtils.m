@@ -126,6 +126,11 @@
     NSString *path = [NSString stringWithFormat:@"%@/camera.png", paths[0]];
     UIImage *img = info[UIImagePickerControllerOriginalImage];
     img = [[self class] unsetOrientation:img];
+    UIGraphicsBeginImageContext(img.size);
+    [img drawInRect:CGRectMake(0, 0, img.size.width, img.size.height)];
+    [dollView.image drawInRect:CGRectMake(img.size.width / 4, 0, img.size.width, img.size.height)];
+    img = UIGraphicsGetImageFromCurrentImageContext();
+    UIGraphicsEndImageContext();
     NSData *data = UIImagePNGRepresentation(img);
     if ([data writeToFile:path atomically:YES]) {
         [AdsWrapper onAdsResult:self withRet:0 withMsg:path];
