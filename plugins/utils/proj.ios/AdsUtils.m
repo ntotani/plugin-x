@@ -125,6 +125,7 @@
     NSArray *paths = NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES);
     NSString *path = [NSString stringWithFormat:@"%@/camera.png", paths[0]];
     UIImage *img = info[UIImagePickerControllerOriginalImage];
+    img = [[self class] unsetOrientation:img];
     NSData *data = UIImagePNGRepresentation(img);
     if ([data writeToFile:path atomically:YES]) {
         [AdsWrapper onAdsResult:self withRet:0 withMsg:path];
@@ -142,6 +143,60 @@
     [[NSNotificationCenter defaultCenter] removeObserver:onShutter];
     [[NSNotificationCenter defaultCenter] removeObserver:onRetake];
     [[AdsWrapper getCurrentRootViewController] dismissViewControllerAnimated:YES completion:nil];
+}
+
++ (UIImage *) unsetOrientation:(UIImage *)image {
+    UIImage *newImage;
+    // 画像のorientationを全て標準(UIImageOrientationUp:0)として生成
+    if (image.imageOrientation == UIImageOrientationDown) {
+        // CGImageRotatedByAngleが180でうまくいかないのでと90を2回
+        newImage = [UIImage imageWithCGImage:[[self class] CGImageRotatedByAngle:[[self class] CGImageRotatedByAngle:image.CGImage angle:90] angle:90]];
+    }else if(image.imageOrientation == UIImageOrientationLeft){
+        newImage = [UIImage imageWithCGImage:[[self class] CGImageRotatedByAngle:image.CGImage angle:90]];
+    }else if(image.imageOrientation == UIImageOrientationRight){
+        newImage = [UIImage imageWithCGImage:[[self class] CGImageRotatedByAngle:image.CGImage angle:-90]];
+    }else{
+        newImage = [UIImage imageWithCGImage:image.CGImage];
+    }
+    return newImage;
+}
+
++ (CGImageRef)CGImageRotatedByAngle:(CGImageRef)imgRef angle:(CGFloat)angle
+{
+    CGFloat angleInRadians = angle * (M_PI / 180);
+    CGFloat width = CGImageGetWidth(imgRef);
+    CGFloat height = CGImageGetHeight(imgRef);
+
+    CGRect imgRect = CGRectMake(0, 0, width, height);
+    CGAffineTransform transform = CGAffineTransformMakeRotation(angleInRadians);
+    CGRect rotatedRect = CGRectApplyAffineTransform(imgRect, transform);
+    CGColorSpaceRef colorSpace = CGColorSpaceCreateDeviceRGB();
+    CGContextRef bmContext = CGBitmapContextCreate(NULL,
+                                                   rotatedRect.size.width,
+                                                   rotatedRect.size.height,
+                                                   8,
+                                                   0,
+                                                   colorSpace,
+                                                   (CGBitmapInfo)kCGImageAlphaPremultipliedFirst);
+    CGContextSetInterpolationQuality(bmContext, kCGInterpolationNone);
+    CGColorSpaceRelease(colorSpace);
+    CGContextTranslateCTM(bmContext,
+                          +(rotatedRect.size.width/2),
+                          +(rotatedRect.size.height/2));
+    CGContextRotateCTM(bmContext, angleInRadians);
+    CGContextTranslateCTM(bmContext,
+                          -(rotatedRect.size.height/2),
+                          -(rotatedRect.size.width/2));
+    CGContextDrawImage(bmContext, CGRectMake(0, 0,
+                                             rotatedRect.size.height,
+                                             rotatedRect.size.width),
+                       imgRef);
+
+    CGImageRef rotatedImage = CGBitmapContextCreateImage(bmContext);
+    CFRelease(bmContext);
+    bmContext = nil;
+
+    return rotatedImage;
 }
 
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo{}
