@@ -14,12 +14,6 @@
 
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo
 {
-    [Parse setApplicationId:cpInfo[@"ApplicationID"] clientKey:cpInfo[@"ClientKey"]];
-    NSString* twitterConsumerKey = cpInfo[@"TwitterConsumerKey"];
-    NSString* twitterConsumerSecret = cpInfo[@"TwitterConsumerSecret"];
-    if (twitterConsumerKey != nil && twitterConsumerSecret != nil) {
-        [PFTwitterUtils initializeWithConsumerKey:twitterConsumerKey consumerSecret:twitterConsumerSecret];
-    }
 }
 
 - (void) login
