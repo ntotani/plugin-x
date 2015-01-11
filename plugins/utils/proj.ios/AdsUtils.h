@@ -26,7 +26,7 @@
 #import <Foundation/Foundation.h>
 #import "InterfaceAds.h"
 
-@interface AdsUtils : NSObject <InterfaceAds, UINavigationControllerDelegate, UIImagePickerControllerDelegate>
+@interface AdsUtils : NSObject <InterfaceAds, UINavigationControllerDelegate, UIImagePickerControllerDelegate, UIAlertViewDelegate>
 {
 }
 

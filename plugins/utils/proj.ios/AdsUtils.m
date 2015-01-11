@@ -62,21 +62,42 @@
 
 - (void)showDialog:(NSMutableDictionary*)params
 {
-    UIAlertController *ac = [UIAlertController alertControllerWithTitle:params[@"title"] message:params[@"message"] preferredStyle:UIAlertControllerStyleAlert];
-    if (params[@"cancel"]) {
-        [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:nil]];
+    NSString *currentVersion = [[UIDevice currentDevice] systemVersion];
+    if([currentVersion compare:@"8.0" options:NSNumericSearch] == NSOrderedAscending){
+        // i0S7
+        UIAlertView *av = [[UIAlertView alloc] init];
+        av.title = params[@"title"];
+        av.message = params[@"message"];
+        if (params[@"cancel"]) { [av addButtonWithTitle:params[@"cancel"]]; }
+        if (params[@"ok"]) { [av addButtonWithTitle:params[@"ok"]]; }
+        if (params[@"red"]) { [av addButtonWithTitle:params[@"red"]]; }
+        av.delegate = self;
+        [av show];
+    } else {
+        // iOS8
+        UIAlertController *ac = [UIAlertController alertControllerWithTitle:params[@"title"] message:params[@"message"] preferredStyle:UIAlertControllerStyleAlert];
+        if (params[@"cancel"]) {
+            [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:nil]];
+        }
+        if (params[@"ok"]) {
+            [ac addAction:[UIAlertAction actionWithTitle:params[@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
+                [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
+            }]];
+        }
+        if (params[@"red"]) {
+            [ac addAction:[UIAlertAction actionWithTitle:params[@"red"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
+                [AdsWrapper onAdsResult:self withRet:0 withMsg:@"red"];
+            }]];
+        }
+        [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
     }
-    if (params[@"ok"]) {
-        [ac addAction:[UIAlertAction actionWithTitle:params[@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-            [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
-        }]];
+}
+
+- (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
+{
+    if (buttonIndex > 0 || alertView.numberOfButtons == 1) {
+        [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
     }
-    if (params[@"red"]) {
-        [ac addAction:[UIAlertAction actionWithTitle:params[@"red"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-            [AdsWrapper onAdsResult:self withRet:0 withMsg:@"red"];
-        }]];
-    }
-    [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
 }
 
 - (UIImage*)convertImg:(NSString*)path with:(int)idx
