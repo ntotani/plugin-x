@@ -112,7 +112,7 @@
     NSError* error = nil;
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     if (error) {
-        if (error.code == NSURLErrorTimedOut) {
+        if (error.code == NSURLErrorTimedOut || error.code == NSURLErrorNetworkConnectionLost) {
             return @"network";
         }
         return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
