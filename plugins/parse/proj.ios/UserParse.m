@@ -125,7 +125,12 @@
     }
     [PFCloud callFunctionInBackground:name withParameters:prms block:^(id object, NSError *error) {
         if (error || !object) {
-            [UserWrapper onActionResult:self withRet:1 withMsg:@"error"];
+            int code = 4;
+            NSString *msg = @"unknown";
+            if ([error code] == kPFErrorConnectionFailed) { code = 1; msg = @"network"; }
+            else if ([error code] == kPFErrorInternalServer) { code = 2; msg = @"server"; }
+            else if ([error code] == kPFErrorExceededQuota) { code = 3; msg = @"overquota"; }
+            [UserWrapper onActionResult:self withRet:code withMsg:msg];
         } else {
             [UserWrapper onActionResult:self withRet:0 withMsg:object];
         }
