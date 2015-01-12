@@ -106,11 +106,15 @@
     }
     NSURL* url = [NSURL URLWithString:[NSString stringWithFormat:@"https://api.twitter.com/1.1/%@.json?%@", api, [paramsArr componentsJoinedByString:@"&"]]];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:url];
+    request.timeoutInterval = 5.0;
     [[PFTwitterUtils twitter] signRequest:request];
     NSURLResponse *response = nil;
     NSError* error = nil;
     NSData *data = [NSURLConnection sendSynchronousRequest:request returningResponse:&response error:&error];
     if (error) {
+        if (error.code == NSURLErrorTimedOut) {
+            return @"network";
+        }
         return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
     return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
