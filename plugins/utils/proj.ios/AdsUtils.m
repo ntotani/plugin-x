@@ -192,6 +192,9 @@
     CGFloat angleInRadians = angle * (M_PI / 180);
     CGFloat width = CGImageGetWidth(imgRef);
     CGFloat height = CGImageGetHeight(imgRef);
+    CGFloat scale = 360.0 / (width < height ? width : height);
+    width *= scale;
+    height *= scale;
 
     CGRect imgRect = CGRectMake(0, 0, width, height);
     CGAffineTransform transform = CGAffineTransformMakeRotation(angleInRadians);
