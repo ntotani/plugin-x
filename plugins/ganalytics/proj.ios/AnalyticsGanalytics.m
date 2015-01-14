@@ -55,6 +55,8 @@
 
 - (void) logError: (NSString*) errorId withMsg:(NSString*) message
 {
+    id tracker = [[GAI sharedInstance] defaultTracker];
+    [tracker send:[[GAIDictionaryBuilder createExceptionWithDescription:[NSString stringWithFormat:@"%@: %@", errorId, message] withFatal:@NO] build]];
 }
 
 - (void) logEvent: (NSString*) eventId
