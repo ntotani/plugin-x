@@ -102,7 +102,7 @@
 
 - (UIImage*)convertImg:(NSString*)path with:(int)idx
 {
-    UIImage *img = [[[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:path, idx]] autorelease];
+    UIImage *img = [[UIImage alloc] initWithContentsOfFile:[NSString stringWithFormat:path, idx]];
     CGRect clip = CGRectMake(0, 0, img.size.width, img.size.height * 2 / 3);
     CGImageRef trim = CGImageCreateWithImageInRect(img.CGImage, clip);
     img = [UIImage imageWithCGImage:trim];
@@ -118,7 +118,7 @@
     }
     CGSize size = [UIScreen mainScreen].bounds.size;
     CGRect frame = CGRectMake(size.width / 4, size.height / 5, size.width, size.height * 2 / 3);
-    dollView = [[[UIImageView alloc] initWithFrame:frame] autorelease];
+    dollView = [[UIImageView alloc] initWithFrame:frame];
     dollView.image = [self convertImg:params[@"path"] with:0];
     NSMutableArray *imgs = [NSMutableArray array];
     for (int i = 1; i < [params[@"frames"] intValue]; i++) {
@@ -128,7 +128,7 @@
     dollView.animationDuration = [params[@"frames"] intValue] / [params[@"fps"] intValue];
     dollView.animationRepeatCount = 0;
     [dollView startAnimating];
-    UIImagePickerController *pc = [[[UIImagePickerController alloc] init] autorelease];
+    UIImagePickerController *pc = [[UIImagePickerController alloc] init];
     pc.sourceType = UIImagePickerControllerSourceTypeCamera;
     pc.delegate = self;
     pc.cameraOverlayView = dollView;
