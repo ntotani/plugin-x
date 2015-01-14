@@ -100,7 +100,7 @@
 {
     NSString* api = params[@"Param1"];
     params = params[@"Param2"];
-    NSMutableArray* paramsArr = [@[] mutableCopy];
+    NSMutableArray* paramsArr = [NSMutableArray array];
     for (NSString* e in params) {
         [paramsArr addObject:[NSString stringWithFormat:@"%@=%@", e, params[e]]];
     }
@@ -117,7 +117,7 @@
         }
         return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
-    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+    return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
 }
 
 - (void)cloudFunc:(NSMutableDictionary*)params
