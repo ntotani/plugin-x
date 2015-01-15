@@ -128,27 +128,20 @@ NSArray * _transactionArray;
 
 - (void)completeTransaction:(SKPaymentTransaction *)transaction {
     NSString *receipt = nil;
-    if(_isServerMode){
-        if (floor(NSFoundationVersionNumber) <= NSFoundationVersionNumber_iOS_6_1) {
-            // iOS 6.1 or earlier.
-            // Use SKPaymentTransaction's transactionReceipt.
-            receipt = [self encode:(uint8_t *)transaction.transactionReceipt.bytes length:transaction.transactionReceipt.length];
-
+    if (_isServerMode) {
+        NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+        NSData *recData = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedDataWithOptions:0];
+        receipt = [[NSString alloc] initWithData:recData encoding:NSUTF8StringEncoding];
+        if (receipt) {
+            [IAPWrapper onPayResult:self withRet:PaymentTransactionStatePurchased withMsg:receipt];
         } else {
-            // iOS 7 or later.
-            NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
-            NSData *recData = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedDataWithOptions:0];
-            receipt = [[NSString alloc] initWithData:recData encoding:NSUTF8StringEncoding];
-            if (!receipt) {
-                receipt = [self encode:(uint8_t *)transaction.transactionReceipt.bytes length:transaction.transactionReceipt.length];
-            }
+            [self finishTransaction: transaction.payment.productIdentifier];
+            [IAPWrapper onPayResult:self withRet:PaymentTransactionStateFailed withMsg:@""];
         }
-        [IAPWrapper onPayResult:self withRet:PaymentTransactionStatePurchased withMsg:receipt];
-    }else{
+    } else {
         [self finishTransaction: transaction.payment.productIdentifier];
         [IAPWrapper onPayResult:self withRet:PaymentTransactionStatePurchased withMsg:@""];
     }
-    
 }
 
 - (void)restoreTransaction:(SKPaymentTransaction *)transaction {
