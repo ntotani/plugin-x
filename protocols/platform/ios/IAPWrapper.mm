@@ -45,6 +45,7 @@ using namespace cocos2d::plugin;
     } else {
         PluginUtilsIOS::outputLog("Can't find the C++ object of the IAP plugin");
     }
+    iapPlugin->onPayResult(cRet, chMsg);
 }
 +(void) onRequestProduct:(id)obj withRet:(ProductRequest) ret withProducts:(NSArray *)products{
     PluginProtocol* plugin = PluginUtilsIOS::getPluginPtr(obj);

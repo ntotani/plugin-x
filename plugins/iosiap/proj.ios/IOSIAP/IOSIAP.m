@@ -41,13 +41,17 @@ NSArray * _transactionArray;
     NSString * pid = [cpInfo objectForKey:@"productId"];
     SKProduct *skProduct = [self getProductById:pid];
     if(skProduct){
+        if (!_isAddObserver) {
+            [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+            _isAddObserver = true;
+        }
         SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:skProduct];
         [[SKPaymentQueue defaultQueue] addPayment:payment];
         OUTPUT_LOG(@"add PaymentQueue");
     }
 }
-- (void) setDebugMode: (BOOL) _debug{
-    self.debug = _debug;
+- (void) setDebugMode: (NSNumber*) _debug{
+    self.debug = [_debug boolValue];
 }
 - (NSString*) getSDKVersion{
     return @"1.0";
@@ -61,19 +65,13 @@ NSArray * _transactionArray;
 -(void)setServerMode{
     _isServerMode = true;
 }
--(void)requestProducts:(NSString*) paramMap{
-    [self setDebug:true];
-    if(!_isAddObserver){
-        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-        _isAddObserver = true;
-    }
+-(void)requestProducts:(NSString*) paramMap {
     NSArray *producIdArray = [paramMap componentsSeparatedByString:@","];
     _productIdentifiers = [[NSSet alloc] initWithArray:producIdArray];
     OUTPUT_LOG(@"param is %@",_productIdentifiers);
     _productsRequest = [[SKProductsRequest alloc] initWithProductIdentifiers:_productIdentifiers];
     _productsRequest.delegate = self;
     [_productsRequest start];
-
 }
 -(NSString *)parseProductToString:(NSArray *) products{
     return @"1";

@@ -32,7 +32,7 @@
  **/
 - (void) configDeveloperInfo: (NSMutableDictionary*) cpInfo;
 - (void) payForProduct: (NSMutableDictionary*) profuctInfo;
-- (void) setDebugMode: (BOOL) debug;
+- (void) setDebugMode: (NSNumber*) debug;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
 @property BOOL debug;
