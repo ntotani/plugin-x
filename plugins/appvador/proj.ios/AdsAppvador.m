@@ -46,44 +46,22 @@
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo
 {
     NSString* bannerAppId = (NSString*) [devInfo objectForKey:@"AppvadorBannerID"];
-    NSString* interstitialAppId = (NSString*) [devInfo objectForKey:@"AppVadorInterstitialID"];
-    
     UIViewController* rootViewController = [AdsWrapper getCurrentRootViewController];
     UIView* rootView = rootViewController.view;
     CGSize screenSize = rootView.frame.size;
-    
-    //バナー広告
     avAdView = [[AvAdView alloc] initWithFrame:CGRectMake(0, screenSize.height-kBannerHeight, kBannerWidth, kBannerHeight) applicationId:bannerAppId];
     avAdView.rootViewController = rootViewController;
     avAdView.delegate = self;
     [avAdView isTest:self.debug];
-    
-    //インタースティシャル広告
-    if (self.debug) {
-        //テスト時はこのIDを使用するとのこと
-        [InterstitialAd initializeWithAppId:@"8059608cd58a9704ca00cc6742fc74aa"];
-    } else {
-        [InterstitialAd initializeWithAppId:interstitialAppId];
-    }
-    [InterstitialAd setDelegate:self];
-    
 }
 
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos
 {
-    NSString* mode = [info objectForKey:@"mode"];
-    
-    if ([mode isEqualToString:@"banner"]) {
-        OUTPUT_LOG(@"showAds! BannerAd");
-        [[AdsWrapper getCurrentRootViewController].view addSubview:avAdView];
-        if (avAdView) {
-            [avAdView adStart];
-        } else {
-            [self appVadorCallback:@"banner" code:kUnknownError];
-        }
-    } else if([mode isEqualToString:@"interstitial"]) {
-        OUTPUT_LOG(@"showAds! InterstitialAd");
-       [InterstitialAd showInterstitial];
+    [[AdsWrapper getCurrentRootViewController].view addSubview:avAdView];
+    if (avAdView) {
+        [avAdView adStart];
+    } else {
+        [self appVadorCallback:@"banner" code:kUnknownError];
     }
 }
 
@@ -111,7 +89,7 @@
 
 - (NSString*) getSDKVersion
 {
-    return @"1.2.2";
+    return @"1.2.6";
 }
 
 - (NSString*) getPluginVersion
