@@ -36,13 +36,6 @@
 
 #pragma mark InterfaceAds impl
 
-//コールバック
-- (void)appVadorCallback:(NSString*)msg code:(int)code;
-{
-    OUTPUT_LOG(@"AdsAppvador:appVadorCallback! code=%d", code);
-    [AdsWrapper onAdsResult:self withRet:code withMsg:msg];
-}
-
 - (void) configDeveloperInfo: (NSMutableDictionary*) devInfo
 {
     NSString* bannerAppId = (NSString*) [devInfo objectForKey:@"AppvadorBannerID"];
@@ -57,11 +50,11 @@
 
 - (void) showAds: (NSMutableDictionary*) info position:(int) pos
 {
-    [[AdsWrapper getCurrentRootViewController].view addSubview:avAdView];
     if (avAdView) {
+        [[AdsWrapper getCurrentRootViewController].view addSubview:avAdView];
         [avAdView adStart];
     } else {
-        [self appVadorCallback:@"banner" code:kUnknownError];
+        [AdsWrapper onAdsResult:self withRet:kUnknownError withMsg:@"banner"];
     }
 }
 
@@ -107,14 +100,14 @@
 - (void)avAdDidOpenFullMovieView:(AvAdView*)avadview
 {
     OUTPUT_LOG(@"AdsAppvador:avAdDidOpenFullMovieView!");
-    [self appVadorCallback:@"banner" code:kAdsShown];
+    [AdsWrapper onAdsResult:self withRet:kAdsShown withMsg:@"banner"];
 }
 
 //バナー広告ページを閉じたとき
 - (void)avAdDidCloseFullMovieView:(AvAdView*)avadview
 {
     OUTPUT_LOG(@"AdsAppvador:avAdDidCloseFullMovieView!");
-    [self appVadorCallback:@"banner" code:kAdsDismissed];
+    [AdsWrapper onAdsResult:self withRet:kAdsDismissed withMsg:@"banner"];
 }
 
 //バナー広告読み込み完了時
@@ -132,28 +125,7 @@
         [avAdView remove];
         avAdView = nil;
     }
-    [self appVadorCallback:@"banner" code:kUnknownError];
-}
-
-//インタースティシャル広告開始時
-- (void)avInterstitialAdDidOpen
-{
-    OUTPUT_LOG(@"AdsAppvador:avInterstitialAdDidOpen!");
-    [self appVadorCallback:@"interstitial" code:kAdsShown];
-}
-
-//インタースティシャル広告終了時
-- (void)avInterstitialAdDidClose
-{
-    OUTPUT_LOG(@"AdsAppvador:avInterstitialAdDidClose!");
-    [self appVadorCallback:@"interstitial" code:kAdsDismissed];
-}
-
-//インタースティシャル広告失敗時
-- (void)avInterstitialAdDidFailToReceiveAd
-{
-    OUTPUT_LOG(@"AdsAppvador:avInterstitialAdDidFailToReceiveAd!");
-    [self appVadorCallback:@"interstitial" code:kUnknownError];
+    [AdsWrapper onAdsResult:self withRet:kUnknownError withMsg:@"banner"];
 }
 
 @end

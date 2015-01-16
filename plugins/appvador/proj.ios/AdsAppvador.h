@@ -27,14 +27,11 @@
 #import <AppVador/AvAdView.h>
 #import <AppVador/InterstitialAd.h>
 
-@interface AdsAppvador : NSObject <InterfaceAds, AvAdViewDelegate, AvInterstitialAdViewDelegate>
+@interface AdsAppvador : NSObject <InterfaceAds, AvAdViewDelegate>
 {
 }
 
 @property BOOL debug;
-
-//コールバック
-- (void)appVadorCallback:(NSString*)msg code:(int)code;
 
 /**
  interfaces from InterfaceAds
@@ -47,29 +44,5 @@
 - (void) setDebugMode: (NSNumber*) isDebugMode;
 - (NSString*) getSDKVersion;
 - (NSString*) getPluginVersion;
-
-//バナータップ時
-- (void)avAdDidTap:(AvAdView*)avadview;
-
-//バナー広告ページが表示された時
-- (void)avAdDidOpenFullMovieView:(AvAdView*)avadview;
-
-//バナー広告ページを閉じたとき
-- (void)avAdDidCloseFullMovieView:(AvAdView*)avadview;
-
-//バナー広告読み込み完了時
-- (void)avAdDidFinishedLoad:(AvAdView*)avadview;
-
-//バナー広告読み込み失敗時
-- (void)avAdDidFailToReceiveAd:(AvAdView*)avadview;
-
-//インタースティシャル広告開始時
-- (void)avInterstitialAdDidOpen;
-
-//インタースティシャル広告終了時
-- (void)avInterstitialAdDidClose;
-
-//インタースティシャル広告失敗時
-- (void)avInterstitialAdDidFailToReceiveAd;
 
 @end
