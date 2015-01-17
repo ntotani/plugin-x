@@ -90,37 +90,26 @@
     return @"0.0.1";
 }
 
-//バナータップ時
 - (void)avAdDidTap:(AvAdView*)avadview
 {
-    OUTPUT_LOG(@"AdsAppvador:avAdDidTap!");
 }
 
-//バナー広告ページが表示された時
 - (void)avAdDidOpenFullMovieView:(AvAdView*)avadview
 {
-    OUTPUT_LOG(@"AdsAppvador:avAdDidOpenFullMovieView!");
     [AdsWrapper onAdsResult:self withRet:kAdsShown withMsg:@"banner"];
 }
 
-//バナー広告ページを閉じたとき
 - (void)avAdDidCloseFullMovieView:(AvAdView*)avadview
 {
-    OUTPUT_LOG(@"AdsAppvador:avAdDidCloseFullMovieView!");
     [AdsWrapper onAdsResult:self withRet:kAdsDismissed withMsg:@"banner"];
 }
 
-//バナー広告読み込み完了時
 - (void)avAdDidFinishedLoad:(AvAdView*)avadview
 {
-    OUTPUT_LOG(@"AdsAppvador:avAdDidFinishedLoad!");
 }
 
-//バナー広告読み込み失敗時
 - (void)avAdDidFailToReceiveAd:(AvAdView*)avadview
 {
-    OUTPUT_LOG(@"AdsAppvador:avAdDidFailToReceiveAd!");
-    //viewの削除
     if (avAdView) {
         [avAdView remove];
         avAdView = nil;
