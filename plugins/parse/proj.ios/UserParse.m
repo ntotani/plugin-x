@@ -46,6 +46,7 @@
 
 - (void) logout
 {
+    [PFUser logOut];
 }
 
 - (NSNumber*) isLoggedIn
