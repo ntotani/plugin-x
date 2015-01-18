@@ -29,17 +29,18 @@
     [PFTwitterUtils logInWithBlock:^(PFUser *user, NSError *error) {
         if (error) {
             OUTPUT_LOG(@"%@", [error userInfo][@"error"]);
+            int code = 4;
             NSString *msg = @"unknown";
-            if ([error code] == kPFErrorConnectionFailed) { msg = @"network"; }
-            else if ([error code] == kPFErrorInternalServer) { msg = @"server"; }
-            else if ([error code] == kPFErrorExceededQuota) { msg = @"overquota"; }
-            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:msg];
+            if ([error code] == kPFErrorConnectionFailed) { code = 1; msg = @"network"; }
+            else if ([error code] == kPFErrorInternalServer) { code = 2; msg = @"server"; }
+            else if ([error code] == kPFErrorExceededQuota) { code = 3; msg = @"overquota"; }
+            [UserWrapper onActionResult:self withRet:code withMsg:msg];
             return;
         }
         if (!user) {
-            [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"cancel"];
+            [UserWrapper onActionResult:self withRet:5 withMsg:@"cancel"];
         } else {
-            [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:user.username];
+            [UserWrapper onActionResult:self withRet:0 withMsg:user.username];
         }
     }];
 }
@@ -62,9 +63,9 @@
     return nil;
 }
 
-- (void) setDebugMode: (BOOL) isDebugMode
+- (void) setDebugMode: (NSNumber*) isDebugMode
 {
-    self.debug = isDebugMode;
+    self.debug = [isDebugMode boolValue];
 }
 
 - (NSString*) getSDKVersion
