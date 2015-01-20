@@ -71,23 +71,31 @@
         if (params[@"cancel"]) { [av addButtonWithTitle:params[@"cancel"]]; }
         if (params[@"ok"]) { [av addButtonWithTitle:params[@"ok"]]; }
         if (params[@"red"]) { [av addButtonWithTitle:params[@"red"]]; }
+        if (params[@"input"]) { av.alertViewStyle = UIAlertViewStylePlainTextInput; }
         av.delegate = self;
         [av show];
     } else {
         // iOS8
         UIAlertController *ac = [UIAlertController alertControllerWithTitle:params[@"title"] message:params[@"message"] preferredStyle:UIAlertControllerStyleAlert];
         if (params[@"cancel"]) {
-            [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:nil]];
+            [ac addAction:[UIAlertAction actionWithTitle:params[@"cancel"] style:UIAlertActionStyleCancel handler:^(UIAlertAction *action) {
+                [AdsWrapper onAdsResult:self withRet:1 withMsg:@""];
+            }]];
         }
         if (params[@"ok"]) {
             [ac addAction:[UIAlertAction actionWithTitle:params[@"ok"] style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
-                [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
+                [AdsWrapper onAdsResult:self withRet:0 withMsg:ac.textFields ? [ac.textFields[0] text] : @""];
             }]];
         }
         if (params[@"red"]) {
             [ac addAction:[UIAlertAction actionWithTitle:params[@"red"] style:UIAlertActionStyleDestructive handler:^(UIAlertAction *action) {
-                [AdsWrapper onAdsResult:self withRet:0 withMsg:@"red"];
+                [AdsWrapper onAdsResult:self withRet:0 withMsg:ac.textFields ? [ac.textFields[0] text] : @""];
             }]];
+        }
+        if (params[@"input"]) {
+            [ac addTextFieldWithConfigurationHandler:^(UITextField *textField) {
+                textField.placeholder = params[@"input"];
+            }];
         }
         [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
     }
@@ -95,8 +103,11 @@
 
 - (void)alertView:(UIAlertView *)alertView clickedButtonAtIndex:(NSInteger)buttonIndex
 {
-    if (buttonIndex > 0 || alertView.numberOfButtons == 1) {
-        [AdsWrapper onAdsResult:self withRet:0 withMsg:@"ok"];
+    if (buttonIndex == alertView.cancelButtonIndex) {
+        [AdsWrapper onAdsResult:self withRet:1 withMsg:@""];
+    } else {
+        NSString *msg = alertView.alertViewStyle == UIAlertViewStylePlainTextInput ? [[alertView textFieldAtIndex:0] text] : @"";
+        [AdsWrapper onAdsResult:self withRet:0 withMsg:msg];
     }
 }
 
