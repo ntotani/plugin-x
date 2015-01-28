@@ -42,15 +42,16 @@ const int RESULT_CODE_PAY_SUCCESS     = 2;
 const int RESULT_CODE_PAY_FAIL        = 3;
 
 -(void) configDeveloperInfo: (NSMutableDictionary*) cpInfo{
+    if (!_isAddObserver) {
+        [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
+        _isAddObserver = true;
+    }
 }
+
 - (void) payForProduct: (NSMutableDictionary*) cpInfo{
     NSString * pid = [cpInfo objectForKey:@"productId"];
     SKProduct *skProduct = [self getProductById:pid];
     if(skProduct){
-        if (!_isAddObserver) {
-            [[SKPaymentQueue defaultQueue] addTransactionObserver:self];
-            _isAddObserver = true;
-        }
         SKMutablePayment *payment = [SKMutablePayment paymentWithProduct:skProduct];
         [[SKPaymentQueue defaultQueue] addPayment:payment];
         OUTPUT_LOG(@"add PaymentQueue");
@@ -131,20 +132,35 @@ const int RESULT_CODE_PAY_FAIL        = 3;
 }
 
 - (void)completeTransaction:(SKPaymentTransaction *)transaction {
-    NSString *receipt = nil;
     if (_isServerMode) {
         NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
         NSData *recData = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedDataWithOptions:0];
-        receipt = [[NSString alloc] initWithData:recData encoding:NSUTF8StringEncoding];
-        if (receipt) {
-            [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:[ParseUtils NSDictionaryToNSString:@{@"receipt": receipt, @"productID": transaction.payment.productIdentifier}]];
+        if (recData) {
+            NSString *receipt = [[NSString alloc] initWithData:recData encoding:NSUTF8StringEncoding];
+            [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:receipt];
         } else {
-            [self finishTransaction: transaction.payment.productIdentifier];
-            [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_FAIL withMsg:@""];
+            SKReceiptRefreshRequest *refreshReceiptRequest = [[SKReceiptRefreshRequest alloc] initWithReceiptProperties:@{}];
+            refreshReceiptRequest.delegate = self;
+            [refreshReceiptRequest start];
         }
     } else {
         [self finishTransaction: transaction.payment.productIdentifier];
         [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:@""];
+    }
+}
+
+- (void)requestDidFinish:(SKRequest *)request
+{
+    if([request isKindOfClass:[SKReceiptRefreshRequest class]])
+    {
+        NSURL *receiptURL = [[NSBundle mainBundle] appStoreReceiptURL];
+        NSData *recData = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedDataWithOptions:0];
+        if (recData) {
+            NSString *receipt = [[NSString alloc] initWithData:recData encoding:NSUTF8StringEncoding];
+            [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:receipt];
+        } else {
+            OUTPUT_LOG(@"Receipt request done but there is no receipt");
+        }
     }
 }
 
