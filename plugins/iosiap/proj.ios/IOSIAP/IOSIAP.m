@@ -23,6 +23,7 @@
  ****************************************************************************/
 
 #import "IOSIAP.h"
+#import "ParseUtils.h"
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
 @implementation IOSIAP
@@ -34,6 +35,11 @@ bool _isAddObserver = false;
 SKProductsRequest * _productsRequest;
 //productTransation
 NSArray * _transactionArray;
+
+const int RESULT_CODE_REQUEST_SUCCESS = 0;
+const int RESULT_CODE_REQUEST_FAIL    = 1;
+const int RESULT_CODE_PAY_SUCCESS     = 2;
+const int RESULT_CODE_PAY_FAIL        = 3;
 
 -(void) configDeveloperInfo: (NSMutableDictionary*) cpInfo{
 }
@@ -87,7 +93,7 @@ NSArray * _transactionArray;
 
 - (void)request:(SKRequest *)request didFailWithError:(NSError *)error {
     OUTPUT_LOG(@"Failed to load list of products.");
-     [IAPWrapper onRequestProduct:self withRet:RequestFail withProducts:NULL];
+     [IAPWrapper onRequestProduct:self withRet:RESULT_CODE_REQUEST_FAIL withProducts:NULL];
     _productsRequest = nil;
 }
 
@@ -101,7 +107,7 @@ NSArray * _transactionArray;
               skProduct.localizedTitle,
               skProduct.price.floatValue);
     }
-    [IAPWrapper onRequestProduct:self withRet:RequestSuccees withProducts:skProducts];
+    [IAPWrapper onRequestProduct:self withRet:RESULT_CODE_REQUEST_SUCCESS withProducts:skProducts];
 }
 
 //SKPaymentTransactionObserver needed
@@ -131,21 +137,21 @@ NSArray * _transactionArray;
         NSData *recData = [[NSData dataWithContentsOfURL:receiptURL] base64EncodedDataWithOptions:0];
         receipt = [[NSString alloc] initWithData:recData encoding:NSUTF8StringEncoding];
         if (receipt) {
-            [IAPWrapper onPayResult:self withRet:PaymentTransactionStatePurchased withMsg:receipt];
+            [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:[ParseUtils NSDictionaryToNSString:@{@"receipt": receipt, @"productID": transaction.payment.productIdentifier}]];
         } else {
             [self finishTransaction: transaction.payment.productIdentifier];
-            [IAPWrapper onPayResult:self withRet:PaymentTransactionStateFailed withMsg:@""];
+            [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_FAIL withMsg:@""];
         }
     } else {
         [self finishTransaction: transaction.payment.productIdentifier];
-        [IAPWrapper onPayResult:self withRet:PaymentTransactionStatePurchased withMsg:@""];
+        [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:@""];
     }
 }
 
 - (void)restoreTransaction:(SKPaymentTransaction *)transaction {
     OUTPUT_LOG(@"restoreTransaction...");
     [self finishTransaction:transaction.payment.productIdentifier];
-    [IAPWrapper onPayResult:self withRet:PaymentTransactionStateRestored withMsg:@""];
+    [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_SUCCESS withMsg:@""];
 }
 
 - (void)failedTransaction:(SKPaymentTransaction *)transaction {
@@ -157,7 +163,7 @@ NSArray * _transactionArray;
     }
     
     [self finishTransaction:transaction.payment.productIdentifier];
-    [IAPWrapper onPayResult:self withRet:PaymentTransactionStateFailed withMsg:@""];
+    [IAPWrapper onPayResult:self withRet:RESULT_CODE_PAY_FAIL withMsg:@""];
 }
 
 - (void)restoreCompletedTransactions {
