@@ -68,10 +68,16 @@
         UIAlertView *av = [[UIAlertView alloc] init];
         av.title = params[@"title"];
         av.message = params[@"message"];
-        if (params[@"cancel"]) { [av addButtonWithTitle:params[@"cancel"]]; }
+        if (params[@"cancel"]) {
+            av.cancelButtonIndex = av.numberOfButtons;
+            [av addButtonWithTitle:params[@"cancel"]];
+        }
         if (params[@"ok"]) { [av addButtonWithTitle:params[@"ok"]]; }
         if (params[@"red"]) { [av addButtonWithTitle:params[@"red"]]; }
-        if (params[@"input"]) { av.alertViewStyle = UIAlertViewStylePlainTextInput; }
+        if (params[@"input"] || params[@"placeholder"]) {
+            av.alertViewStyle = UIAlertViewStylePlainTextInput;
+            if (params[@"input"]) [av textFieldAtIndex:0].text = params[@"input"];
+        }
         av.delegate = self;
         [av show];
     } else {
@@ -92,9 +98,10 @@
                 [AdsWrapper onAdsResult:self withRet:0 withMsg:ac.textFields ? [ac.textFields[0] text] : @""];
             }]];
         }
-        if (params[@"input"]) {
+        if (params[@"input"] || params[@"placeholder"]) {
             [ac addTextFieldWithConfigurationHandler:^(UITextField *textField) {
-                textField.placeholder = params[@"input"];
+                if (params[@"input"]) textField.text = params[@"input"];
+                if (params[@"placeholder"]) textField.placeholder = params[@"placeholder"];
             }];
         }
         [[AdsWrapper getCurrentRootViewController] presentViewController:ac animated:YES completion:nil];
