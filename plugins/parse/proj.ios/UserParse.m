@@ -18,10 +18,6 @@
 
 - (void) login
 {
-    PFLogInViewController* vc = [[PFLogInViewController alloc] init];
-    vc.fields = PFLogInFieldsDefault | PFLogInFieldsTwitter;
-    vc.delegate = self;
-    [[AdsWrapper getCurrentRootViewController] presentViewController:vc animated:YES completion:nil];
 }
 
 - (void) loginWithTwitter
@@ -70,27 +66,12 @@
 
 - (NSString*) getSDKVersion
 {
-    return @"1.4.1";
+    return @"1.6.2";
 }
 
 - (NSString*) getPluginVersion
 {
     return @"0.0.1";
-}
-
-- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user
-{
-    [UserWrapper onActionResult:self withRet:kLoginSucceed withMsg:user.username];
-}
-
-- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error
-{
-    [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:[error localizedDescription]];
-}
-
-- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController
-{
-    [UserWrapper onActionResult:self withRet:kLoginFailed withMsg:@"cancel"];
 }
 
 - (NSString*)getTwitterID

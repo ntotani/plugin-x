@@ -2,7 +2,7 @@
 #import "InterfaceUser.h"
 #import <Parse/Parse.h>
 
-@interface UserParse : NSObject <InterfaceUser, PFLogInViewControllerDelegate>
+@interface UserParse : NSObject <InterfaceUser>
 {
 }
 
@@ -21,9 +21,6 @@
 - (NSString*) getPluginVersion;
 
 - (void)loginWithTwitter;
-- (void)logInViewController:(PFLogInViewController *)logInController didLogInUser:(PFUser *)user;
-- (void)logInViewController:(PFLogInViewController *)logInController didFailToLogInWithError:(NSError *)error;
-- (void)logInViewControllerDidCancelLogIn:(PFLogInViewController *)logInController;
 
 - (NSString*)getTwitterID;
 - (NSString*)twitterApi:(NSMutableDictionary*)params;
