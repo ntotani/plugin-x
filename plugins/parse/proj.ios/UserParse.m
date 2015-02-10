@@ -3,6 +3,7 @@
 #import "AdsWrapper.h"
 #import <ParseFacebookUtils/PFFacebookUtils.h>
 #import <FacebookSDK/FacebookSDK.h>
+#import "ParseUtils.h"
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 #define LOVER_PROGRESS 100
@@ -115,6 +116,14 @@ NSString *_fbUserName = @"";
     return _fbUserID;
 }
 
+- (NSString*)getCurrentSNS
+{
+    if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
+        return @"Twitter";
+    }
+    return @"Facebook";
+}
+
 - (NSString*)twitterApi:(NSMutableDictionary*)params
 {
     NSString* api = params[@"Param1"];
@@ -137,6 +146,34 @@ NSString *_fbUserName = @"";
         return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
     return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+}
+
+-(void)facebookApi:(NSMutableDictionary *)params{
+    NSString *graphPath = [params objectForKey:@"Param1"];
+    int methodID = [[params objectForKey:@"Param2"] intValue];
+    NSString * method = methodID == 0? @"GET":methodID == 1?@"POST":@"DELETE";
+    NSDictionary *param = [params objectForKey:@"Param3"];
+    int cbId = [[params objectForKey:@"Param4"] intValue];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [FBRequestConnection startWithGraphPath:graphPath
+                                     parameters:param HTTPMethod:method
+                              completionHandler:^(FBRequestConnection *connection, id result, NSError *error) {
+                                  if (!error) {
+                                      NSString *msg = [ParseUtils NSDictionaryToNSString:(NSDictionary *)result];
+                                      if (nil == msg) {
+                                          NSString *msg = [ParseUtils MakeJsonStringWithObject:@"network" andKey:@"error"];
+                                          [UserWrapper onGraphResult:self withRet:kGraphResultFail withMsg:msg withCallback:cbId];
+                                          OUTPUT_LOG(@"parse result failed");
+                                      } else {
+                                          [UserWrapper onGraphResult:self withRet:kGraphResultSuccess withMsg:msg withCallback:cbId];
+                                      }
+                                  } else {
+                                      NSString *msg = [ParseUtils MakeJsonStringWithObject:@"server" andKey:@"error"];
+                                      [UserWrapper onGraphResult:self withRet:(int)error.code withMsg:msg withCallback:cbId];
+                                      OUTPUT_LOG(@"error %@", error.description);
+                                  }
+                              }];
+    });
 }
 
 - (void)cloudFunc:(NSMutableDictionary*)params
