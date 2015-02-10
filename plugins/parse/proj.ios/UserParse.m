@@ -1,6 +1,8 @@
 #import "UserParse.h"
 #import "UserWrapper.h"
 #import "AdsWrapper.h"
+#import <ParseFacebookUtils/PFFacebookUtils.h>
+#import <FacebookSDK/FacebookSDK.h>
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 #define LOVER_PROGRESS 100
@@ -11,6 +13,8 @@
 @implementation UserParse
 
 @synthesize debug = __debug;
+NSString *_fbUserID = @"";
+NSString *_fbUserName = @"";
 
 - (void) configDeveloperInfo : (NSMutableDictionary*) cpInfo
 {
@@ -37,6 +41,33 @@
             [UserWrapper onActionResult:self withRet:5 withMsg:@"cancel"];
         } else {
             [UserWrapper onActionResult:self withRet:0 withMsg:user.username];
+        }
+    }];
+}
+
+- (void) loginWithFacebook
+{
+    [PFFacebookUtils logInWithPermissions:@[@"read_stream"] block:^(PFUser *user, NSError *error) {
+        if (error) {
+            OUTPUT_LOG(@"%@", [error userInfo][@"error"]);
+            int code = 4;
+            NSString *msg = @"unknown";
+            if ([error code] == kPFErrorConnectionFailed) { code = 1; msg = @"network"; }
+            else if ([error code] == kPFErrorInternalServer) { code = 2; msg = @"server"; }
+            else if ([error code] == kPFErrorExceededQuota) { code = 3; msg = @"overquota"; }
+            [UserWrapper onActionResult:self withRet:code withMsg:msg];
+            return;
+        }
+        if (!user) {
+            [UserWrapper onActionResult:self withRet:5 withMsg:@"cancel"];
+        } else {
+            [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fbUser, NSError *error) {
+                _fbUserID = fbUser[@"id"];
+                [_fbUserID retain];
+                _fbUserName = fbUser[@"name"];
+                [_fbUserName retain];
+                [UserWrapper onActionResult:self withRet:0 withMsg:user.username];
+            }];
         }
     }];
 }
@@ -77,6 +108,11 @@
 - (NSString*)getTwitterID
 {
     return [PFTwitterUtils twitter].userId;
+}
+
+- (NSString*)getFacebookID
+{
+    return _fbUserID;
 }
 
 - (NSString*)twitterApi:(NSMutableDictionary*)params
