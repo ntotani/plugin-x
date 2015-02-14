@@ -26,6 +26,7 @@
 #import "ShareWrapper.h"
 #import <FacebookSDK/FacebookSDK.h>
 #import "ParseUtils.h"
+#import <Social/Social.h>
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 
 @implementation ShareFacebook
@@ -122,6 +123,24 @@
 
 - (void) share: (NSMutableDictionary*) shareInfo
 {
+    SLComposeViewController *cvc = [SLComposeViewController composeViewControllerForServiceType:SLServiceTypeFacebook];
+    [cvc setInitialText:[NSString stringWithFormat:@"%@", shareInfo[@"SharedText"]]];
+    NSString* imgPath = shareInfo[@"SharedImagePath"];
+    if (imgPath) {
+        [cvc addImage:[UIImage imageWithContentsOfFile:imgPath]];
+    }
+    [cvc setCompletionHandler:^(SLComposeViewControllerResult result) {
+        switch(result){
+            case SLComposeViewControllerResultCancelled:
+                [ShareWrapper onShareResult:self withRet:kShareCancel withMsg:@"Share Cancelled"];
+                break;
+            case SLComposeViewControllerResultDone:
+                [ShareWrapper onShareResult:self withRet:kShareSuccess withMsg:@"Share Succeed"];
+                break;
+        }
+    }];
+    [[UIApplication sharedApplication].keyWindow.rootViewController presentViewController:cvc animated:YES completion:nil];
+    /*
     [self convertParamsToFBParams:shareInfo];
     NSString *link = [shareInfo objectForKey:@"link"];
     NSString *photo = [shareInfo objectForKey:@"photo"];
@@ -166,6 +185,7 @@
          NSString *msg = [ParseUtils MakeJsonStringWithObject:@"Share failed, share target absent or not supported, please add 'siteUrl' or 'imageUrl' in parameters" andKey:@"error_message"];
         [ShareWrapper onShareResult:self withRet:kShareFail withMsg:msg];
     }
+     */
 }
 
 - (void) setDebugMode: (BOOL) debug
