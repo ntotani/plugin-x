@@ -64,9 +64,7 @@ NSString *_fbUserName = @"";
         } else {
             [[FBRequest requestForMe] startWithCompletionHandler:^(FBRequestConnection *connection, NSDictionary<FBGraphUser> *fbUser, NSError *error) {
                 _fbUserID = fbUser[@"id"];
-                [_fbUserID retain];
                 _fbUserName = fbUser[@"name"];
-                [_fbUserName retain];
                 [UserWrapper onActionResult:self withRet:0 withMsg:user.username];
             }];
         }
@@ -116,6 +114,14 @@ NSString *_fbUserName = @"";
     return _fbUserID;
 }
 
+- (NSString*)getFacebookUserName
+{
+    return _fbUserName;
+}
+
+- (void)setFacebookID:(NSString*)fbID { _fbUserID = fbID; }
+- (void)setFacebookUserName:(NSString*)fbUserName { _fbUserName = fbUserName; }
+
 - (NSString*)getCurrentSNS
 {
     if ([PFTwitterUtils isLinkedWithUser:[PFUser currentUser]]) {
@@ -145,7 +151,7 @@ NSString *_fbUserName = @"";
         }
         return [NSString stringWithFormat:@"{\"errors\":[{\"message\":\"%@\",\"code\":999}]}", [error localizedDescription]];
     }
-    return [[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding] autorelease];
+    return [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
 }
 
 -(void)facebookApi:(NSMutableDictionary *)params{

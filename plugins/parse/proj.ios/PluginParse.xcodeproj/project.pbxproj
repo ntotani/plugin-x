@@ -192,6 +192,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/PluginAdmob.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
@@ -218,6 +219,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "compiler-default";
 				CLANG_CXX_LIBRARY = "compiler-default";
+				CLANG_ENABLE_OBJC_ARC = YES;
 				DSTROOT = /tmp/PluginAdmob.dst;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
