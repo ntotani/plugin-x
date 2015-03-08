@@ -46,6 +46,20 @@ NSString *_fbUserName = @"";
     }];
 }
 
+- (void) fetchTwitterUserInfo
+{
+    NSURL *verify = [NSURL URLWithString:@"https://api.twitter.com/1.1/account/verify_credentials.json"];
+    NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
+    [[PFTwitterUtils twitter] signRequest:request];
+    [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+        if (!connectionError) {
+            [UserWrapper onActionResult:self withRet:0 withMsg:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
+        } else {
+            [UserWrapper onActionResult:self withRet:1 withMsg:@"error"];
+        }
+    }];
+}
+
 - (void) loginWithFacebook
 {
     [PFFacebookUtils logInWithPermissions:@[@"read_stream"] block:^(PFUser *user, NSError *error) {
