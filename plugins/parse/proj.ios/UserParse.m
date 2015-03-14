@@ -48,15 +48,20 @@ NSString *_fbUserName = @"";
 
 - (void) fetchTwitterUserInfo
 {
-    NSURL *verify = [NSURL URLWithString:@"https://api.twitter.com/1.1/account/verify_credentials.json"];
+    NSURL *verify = [NSURL URLWithString:@"https://api.twitter.com/1.1/account/verify_credentials.json?include_entities=false&skip_status=true"];
     NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:verify];
     [[PFTwitterUtils twitter] signRequest:request];
     [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue mainQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
         if (!connectionError) {
-            [UserWrapper onActionResult:self withRet:0 withMsg:[[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding]];
-        } else {
-            [UserWrapper onActionResult:self withRet:1 withMsg:@"error"];
+            NSError *jsonErr;
+            NSDictionary *json = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonErr];
+            if (!jsonErr && !json[@"errors"]) {
+                NSDictionary *ret = @{@"name":json[@"name"], @"icon":json[@"profile_image_url"]};
+                [UserWrapper onActionResult:self withRet:0 withMsg:[[NSString alloc] initWithData:[NSJSONSerialization dataWithJSONObject:ret options:0 error:&jsonErr] encoding:NSUTF8StringEncoding]];
+                return;
+            }
         }
+        [UserWrapper onActionResult:self withRet:1 withMsg:@"error"];
     }];
 }
 
