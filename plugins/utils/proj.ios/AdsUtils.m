@@ -79,7 +79,9 @@
             if (params[@"input"]) [av textFieldAtIndex:0].text = params[@"input"];
         }
         av.delegate = self;
-        [av show];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [av show];
+        });
     } else {
         // iOS8
         UIAlertController *ac = [UIAlertController alertControllerWithTitle:params[@"title"] message:params[@"message"] preferredStyle:UIAlertControllerStyleAlert];
