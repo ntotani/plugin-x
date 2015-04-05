@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		979B7D181999DC90001196FF /* Parse.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 979B7D171999DC90001196FF /* Parse.framework */; };
+		C60DE8F11AD1365200A075EB /* Crashlytics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C60DE8F01AD1365200A075EB /* Crashlytics.framework */; };
 		C699FD121A89F4A4000AEA91 /* FacebookSDK.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C699FD111A89F4A4000AEA91 /* FacebookSDK.framework */; };
 		FADC44AB176EA82000B2D5ED /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = FADC44AA176EA82000B2D5ED /* Foundation.framework */; };
 		FADC44C6176EA84500B2D5ED /* UserParse.m in Sources */ = {isa = PBXBuildFile; fileRef = FADC44C4176EA84500B2D5ED /* UserParse.m */; };
@@ -27,6 +28,7 @@
 
 /* Begin PBXFileReference section */
 		979B7D171999DC90001196FF /* Parse.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Parse.framework; sourceTree = "<group>"; };
+		C60DE8F01AD1365200A075EB /* Crashlytics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Crashlytics.framework; path = "../../../../../runtime-src/proj.ios_mac/Crashlytics.framework"; sourceTree = "<group>"; };
 		C699FD111A89F4A4000AEA91 /* FacebookSDK.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = FacebookSDK.framework; path = ../../facebook/proj.ios/sdk/FacebookSDK.framework; sourceTree = "<group>"; };
 		FADC44A7176EA82000B2D5ED /* libPluginParse.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPluginParse.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		FADC44AA176EA82000B2D5ED /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
@@ -42,6 +44,7 @@
 			files = (
 				C699FD121A89F4A4000AEA91 /* FacebookSDK.framework in Frameworks */,
 				979B7D181999DC90001196FF /* Parse.framework in Frameworks */,
+				C60DE8F11AD1365200A075EB /* Crashlytics.framework in Frameworks */,
 				FADC44AB176EA82000B2D5ED /* Foundation.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -71,6 +74,7 @@
 		FADC44A9176EA82000B2D5ED /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C60DE8F01AD1365200A075EB /* Crashlytics.framework */,
 				C699FD111A89F4A4000AEA91 /* FacebookSDK.framework */,
 				979B7D171999DC90001196FF /* Parse.framework */,
 				FADC44AA176EA82000B2D5ED /* Foundation.framework */,
@@ -198,6 +202,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					../../facebook/proj.ios/sdk,
+					"../../../../../runtime-src/proj.ios_mac",
 				);
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;
@@ -225,6 +230,7 @@
 					"$(inherited)",
 					"$(PROJECT_DIR)",
 					../../facebook/proj.ios/sdk,
+					"../../../../../runtime-src/proj.ios_mac",
 				);
 				GCC_C_LANGUAGE_STANDARD = "compiler-default";
 				GCC_PRECOMPILE_PREFIX_HEADER = YES;

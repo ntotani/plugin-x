@@ -4,6 +4,7 @@
 #import <ParseFacebookUtils/PFFacebookUtils.h>
 #import <FacebookSDK/FacebookSDK.h>
 #import "ParseUtils.h"
+#import <Crashlytics/Crashlytics.h>
 
 #define OUTPUT_LOG(...)     if (self.debug) NSLog(__VA_ARGS__);
 #define LOVER_PROGRESS 100
@@ -41,7 +42,8 @@ NSString *_fbUserName = @"";
         if (!user) {
             [UserWrapper onActionResult:self withRet:5 withMsg:@"cancel"];
         } else {
-            [UserWrapper onActionResult:self withRet:0 withMsg:user.username];
+            [Crashlytics setUserIdentifier:user.objectId];
+            [UserWrapper onActionResult:self withRet:0 withMsg:user.objectId];
         }
     }];
 }
@@ -103,7 +105,7 @@ NSString *_fbUserName = @"";
 - (NSString*) getSessionID
 {
     if ([PFUser currentUser]) {
-        return [PFUser currentUser].username;
+        return [PFUser currentUser].objectId;
     }
     return nil;
 }
